@@ -1,11 +1,11 @@
 # ai-tools
 
-`ai-tools` is an npm CLI that installs AI skills from GitHub branches in this repository into Codex and Claude.
+`@minhluudev/ai-tools` is an npm CLI that installs AI skills from GitHub branches in this repository into Codex and Claude.
 
 ## Install
 
 ```bash
-npm install -g ai-tools
+npm install -g @minhluudev/ai-tools
 ai-tools install
 ```
 
@@ -85,3 +85,9 @@ GitHub Actions includes:
 - `.github/workflows/publish.yml` for npm publish on tags matching `v*.*.*` and manual dispatch
 
 To publish successfully, configure the repository secret `NPM_TOKEN` with publish access to the target npm package.
+
+For the first public publish of this scoped package, use:
+
+```bash
+npm publish --access public
+```
