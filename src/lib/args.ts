@@ -29,8 +29,8 @@ export function parseArgs(argv: string[]): ParseArgsResult {
   const options: CliOptions = {
     help: false,
     yes: false,
-    agent: undefined,
-    location: undefined,
+    agents: [],
+    locations: [],
     skills: [],
     groups: []
   };
@@ -75,18 +75,20 @@ export function parseArgs(argv: string[]): ParseArgsResult {
     }
 
     if (key === "agent") {
-      if (!isAgent(value)) {
-        throw new Error(`Invalid agent "${value}". Use "codex" or "claude".`);
+      const agents = parseCsv(value);
+      if (agents.some((agent) => !isAgent(agent))) {
+        throw new Error(`Invalid agent list "${value}". Use "codex" and/or "claude".`);
       }
-      options.agent = value;
+      options.agents = agents as Agent[];
       continue;
     }
 
     if (key === "location") {
-      if (!isInstallLocation(value)) {
-        throw new Error(`Invalid location "${value}". Use "global" or "local".`);
+      const locations = parseCsv(value);
+      if (locations.some((location) => !isInstallLocation(location))) {
+        throw new Error(`Invalid location list "${value}". Use "global" and/or "local".`);
       }
-      options.location = value;
+      options.locations = locations as InstallLocation[];
     }
   }
 
@@ -97,14 +99,19 @@ export function printHelp(): void {
   console.log(`ai-tools
 
 Usage:
+  ai-tools
   ai-tools install [options]
   ai-tools help
+
+Default behavior:
+  Running "ai-tools" in an interactive terminal opens a top-level menu.
+  Running "ai-tools install" starts the skills installer directly.
 
 Options:
   --skills <ids>      Comma-separated individual skill ids
   --groups <ids>      Comma-separated group ids
-  --location <type>   global | local
-  --agent <agent>     codex | claude
+  --location <types>  Comma-separated: global,local
+  --agent <agents>    Comma-separated: codex,claude
   --yes               Skip overwrite prompts
   --help, -h          Show help
 `);

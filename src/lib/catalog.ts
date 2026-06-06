@@ -142,6 +142,25 @@ function isSkillGroup(group: SkillGroup | null): group is SkillGroup {
   return group !== null;
 }
 
+async function tryLoadManifest(
+  client: GitHubClient,
+  input: {
+    branch: string;
+    sha: string;
+    manifestPath: string;
+  }
+): Promise<ManifestFile | null> {
+  try {
+    const rawManifest = await client.fetchManifest(input);
+    return validateManifest(rawManifest, {
+      branch: input.branch,
+      manifestPath: input.manifestPath
+    });
+  } catch {
+    return null;
+  }
+}
+
 export async function loadCatalogIndex(
   client: GitHubClient,
   githubConfig: PackageGithubConfig
@@ -149,24 +168,53 @@ export async function loadCatalogIndex(
   const warnings: string[] = [];
   const branches = await client.listBranches();
   const branchMap = new Map(branches.map((branch) => [branch.name, branch]));
-  const skillsBranch = branchMap.get(githubConfig.skillsBranch);
+  const configuredSkillsBranch = branchMap.get(githubConfig.skillsBranch);
+  const defaultBranch = branchMap.get(githubConfig.defaultBranch);
 
-  if (!skillsBranch) {
-    throw new Error(`Configured skills branch "${githubConfig.skillsBranch}" was not found.`);
+  let skillsBranch = configuredSkillsBranch;
+  let skillManifest: ManifestFile | null = null;
+
+  if (configuredSkillsBranch) {
+    skillManifest = await tryLoadManifest(client, {
+      branch: configuredSkillsBranch.name,
+      sha: configuredSkillsBranch.sha,
+      manifestPath: githubConfig.manifestPath
+    });
   }
 
-  const skillManifestRaw = await client.fetchManifest({
-    branch: skillsBranch.name,
-    sha: skillsBranch.sha,
-    manifestPath: githubConfig.manifestPath
-  });
-  const skillManifest = validateManifest(skillManifestRaw, {
-    branch: skillsBranch.name,
-    manifestPath: githubConfig.manifestPath
-  });
+  if (!skillManifest && defaultBranch) {
+    const defaultManifest = await tryLoadManifest(client, {
+      branch: defaultBranch.name,
+      sha: defaultBranch.sha,
+      manifestPath: githubConfig.manifestPath
+    });
+
+    if (defaultManifest) {
+      skillsBranch = defaultBranch;
+      skillManifest = defaultManifest;
+
+      if (!configuredSkillsBranch) {
+        warnings.push(
+          `Configured skills branch "${githubConfig.skillsBranch}" was not found. Falling back to "${defaultBranch.name}".`
+        );
+      } else if (configuredSkillsBranch.name !== defaultBranch.name) {
+        warnings.push(
+          `Configured skills branch "${githubConfig.skillsBranch}" does not contain a valid manifest. Falling back to "${defaultBranch.name}".`
+        );
+      }
+    }
+  }
+
+  if (!skillsBranch || !skillManifest) {
+    const availableBranches = branches.map((branch) => branch.name).join(", ") || "none";
+    throw new Error(
+      `Could not load skills catalog. Expected "${githubConfig.manifestPath}" in branch "${githubConfig.skillsBranch}"` +
+        ` or fallback branch "${githubConfig.defaultBranch}". Available branches: ${availableBranches}.`
+    );
+  }
 
   const excludedBranches = new Set([
-    githubConfig.skillsBranch,
+    skillsBranch.name,
     ...githubConfig.excludeBranches,
     githubConfig.defaultBranch
   ]);

@@ -8,6 +8,7 @@ const PACKAGE_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), 
 interface PackageJsonShape {
   aiTools?: {
     github?: Partial<PackageConfig["github"]>;
+    selectionCatalogPath?: string;
   };
 }
 
@@ -23,6 +24,7 @@ export async function loadPackageConfig(): Promise<PackageConfig> {
 
   return {
     packageRoot: PACKAGE_ROOT,
+    selectionCatalogPath: aiTools.selectionCatalogPath || "selection-catalog.json",
     github: {
       owner: aiTools.github.owner,
       repo: aiTools.github.repo,

@@ -1,144 +1,27 @@
 import * as process from "node:process";
 import { parseArgs, printHelp } from "./lib/args.js";
 import { loadPackageConfig } from "./lib/config.js";
-import { loadCatalogIndex, mergeSelectedItems } from "./lib/catalog.js";
-import { createPromptSession, promptConfirm, promptMultiSelect, promptSingleSelect } from "./lib/prompts.js";
+import { createPromptSession, promptConfirm, promptSingleSelect } from "./lib/prompts.js";
 import { createGitHubClient } from "./lib/github.js";
 import { detectExistingTargets, installPlannedItems, planInstallations, resolveInstallRoot } from "./lib/install.js";
-import type {
-  Agent,
-  CatalogIndex,
-  CliOptions,
-  InstallLocation,
-  ManifestItem,
-  PlannedInstallation,
-  PromptChoice
-} from "./lib/types.js";
+import { loadSelectionCatalog, resolveSelectionItems } from "./lib/selection-catalog.js";
+import { runTabbedWizard } from "./lib/tui-wizard.js";
+import type { Agent, CliOptions, InstallLocation, SelectionCatalog } from "./lib/types.js";
 
-function formatSelectionChoices(items: ManifestItem[]): PromptChoice[] {
-  return items.map((item) => {
-    const compatibility = [item.targets.codex ? "codex" : null, item.targets.claude ? "claude" : null]
-      .filter(Boolean)
-      .join(", ");
+type EntryAction = "install-skills" | "install-libs";
 
-    return {
-      value: item.id,
-      label: item.label,
-      description: `${item.description || "No description"} [${compatibility || "unsupported"}]`
-    };
-  });
-}
-
-function formatGroupChoices(groups: CatalogIndex["groups"]): PromptChoice[] {
-  return groups.map((group) => ({
-    value: group.id,
-    label: group.label,
-    description: `${group.description || "No description"} (${group.items.length} skill${group.items.length === 1 ? "" : "s"})`
-  }));
-}
-
-function printSelectionSummary(input: {
-  location: InstallLocation;
-  agent: Agent;
-  installRoot: string;
-  selectedSkills: string[];
-  selectedGroups: string[];
-  plannedItems: PlannedInstallation[];
-}): void {
-  console.log("");
-  console.log("Install summary");
-  console.log(`- Agent: ${input.agent}`);
-  console.log(`- Location: ${input.location}`);
-  console.log(`- Root: ${input.installRoot}`);
-  console.log(`- Individual skills: ${input.selectedSkills.length ? input.selectedSkills.join(", ") : "none"}`);
-  console.log(`- Groups: ${input.selectedGroups.length ? input.selectedGroups.join(", ") : "none"}`);
-  console.log(`- Final items: ${input.plannedItems.map((item) => item.id).join(", ")}`);
-}
-
-async function resolveInteractiveSelections(
-  index: CatalogIndex,
-  options: CliOptions
-): Promise<{
-  selectedSkills: string[];
-  selectedGroups: string[];
-  location: InstallLocation;
-  agent: Agent;
-}> {
-  const prompt = createPromptSession();
-
-  try {
-    const selectedSkills =
-      options.skills.length > 0
-        ? options.skills
-        : await promptMultiSelect(prompt, {
-            message: "Select individual skills",
-            choices: formatSelectionChoices(index.individualSkills),
-            allowEmpty: true
-          });
-
-    const selectedGroups =
-      options.groups.length > 0
-        ? options.groups
-        : await promptMultiSelect(prompt, {
-            message: "Select skill groups",
-            choices: formatGroupChoices(index.groups),
-            allowEmpty: true
-          });
-
-    const location =
-      options.location ||
-      (await promptSingleSelect<InstallLocation>(prompt, {
-        message: "Select installation location",
-        choices: [
-          {
-            value: "global",
-            label: "global",
-            description: "Install into the current user's home directory."
-          },
-          {
-            value: "local",
-            label: "local",
-            description: "Install into this project's dot directories."
-          }
-        ]
-      }));
-
-    const agent =
-      options.agent ||
-      (await promptSingleSelect<Agent>(prompt, {
-        message: "Select agent",
-        choices: [
-          {
-            value: "codex",
-            label: "codex",
-            description: "Install as Codex skills."
-          },
-          {
-            value: "claude",
-            label: "claude",
-            description: "Install as Claude custom agents."
-          }
-        ]
-      }));
-
-    return { selectedSkills, selectedGroups, location, agent };
-  } finally {
-    await prompt.close();
-  }
-}
-
-function ensureNonInteractiveInputs(index: CatalogIndex, options: CliOptions): void {
+function ensureNonInteractiveInputs(selectionCatalog: SelectionCatalog, options: CliOptions): void {
   const missing: string[] = [];
 
   if (options.skills.length === 0 && options.groups.length === 0) {
     missing.push("--skills and/or --groups");
   }
 
-  if (!options.location) {
+  if (options.locations.length === 0) {
     missing.push("--location");
   }
 
-  if (!options.agent) {
+  if (options.agents.length === 0) {
     missing.push("--agent");
   }
 
@@ -147,14 +30,14 @@ function ensureNonInteractiveInputs(index: CatalogIndex, options: CliOptions): v
   }
 
   const unknownSkills = options.skills.filter(
-    (skillId) => !index.individualSkills.some((item) => item.id === skillId)
+    (skillId) => !selectionCatalog.skills.some((item) => item.id === skillId)
   );
   if (unknownSkills.length > 0) {
     throw new Error(`Unknown skill id(s): ${unknownSkills.join(", ")}`);
   }
 
   const unknownGroups = options.groups.filter(
-    (groupId) => !index.groups.some((group) => group.id === groupId)
+    (groupId) => !selectionCatalog.groups.some((group) => group.id === groupId)
   );
   if (unknownGroups.length > 0) {
     throw new Error(`Unknown group id(s): ${unknownGroups.join(", ")}`);
@@ -162,29 +45,65 @@ function ensureNonInteractiveInputs(index: CatalogIndex, options: CliOptions): v
 }
 
 async function resolveSelections(
-  index: CatalogIndex,
+  selectionCatalog: SelectionCatalog,
   options: CliOptions
 ): Promise<{
   selectedSkills: string[];
   selectedGroups: string[];
-  location: InstallLocation;
-  agent: Agent;
+  locations: InstallLocation[];
+  agents: Agent[];
 }> {
   if (!process.stdin.isTTY || !process.stdout.isTTY) {
-    ensureNonInteractiveInputs(index, options);
+    ensureNonInteractiveInputs(selectionCatalog, options);
     return {
       selectedSkills: options.skills,
       selectedGroups: options.groups,
-      location: options.location as InstallLocation,
-      agent: options.agent as Agent
+      locations: options.locations,
+      agents: options.agents
     };
   }
 
-  return resolveInteractiveSelections(index, options);
+  return runTabbedWizard(selectionCatalog, options);
+}
+
+async function resolveEntryAction(rawArgs: string[]): Promise<EntryAction | null> {
+  if (rawArgs.length > 0 || !process.stdin.isTTY || !process.stdout.isTTY) {
+    return null;
+  }
+
+  const prompt = createPromptSession();
+  try {
+    return await promptSingleSelect<EntryAction>(prompt, {
+      message: "Choose an action",
+      choices: [
+        {
+          value: "install-skills",
+          label: "Install agent skills",
+          description: "Open the terminal UI to install skills for Codex and Claude."
+        },
+        {
+          value: "install-libs",
+          label: "Install libs for AI",
+          description: "Install shared AI libraries and tooling."
+        }
+      ]
+    });
+  } finally {
+    await prompt.close();
+  }
 }
 
 export async function runCli(argv: string[] = process.argv): Promise<void> {
-  const { command, options } = parseArgs(argv.slice(2));
+  const rawArgs = argv.slice(2);
+  const entryAction = await resolveEntryAction(rawArgs);
+
+  if (entryAction === "install-libs") {
+    console.log("Install libs for AI is not implemented yet.");
+    return;
+  }
+
+  const effectiveArgs = entryAction === "install-skills" ? ["install"] : rawArgs;
+  const { command, options } = parseArgs(effectiveArgs);
 
   if (options.help || command === "help") {
     printHelp();
@@ -196,42 +115,38 @@ export async function runCli(argv: string[] = process.argv): Promise<void> {
   }
 
   const config = await loadPackageConfig();
-  const client = createGitHubClient(config.github);
+  const selectionCatalog = await loadSelectionCatalog(config);
 
-  console.log("Loading remote catalogs...");
-  const index = await loadCatalogIndex(client, config.github);
-
-  if (index.individualSkills.length === 0 && index.groups.length === 0) {
-    throw new Error("No installable skills or groups were found in the configured repository.");
+  if (selectionCatalog.skills.length === 0 && selectionCatalog.groups.length === 0) {
+    throw new Error("Selection catalog is empty. Add skills or groups before running the installer.");
   }
 
-  const { selectedSkills, selectedGroups, location, agent } = await resolveSelections(index, options);
-  const finalItems = mergeSelectedItems({
-    individualSkills: index.individualSkills,
-    groups: index.groups,
+  const { selectedSkills, selectedGroups, locations, agents } = await resolveSelections(selectionCatalog, options);
+
+  console.log("");
+  console.log("Resolving selected sources...");
+  const client = createGitHubClient(config.github);
+  const finalItems = await resolveSelectionItems({
+    client,
+    config,
+    selectionCatalog,
     selectedSkillIds: selectedSkills,
     selectedGroupIds: selectedGroups
   });
 
   if (finalItems.length === 0) {
-    throw new Error("No skills were selected.");
+    throw new Error("No installable items were resolved from the selected sources.");
   }
 
-  const installRoot = resolveInstallRoot({ agent, location, cwd: process.cwd() });
-  const plannedItems = planInstallations({
-    items: finalItems,
-    agent,
-    installRoot
-  });
-
-  printSelectionSummary({
-    location,
-    agent,
-    installRoot,
-    selectedSkills,
-    selectedGroups,
-    plannedItems
-  });
+  const plannedItems = locations.flatMap((location) =>
+    agents.flatMap((agent) =>
+      planInstallations({
+        items: finalItems,
+        agent,
+        installRoot: resolveInstallRoot({ agent, location, cwd: process.cwd() })
+      })
+    )
+  );
 
   const existingTargets = await detectExistingTargets(plannedItems);
   let overwriteExisting = options.yes;
@@ -277,13 +192,5 @@ export async function runCli(argv: string[] = process.argv): Promise<void> {
   console.log("Install complete");
   for (const result of results) {
     console.log(`- ${result.id}: ${result.targetPath}`);
-  }
-
-  if (index.warnings.length > 0) {
-    console.log("");
-    console.log("Catalog warnings");
-    for (const warning of index.warnings) {
-      console.log(`- ${warning}`);
-    }
   }
 }

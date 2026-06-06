@@ -17,6 +17,7 @@
   },
   "files": [
     "dist/src",
+    "selection-catalog.json",
     "README.md"
   ],
   "scripts": {
@@ -31,10 +32,12 @@
     "node": ">=22.0.0"
   },
   "devDependencies": {
+    "@types/blessed": "^0.1.27",
     "@types/node": "^22.15.30",
     "typescript": "^5.8.3"
   },
   "aiTools": {
+    "selectionCatalogPath": "selection-catalog.json",
     "github": {
       "owner": "minhluudev",
       "repo": "ai-tools",
@@ -46,5 +49,9 @@
         "master"
       ]
     }
+  },
+  "dependencies": {
+    "@inquirer/prompts": "^8.5.2",
+    "blessed": "^0.1.81"
   }
 }

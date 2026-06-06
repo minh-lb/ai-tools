@@ -5,8 +5,8 @@ export type Command = "install" | "help";
 export interface CliOptions {
   help: boolean;
   yes: boolean;
-  agent?: Agent;
-  location?: InstallLocation;
+  agents: Agent[];
+  locations: InstallLocation[];
   skills: string[];
   groups: string[];
 }
@@ -86,6 +86,26 @@ export interface CatalogIndex {
   warnings: string[];
 }
 
+export interface SelectionSkill {
+  id: string;
+  label: string;
+  description: string;
+  sourceBranch?: string;
+}
+
+export interface SelectionGroup {
+  id: string;
+  label: string;
+  description: string;
+  sourceBranch?: string;
+}
+
+export interface SelectionCatalog {
+  version: 1;
+  skills: SelectionSkill[];
+  groups: SelectionGroup[];
+}
+
 export interface PackageGithubConfig {
   owner: string;
   repo: string;
@@ -98,6 +118,7 @@ export interface PackageGithubConfig {
 export interface PackageConfig {
   packageRoot: string;
   github: PackageGithubConfig;
+  selectionCatalogPath: string;
 }
 
 export interface GitHubClient {

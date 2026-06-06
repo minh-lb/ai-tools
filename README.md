@@ -9,14 +9,27 @@ npm install -g @minhluudev/ai-tools
 ai-tools install
 ```
 
+By default, `ai-tools` and `ai-tools install` run as an interactive terminal UI when executed in a normal terminal. CLI options are only needed for non-interactive or scripted usage.
+Use `← →` to switch tabs, `↑ ↓` to move within a tab, `space` or `enter` to toggle options, and `q` or `esc` to cancel. On the `Review` tab, `enter` confirms the highlighted action.
+
+Running `ai-tools` now shows a top-level menu with:
+
+1. `Install agent skills`
+2. `Install libs for AI`
+
+The second option is currently a placeholder and exits with a clear message until the libs install flow is implemented.
+
 ## Supported Flow
 
 The interactive installer asks for:
 
-1. Individual skills from the `skill-general` branch
-2. Skill groups from other branches such as `laravel-ddd`
-3. Installation location: `global` or `local`
-4. Target agent: `codex` or `claude`
+1. Individual skills from the local selection catalog packaged with the CLI
+2. Skill groups from the same local selection catalog, shown in the same `Skills` tab
+3. Installation locations: `global`, `local`, or both
+4. Target agents: `codex`, `claude`, or both
+5. A review tab where you can confirm or cancel after navigating back and forth with the tab bar
+
+The wizard does not validate GitHub branches or manifests while you are selecting options. Source validation only starts after you confirm the review step.
 
 Global installs write into:
 
@@ -31,6 +44,8 @@ Local installs write into:
 ## Manifest Contract
 
 Each source branch must expose `ai-tools.catalog.json` at the branch root.
+
+The menu shown by the wizard is driven by `selection-catalog.json` in this package. Update that file when you add or rename installable skills/groups.
 
 ```json
 {
@@ -72,8 +87,8 @@ Rules:
 ai-tools install \
   --skills laravel-code-reviewer,mql5-ui-designer \
   --groups laravel-ddd \
-  --location local \
-  --agent codex \
+  --location local,global \
+  --agent codex,claude \
   --yes
 ```
 

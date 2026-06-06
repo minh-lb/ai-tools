@@ -10,16 +10,16 @@ test("parseArgs parses install flags", () => {
     "--groups",
     "laravel-ddd",
     "--location",
-    "local",
+    "local,global",
     "--agent",
-    "codex",
+    "codex,claude",
     "--yes"
   ]);
 
   assert.equal(result.command, "install");
   assert.deepEqual(result.options.skills, ["skill-1", "skill-2"]);
   assert.deepEqual(result.options.groups, ["laravel-ddd"]);
-  assert.equal(result.options.location, "local");
-  assert.equal(result.options.agent, "codex");
+  assert.deepEqual(result.options.locations, ["local", "global"]);
+  assert.deepEqual(result.options.agents, ["codex", "claude"]);
   assert.equal(result.options.yes, true);
 });
