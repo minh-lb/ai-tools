@@ -1,12 +1,12 @@
 import blessed from "blessed";
-import type { ProjectDocsCatalog, ProjectDocsDocument } from "./types.js";
+import type { ProjectDocsCatalog, ProjectDocsSkill } from "./types.js";
 
-type ProjectDocsTab = "documents" | "review";
+type ProjectDocsTab = "skills" | "review";
 type ReviewAction = "confirm" | "back" | "cancel";
 
 interface ProjectDocsState {
   activeTab: ProjectDocsTab;
-  selectedDocuments: Set<string>;
+  selectedSkills: Set<string>;
   listCursor: Record<ProjectDocsTab, number>;
   reviewAction: ReviewAction;
   notice: string;
@@ -19,14 +19,14 @@ interface TabItem {
   kind: ProjectDocsTab;
 }
 
-const TAB_ORDER: ProjectDocsTab[] = ["documents", "review"];
+const TAB_ORDER: ProjectDocsTab[] = ["skills", "review"];
 
 function buildInitialState(): ProjectDocsState {
   return {
-    activeTab: "documents",
-    selectedDocuments: new Set<string>(),
+    activeTab: "skills",
+    selectedSkills: new Set<string>(),
     listCursor: {
-      documents: 0,
+      skills: 0,
       review: 0
     },
     reviewAction: "confirm",
@@ -39,12 +39,12 @@ function selectionArray<T>(items: Set<T>): T[] {
 }
 
 function currentTabItems(state: ProjectDocsState, catalog: ProjectDocsCatalog): TabItem[] {
-  if (state.activeTab === "documents") {
-    return catalog.documents.map((document) => ({
-      id: document.id,
-      label: document.label,
-      description: document.description,
-      kind: "documents" as const
+  if (state.activeTab === "skills") {
+    return catalog.skills.map((skill) => ({
+      id: skill.id,
+      label: skill.label,
+      description: skill.description,
+      kind: "skills" as const
     }));
   }
 
@@ -52,7 +52,7 @@ function currentTabItems(state: ProjectDocsState, catalog: ProjectDocsCatalog): 
     {
       id: "confirm",
       label: "Confirm install",
-      description: "Continue with the selected documents.",
+      description: "Continue with the selected skills.",
       kind: "review"
     },
     {
@@ -78,19 +78,19 @@ function renderTabs(state: ProjectDocsState): string {
 }
 
 function isItemSelected(item: TabItem, state: ProjectDocsState): boolean {
-  if (item.kind === "documents") {
-    return state.selectedDocuments.has(item.id);
+  if (item.kind === "skills") {
+    return state.selectedSkills.has(item.id);
   }
 
   return state.reviewAction === item.id;
 }
 
 function toggleItem(item: TabItem, state: ProjectDocsState): void {
-  if (item.kind === "documents") {
-    if (state.selectedDocuments.has(item.id)) {
-      state.selectedDocuments.delete(item.id);
+  if (item.kind === "skills") {
+    if (state.selectedSkills.has(item.id)) {
+      state.selectedSkills.delete(item.id);
     } else {
-      state.selectedDocuments.add(item.id);
+      state.selectedSkills.add(item.id);
     }
     return;
   }
@@ -115,19 +115,19 @@ function renderHeader(): string {
   return [
     "{black-fg}{cyan-bg} AI-TOOLS {/cyan-bg}{/black-fg}",
     "{bold}Install project docs{/bold}",
-    "{gray-fg}Choose documents first, then confirm from review.{/gray-fg}",
+    "{gray-fg}Choose skills first, then confirm from review.{/gray-fg}",
     "{cyan-fg}------------------------------------------------------------------------{/cyan-fg}"
   ].join("\n");
 }
 
 function renderReviewSummary(state: ProjectDocsState, catalog: ProjectDocsCatalog): string {
-  const selectedDocuments = catalog.documents
-    .filter((document) => state.selectedDocuments.has(document.id))
-    .map((document) => document.label);
+  const selectedSkills = catalog.skills
+    .filter((skill) => state.selectedSkills.has(skill.id))
+    .map((skill) => skill.label);
 
   const lines = [
     "{bold}Selections{/bold}",
-    `Documents: ${selectedDocuments.length ? selectedDocuments.join(", ") : "none"}`
+    `Skills: ${selectedSkills.length ? selectedSkills.join(", ") : "none"}`
   ];
 
   if (state.notice) {
@@ -188,8 +188,8 @@ function moveCursor(state: ProjectDocsState, catalog: ProjectDocsCatalog, delta:
 }
 
 function validateBeforeConfirm(state: ProjectDocsState): string | null {
-  if (state.selectedDocuments.size === 0) {
-    return "Select at least one document before confirming.";
+  if (state.selectedSkills.size === 0) {
+    return "Select at least one skill before confirming.";
   }
 
   return null;
@@ -211,7 +211,7 @@ function syncListSelection(
 
 export async function runProjectDocsWizard(
   catalog: ProjectDocsCatalog
-): Promise<{ selectedDocuments: ProjectDocsDocument[] } | { backToMenu: true }> {
+): Promise<{ selectedSkills: ProjectDocsSkill[] } | { backToMenu: true }> {
   return new Promise((resolve, reject) => {
     const state = buildInitialState();
     let lastTabSwitchAt = 0;
@@ -298,7 +298,7 @@ export async function runProjectDocsWizard(
     }
 
     function render(): void {
-      const stepTitle = state.activeTab === "documents" ? "Select documents" : "Review selections";
+      const stepTitle = state.activeTab === "skills" ? "Select skills" : "Review selections";
       headerBox.setContent(renderHeader());
       tabsBox.setContent(renderTabs(state));
       titleBox.setContent(`{bold}${stepTitle}{/bold}`);
@@ -320,7 +320,7 @@ export async function runProjectDocsWizard(
     function finishSuccess(): void {
       cleanup();
       resolve({
-        selectedDocuments: catalog.documents.filter((document) => state.selectedDocuments.has(document.id))
+        selectedSkills: catalog.skills.filter((skill) => state.selectedSkills.has(skill.id))
       });
     }
 
@@ -359,26 +359,26 @@ export async function runProjectDocsWizard(
       }
 
       const items = currentTabItems(state, catalog);
-      const current = items[state.listCursor.documents];
+      const current = items[state.listCursor.skills];
       if (current) {
         toggleItem(current, state);
       }
       render();
     }
 
-    function toggleAllDocuments(): void {
-      if (state.activeTab !== "documents") {
+    function toggleAllSkills(): void {
+      if (state.activeTab !== "skills") {
         return;
       }
 
       const items = currentTabItems(state, catalog);
-      const allSelected = items.every((item) => state.selectedDocuments.has(item.id));
+      const allSelected = items.every((item) => state.selectedSkills.has(item.id));
       for (const item of items) {
-        const selected = state.selectedDocuments.has(item.id);
+        const selected = state.selectedSkills.has(item.id);
         if (allSelected && selected) {
-          state.selectedDocuments.delete(item.id);
+          state.selectedSkills.delete(item.id);
         } else if (!allSelected && !selected) {
-          state.selectedDocuments.add(item.id);
+          state.selectedSkills.add(item.id);
         }
       }
 
@@ -426,7 +426,7 @@ export async function runProjectDocsWizard(
     });
 
     screen.key(["a"], () => {
-      toggleAllDocuments();
+      toggleAllSkills();
     });
 
     screen.key(["q", "C-c"], () => {

@@ -19,7 +19,7 @@ Running `ai-tools` now shows a top-level menu with:
 3. `Install libs for AI`
 4. `Cancel`
 
-`Install project docs` now opens its own terminal UI with two tabs: `Documents` and `Review`.
+`Install project docs` now opens its own terminal UI with two tabs: `Skills` and `Review`.
 `Install libs for AI` is still a placeholder until that flow is implemented.
 
 ## Supported Flow
@@ -27,14 +27,13 @@ Running `ai-tools` now shows a top-level menu with:
 The interactive installer asks for:
 
 1. Individual skills from the local selection catalog packaged with the CLI
-2. Skill groups from the same local selection catalog, shown in the same `Skills` tab
-3. Installation locations: `global`, `local`, or both
-4. Target agents: `codex`, `claude`, or both
-5. A review tab where you can confirm or cancel after navigating back and forth with the tab bar
+2. Installation locations: `global`, `local`, or both
+3. Target agents: `codex`, `claude`, or both
+4. A review tab where you can confirm or cancel after navigating back and forth with the tab bar
 
 The project docs installer asks for:
 
-1. Documents from the local `project-docs-catalog.json`
+1. Skills from the local `project-docs-catalog.json`
 2. A `Review` tab where you can confirm, go back to the main menu, or cancel
 
 The wizard does not validate GitHub branches or manifests while you are selecting options. Source validation only starts after you confirm the review step.
@@ -53,7 +52,7 @@ Local installs write into:
 
 Each source branch must expose `ai-tools.catalog.json` at the branch root.
 
-The menu shown by the wizard is driven by `selection-catalog.json` in this package. Update that file when you add or rename installable skills/groups.
+The menu shown by the wizard is driven by `selection-catalog.json` in this package. Update that file when you add or rename installable skills.
 
 ```json
 {
@@ -63,18 +62,18 @@ The menu shown by the wizard is driven by `selection-catalog.json` in this packa
   "description": "Standalone skills",
   "items": [
     {
-      "id": "laravel-code-reviewer",
-      "label": "Laravel Code Reviewer",
-      "description": "Review Laravel and PHP changes",
-      "sourcePath": "skills/laravel-code-reviewer",
+      "id": "git-engineering-workflow",
+      "label": "Git engineering workflow",
+      "description": "Folder: git-engineering-workflow",
+      "sourcePath": "skills/git-engineering-workflow",
       "targets": {
         "codex": {
           "type": "directory",
-          "outputPath": "skills/laravel-code-reviewer"
+          "outputPath": "skills/git-engineering-workflow"
         },
         "claude": {
           "type": "file",
-          "outputPath": "agents/laravel-code-reviewer.md"
+          "outputPath": "agents/git-engineering-workflow.md"
         }
       }
     }
@@ -84,7 +83,7 @@ The menu shown by the wizard is driven by `selection-catalog.json` in this packa
 
 Rules:
 
-- `skill-general` must use `"type": "skills"`
+- `agent-skills` must use `"type": "skills"`
 - group branches must use `"type": "group"`
 - `sourcePath` and `outputPath` must stay inside the repository or install root
 - each selected skill id must be unique across the final merged selection
@@ -93,8 +92,7 @@ Rules:
 
 ```bash
 ai-tools install \
-  --skills laravel-code-reviewer,mql5-ui-designer \
-  --groups laravel-ddd \
+  --skills git-engineering-workflow,review-code \
   --location local,global \
   --agent codex,claude \
   --yes

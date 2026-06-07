@@ -1,10 +1,17 @@
 {
   "version": 1,
-  "documents": [
+  "skills": [
     {
-      "id": "current-project",
-      "label": "Current project",
-      "description": "Use the current repository as the target for project docs installation."
+      "id": "laravel-ddd",
+      "label": "Laravel DDD",
+      "description": "Folder: laravel-ddd",
+      "sourceBranch": "project-docs"
+    },
+    {
+      "id": "nextjs",
+      "label": "NextJS",
+      "description": "Folder: nextjs",
+      "sourceBranch": "project-docs"
     }
   ]
 }

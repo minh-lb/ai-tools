@@ -2,14 +2,16 @@
   "version": 1,
   "skills": [
     {
-      "id": "laravel-code-reviewer",
-      "label": "Laravel Code Reviewer",
-      "description": "Review Laravel and PHP changes"
+      "id": "git-engineering-workflow",
+      "label": "Git engineering workflow",
+      "description": "Folder: git-engineering-workflow",
+      "sourceBranch": "agent-skills"
     },
     {
-      "id": "mql5-ui-designer",
-      "label": "MQL5 UI Designer",
-      "description": "Design and scaffold MetaTrader 5 interfaces"
+      "id": "review-code",
+      "label": "Review code",
+      "description": "Folder: review-code",
+      "sourceBranch": "agent-skills"
     }
   ]
 }

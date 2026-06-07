@@ -1,31 +1,37 @@
 import { readFile } from "node:fs/promises";
 import * as path from "node:path";
-import type { PackageConfig, ProjectDocsCatalog, ProjectDocsDocument } from "./types.js";
+import type { PackageConfig, ProjectDocsCatalog, ProjectDocsSkill } from "./types.js";
 
 interface RawProjectDocsEntry {
   id?: unknown;
   label?: unknown;
   description?: unknown;
+  sourceBranch?: unknown;
 }
 
 interface RawProjectDocsCatalog {
   version?: unknown;
-  documents?: unknown;
+  skills?: unknown;
 }
 
-function validateDocumentEntry(rawEntry: unknown, index: number): ProjectDocsDocument {
+function validateSkillEntry(rawEntry: unknown, index: number): ProjectDocsSkill {
   if (!rawEntry || typeof rawEntry !== "object") {
-    throw new Error(`Project docs catalog document #${index + 1} must be an object.`);
+    throw new Error(`Project docs catalog skill #${index + 1} must be an object.`);
   }
 
   const entry = rawEntry as RawProjectDocsEntry;
   if (typeof entry.id !== "string" || entry.id.trim() === "") {
-    throw new Error(`Project docs catalog document #${index + 1} is missing a valid id.`);
+    throw new Error(`Project docs catalog skill #${index + 1} is missing a valid id.`);
   }
 
   if (typeof entry.label !== "string" || entry.label.trim() === "") {
-    throw new Error(`Project docs catalog document "${entry.id}" is missing a valid label.`);
+    throw new Error(`Project docs catalog skill "${entry.id}" is missing a valid label.`);
   }
+
+  const sourceBranch =
+    typeof entry.sourceBranch === "string" && entry.sourceBranch.trim() !== ""
+      ? entry.sourceBranch.trim()
+      : undefined;
 
   return {
     id: entry.id.trim(),
@@ -33,7 +39,8 @@ function validateDocumentEntry(rawEntry: unknown, index: number): ProjectDocsDoc
     description:
       typeof entry.description === "string" && entry.description.trim() !== ""
         ? entry.description.trim()
-        : ""
+        : "",
+    sourceBranch
   };
 }
 
@@ -46,12 +53,12 @@ export async function loadProjectDocsCatalog(config: PackageConfig): Promise<Pro
     throw new Error(`Project docs catalog "${config.projectDocsCatalogPath}" must use version 1.`);
   }
 
-  if (!Array.isArray(rawCatalog.documents)) {
-    throw new Error(`Project docs catalog "${config.projectDocsCatalogPath}" must contain a documents array.`);
+  if (!Array.isArray(rawCatalog.skills)) {
+    throw new Error(`Project docs catalog "${config.projectDocsCatalogPath}" must contain a skills array.`);
   }
 
   return {
     version: 1,
-    documents: rawCatalog.documents.map((entry, index) => validateDocumentEntry(entry, index))
+    skills: rawCatalog.skills.map((entry, index) => validateSkillEntry(entry, index))
   };
 }

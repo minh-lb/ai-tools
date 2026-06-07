@@ -120,7 +120,7 @@ export async function runCli(argv: string[] = process.argv): Promise<void> {
       }
 
       printSectionHeader("Install project docs", "Project documentation installation is not implemented yet.");
-      console.log(`Selected documents: ${projectDocsResult.selectedDocuments.map((document) => document.label).join(", ")}`);
+      console.log(`Selected skills: ${projectDocsResult.selectedSkills.map((skill) => skill.label).join(", ")}`);
       console.log("Install project docs is not implemented yet.");
       return;
     }

@@ -106,15 +106,16 @@ export interface SelectionCatalog {
   groups: SelectionGroup[];
 }
 
-export interface ProjectDocsDocument {
+export interface ProjectDocsSkill {
   id: string;
   label: string;
   description: string;
+  sourceBranch?: string;
 }
 
 export interface ProjectDocsCatalog {
   version: 1;
-  documents: ProjectDocsDocument[];
+  skills: ProjectDocsSkill[];
 }
 
 export interface PackageGithubConfig {
