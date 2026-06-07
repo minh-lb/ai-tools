@@ -1,0 +1,29 @@
+<?php declare(strict_types=1);
+
+namespace Modules\{Module}\Application\UseCases;
+
+use Illuminate\Contracts\Events\Dispatcher;
+use Modules\{Module}\Application\DTOs\{Name}DTO;
+use Modules\{Module}\Domain\Actions\{Action}Action;
+use Modules\{Module}\Domain\Entities\{Entity};
+
+class {Name}UseCase
+{
+    public function __construct(
+        private readonly {Action}Action $action,
+        private readonly Dispatcher $events,
+    ) {}
+
+    public function handle({Name}DTO $dto): {Entity}
+    {
+        $entity = $this->action->execute(
+            id: $dto->id,
+        );
+
+        foreach ($entity->releaseEvents() as $event) {
+            $this->events->dispatch($event);
+        }
+
+        return $entity;
+    }
+}

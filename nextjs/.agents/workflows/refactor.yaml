@@ -1,0 +1,37 @@
+name: refactor
+version: 1.4
+purpose: Improve structure while preserving behavior and public contracts.
+
+trigger:
+  when:
+    - user asks to refactor
+    - user asks to improve structure without behavior change
+
+context:
+  core_context: provided_by_AGENTS.md
+  rules: docs/coding-standards.md
+  load_on_demand_only_if_needed:
+    - docs/design.md only for user-facing UI refactors when the file exists
+    - docs/design-extended.md only when user-facing UI refactors require density, component-default, or motion details and the file exists
+    - docs/visual-acceptance.md only for user-facing UI refactors when the file exists
+    - .agents/skills/frontend-coding-rules/SKILL.md only for user-facing UI refactors
+    - .agents/skills/nextjs-coding/SKILL.md for App Router layer boundaries
+    - .agents/skills/react-component-generator/SKILL.md for component restructuring
+
+refactor_rules:
+  - Follow AGENT.CONTRACT_STABILITY; no behavior or public API changes unless explicitly requested.
+  - Establish a passing baseline (`npm run lint` when configured, `npm run typecheck` when configured, `npm run build`, plus existing related tests when a test runner is configured) before starting.
+  - Add characterization tests before risky refactors.
+
+steps:
+  - understand_current_behavior
+  - run_baseline: run `npm run lint` (when configured), `npm run typecheck` (when configured), and `npm run build` plus existing related tests when a test runner is configured, to establish a baseline. If failing, stop and report.
+  - plan_small_refactor
+  - apply_incrementally
+  - run_lint: run `npm run lint` when configured; fix violations before proceeding.
+  - run_typecheck: run `npm run typecheck` when configured; otherwise run `tsc --noEmit` when TypeScript is configured.
+  - run_tests: run existing related tests when a test runner is configured to verify no behavior change.
+  - run_e2e: for user-facing refactors, run E2E tests when configured to verify no behavior regression in affected flows.
+  - build: run `npm run build` to verify no compile errors.
+  - summarize_with_risks
+  - commit: ask before committing; follow COMMIT.APPROVAL, COMMIT.SCOPED_STAGE, COMMIT.NO_AI_ATTRIBUTION, and COMMIT.BUILD_GATE.  # [action: commit]

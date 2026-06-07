@@ -1,0 +1,29 @@
+name: test-generation
+version: 1.2
+purpose: Add useful tests for existing behavior without unnecessary production changes.
+
+trigger:
+  when:
+    - user asks to add tests
+    - user asks to improve coverage
+
+context:
+  core_context: provided_by_AGENTS.md
+  load_on_demand_only_if_needed:
+    - target production code and existing tests
+    - docs/coding-standards.md (TEST.* rules only)
+    - .agents/skills/nextjs-coding/SKILL.md for App Router layer context
+
+steps:
+  - inspect_behavior: identify inputs, outputs, side effects, and contracts.
+  - choose_cases: prioritize success, failure, and edge cases following TEST.RISK_PRIORITIZATION.
+  - write_tests: follow TEST.BEHAVIOR_FIRST and docs/coding-standards.md test rules.
+  - run_lint: run `npm run lint` when configured; fix violations before proceeding.
+  - run_typecheck: run `npm run typecheck` when configured; otherwise run `tsc --noEmit` when TypeScript is configured. Fix errors before proceeding.
+  - run_tests: new tests first, then related/full suite when reasonable.
+  - build: run `npm run build` to verify no compile errors introduced by test changes.
+  - summarize: include tests added, gaps, commands run, next step.
+  - commit: ask before committing; follow COMMIT.APPROVAL, COMMIT.SCOPED_STAGE, COMMIT.NO_AI_ATTRIBUTION, and COMMIT.BUILD_GATE.  # [action: commit]
+
+gates:
+  commit_approval: always_required

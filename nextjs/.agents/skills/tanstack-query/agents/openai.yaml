@@ -1,0 +1,4 @@
+interface:
+  display_name: "TanStack Query"
+  short_description: "TanStack Query patterns for React apps"
+  default_prompt: "Use $tanstack-query to implement TanStack Query v5 in React/Next.js: set up QueryClient, design stable query keys/options, build query/mutation flows, and apply the right cache strategy (invalidate, setQueryData, or optimistic rollback) with proper testing and hydration behavior."

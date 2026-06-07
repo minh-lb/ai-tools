@@ -1,0 +1,30 @@
+name: refactor
+version: 1.4
+purpose: Improve structure while preserving behavior and public contracts.
+
+trigger:
+  when:
+    - user asks to refactor
+    - user asks to improve structure without behavior change
+    - user runs /autopilot refactor
+
+context:
+  core_context: provided_by_AGENTS.md
+  rules: docs/coding-standards.md
+  load_on_demand_only_if_needed:
+    - .agents/skills/autopilot/SKILL.md
+    - .agents/skills/domain-driven-design/SKILL.md for Laravel/module boundaries
+    - .agents/skills/api-response/SKILL.md for controller response code
+
+refactor_rules:
+  - follow AGENT.CONTRACT_STABILITY; no behavior or public API changes unless requested.
+  - Establish a passing baseline when practical.
+  - Add characterization tests before risky refactors.
+
+steps:
+  - understand_current_behavior
+  - run_or_report_baseline_tests
+  - plan_small_refactor
+  - apply_incrementally
+  - verify_behavior_unchanged
+  - summarize_with_AGENTS_output_format

@@ -1,0 +1,38 @@
+// Substitution required: replace every occurrence of "Feature"/"feature" with your feature name.
+// Checklist: service import path, schema name, action name, FeatureFormState type name.
+// See Rule 09 Form Patterns section for controller wiring with useActionState.
+"use server";
+
+import { z } from "zod";
+import { updateFeatureItem } from "~/services/feature.service";
+
+const FeatureFormSchema = z.object({
+  id: z.string().min(1),                   // passed as a hidden input or from route context
+  name: z.string().min(1, "Name is required"),
+});
+
+type FeatureFormInput = z.infer<typeof FeatureFormSchema>;
+
+export type FeatureFormState = {
+  errors?: Partial<Record<keyof FeatureFormInput, string[]>>;
+  message?: string;
+  success?: boolean;
+};
+
+// useActionState requires React 19+ / Next.js 15+.
+// For React 18, replace useActionState with useFormState from "react-dom" in the controller.
+export const featureAction = async (
+  _prev: FeatureFormState,
+  formData: FormData,
+): Promise<FeatureFormState> => {
+  // Object.fromEntries works for text/number inputs. For multi-value fields use formData.getAll("field").
+  // For file uploads use formData.get("file") as File — do not use Object.fromEntries.
+  const parsed = FeatureFormSchema.safeParse(Object.fromEntries(formData));
+
+  if (!parsed.success) {
+    return { errors: parsed.error.flatten().fieldErrors };
+  }
+
+  await updateFeatureItem(parsed.data);
+  return { success: true, message: "Saved." };
+};

@@ -1,0 +1,31 @@
+"use client"; // Required: this container uses useController() which calls React hooks.
+
+import { useController } from "./controller";
+import type { FeatureItemDto } from "./types";
+
+export default function FeatureContainer() {
+  const { items, isLoading, isError, error, update, isUpdating } = useController();
+
+  if (isLoading) return <div>Loading…</div>;
+  if (isError) return <div>Something went wrong. Please try again.</div>; // Do not expose error.message in production UI.
+  if (items.length === 0) return <div>No items found.</div>;
+
+  return (
+    <section>
+      {items.map((item) => (
+        <div key={item.id}>
+          <span>{item.name}</span>
+          {/* NOTE: isUpdating disables ALL buttons while any item is saving.
+              For per-item loading state, track a Set<id> in the controller instead. */}
+          <button
+            onClick={() => update(item)}
+            disabled={isUpdating}
+            type="button"
+          >
+            {isUpdating ? "Saving…" : "Update"}
+          </button>
+        </div>
+      ))}
+    </section>
+  );
+}

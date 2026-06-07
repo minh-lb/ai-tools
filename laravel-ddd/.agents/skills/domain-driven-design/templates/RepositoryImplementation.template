@@ -1,0 +1,32 @@
+<?php declare(strict_types=1);
+
+namespace Modules\{Module}\Infrastructure\Repositories;
+
+use Modules\{Module}\Domain\Entities\{Entity};
+use Modules\{Module}\Domain\Repositories\{Entity}Repository;
+use Modules\{Module}\Infrastructure\Models\{Entity}Model;
+
+class {Entity}RepositoryImpl implements {Entity}Repository
+{
+    public function find(string $id): {Entity}
+    {
+        $model = {Entity}Model::query()->findOrFail($id);
+
+        return new {Entity}(
+            id: (string) $model->getAttribute('id'),
+        );
+    }
+
+    public function save({Entity} $entity): void
+    {
+        {Entity}Model::query()->updateOrCreate(
+            ['id' => $entity->id],
+            ['id' => $entity->id],
+        );
+    }
+
+    public function delete(string $id): void
+    {
+        {Entity}Model::query()->where('id', $id)->delete();
+    }
+}

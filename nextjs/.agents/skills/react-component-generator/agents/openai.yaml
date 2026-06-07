@@ -1,0 +1,4 @@
+interface:
+  display_name: "React Component Generator"
+  short_description: "Generate repo-aligned React components with repo-resolved placement"
+  default_prompt: "Use $react-component-generator to create or refactor a React component, use $nextjs-coding to resolve the correct folder before generating files, apply docs/design.md for core UI defaults, load docs/design-extended.md only when detailed visual constraints are needed, and use docs/visual-acceptance.md for user-facing UI verification when available."

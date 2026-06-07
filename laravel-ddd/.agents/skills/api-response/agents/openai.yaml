@@ -1,0 +1,4 @@
+interface:
+  display_name: "API Response"
+  short_description: "Standardize Laravel JSON success/problem/validation responses"
+  default_prompt: "Use $api-response to implement a Laravel controller action that returns ApiResponse::success() and ApiResponse::problem() with consistent status and error codes."

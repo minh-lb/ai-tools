@@ -1,0 +1,4 @@
+interface:
+  display_name: "Codebase Setup"
+  short_description: "Setup and normalize project structure, dependencies, and baseline configs"
+  default_prompt: "Use $codebase-setup to bootstrap or normalize this codebase and run full baseline by default (structure + deps + configs + scripts + CI + env + verify) even when no arguments are provided. Keep changes minimal/reviewable, ask only for destructive or breaking operations, include `.env.example` plus local env policy, and configure API client baseline when external APIs are in scope."

@@ -1,0 +1,33 @@
+name: bug-fix
+version: 1.3
+purpose: Reproduce, diagnose, fix, and test a defect with the smallest safe change.
+
+trigger:
+  when:
+    - user reports a defect
+    - user runs /autopilot bugfix
+    - a failing build or runtime error needs investigation
+
+context:
+  core_context: provided_by_AGENTS.md
+  rules: docs/coding-standards.md
+  load_on_demand_only_if_needed:
+    - .agents/skills/autopilot/SKILL.md
+    - docs/design.md only for user-facing UI defects when the file exists
+    - docs/design-extended.md only when user-facing UI defects require density, component-default, or motion details and the file exists
+    - docs/visual-acceptance.md only for user-facing UI defects when the file exists
+    - .agents/skills/frontend-coding-rules/SKILL.md only for user-facing UI defects
+    - .agents/skills/nextjs-coding/SKILL.md for App Router issues
+  rule: follow AGENT.SCOPED_READS; do not edit before root cause is clear
+
+steps:
+  - reproduce: capture expected behavior, actual behavior, and trigger.
+  - isolate: trace data flow to the first wrong behavior.
+  - write_test: add a regression test that fails before the fix when practical.
+  - fix: follow AGENT.MINIMAL_CHANGE; no drive-by refactor.
+  - run_lint: run `npm run lint` when configured; fix violations before proceeding.
+  - run_typecheck: run `npm run typecheck` when configured; otherwise run `tsc --noEmit` when TypeScript is configured. Fix errors before tests/build.
+  - run_tests: run regression and related tests when a test runner is configured; confirm fix passes.
+  - build: run `npm run build`; confirm fix is isolated.
+  - summarize: include root cause, fix, tests, residual risk, next step.
+  - commit: ask before committing; follow COMMIT.APPROVAL, COMMIT.SCOPED_STAGE, COMMIT.NO_AI_ATTRIBUTION, and COMMIT.BUILD_GATE.  # [action: commit]

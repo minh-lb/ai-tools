@@ -1,0 +1,46 @@
+// Substitution required: replace every occurrence of "Feature"/"feature" with your feature name.
+// Checklist: service import path, queryKey string, queryFn names, return shape, FeatureItemDto type.
+// Prerequisite: create types/index.ts.template first so the "./types" import resolves (Rule 10).
+// No 'use client' directive here — this file exports hooks consumed by index.tsx which holds the boundary.
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { getFeatureItems, updateFeatureItem } from "~/services/feature.service";
+import type { FeatureItemDto } from "./types";
+
+type ControllerReturn = {
+  items: FeatureItemDto[];
+  isLoading: boolean;
+  isError: boolean;
+  error: Error | null; // Cast to ApiClientError when status is needed: (error as ApiClientError).status
+  update: (payload: FeatureItemDto) => void;
+  isUpdating: boolean;
+};
+
+export const useController = (): ControllerReturn => {
+  const queryClient = useQueryClient();
+
+  const { data, isLoading, isError, error } = useQuery({
+    queryKey: ["feature-items"],
+    queryFn: getFeatureItems,
+  });
+
+  const { mutate: update, isPending: isUpdating } = useMutation({
+    mutationFn: updateFeatureItem,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["feature-items"] });
+    },
+    onError: (err) => {
+      // TODO: wire a toast utility here, e.g. toast.error(err.message)
+      // Remove this throw once wired — it exists only to prevent silent swallow during dev.
+      throw new Error("onError not wired: " + err.message);
+    },
+  });
+
+  return {
+    items: data ?? [],
+    isLoading,
+    isError,
+    error,
+    update,
+    isUpdating,
+  };
+};

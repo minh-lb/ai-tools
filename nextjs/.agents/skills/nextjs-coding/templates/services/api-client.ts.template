@@ -1,0 +1,107 @@
+import axios, {
+  AxiosError,
+  AxiosHeaders,
+  type AxiosInstance,
+  type AxiosRequestConfig,
+  type InternalAxiosRequestConfig,
+} from "axios";
+
+type HttpMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
+type QueryValue = string | number | boolean | null | undefined;
+type QueryParams = Record<string, QueryValue | QueryValue[]>;
+
+export type RequestOptions = {
+  method?: HttpMethod;
+  headers?: Record<string, string>;
+  params?: QueryParams;
+  body?: unknown;
+  signal?: AbortSignal;
+  timeoutMs?: number;
+  withCredentials?: boolean;
+};
+
+const DEFAULT_TIMEOUT_MS = 15_000;
+const DEFAULT_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "";
+
+let getAccessToken: () => string | undefined = () => {
+  if (typeof window === "undefined") {
+    return undefined;
+  }
+
+  const token = window.localStorage.getItem("access_token");
+  return token ?? undefined;
+};
+
+export const setAccessTokenGetter = (getter: () => string | undefined) => {
+  getAccessToken = getter;
+};
+
+export const apiClient: AxiosInstance = axios.create({
+  baseURL: DEFAULT_BASE_URL,
+  timeout: DEFAULT_TIMEOUT_MS,
+  headers: {
+    Accept: "application/json",
+    "Content-Type": "application/json",
+  },
+});
+
+apiClient.interceptors.request.use(
+  (config: InternalAxiosRequestConfig) => {
+    const headers = AxiosHeaders.from(config.headers);
+    const accessToken = getAccessToken();
+
+    if (accessToken) {
+      headers.set("Authorization", `Bearer ${accessToken}`);
+    }
+
+    if (!headers.has("X-Requested-With")) {
+      headers.set("X-Requested-With", "XMLHttpRequest");
+    }
+
+    config.headers = headers;
+    return config;
+  },
+  (error: unknown) => Promise.reject(error),
+);
+
+const normalizeAxiosError = (error: AxiosError) => {
+  const status = error.response?.status;
+  const statusText = error.response?.statusText ?? "Unknown Error";
+  const message = status
+    ? `Request failed (${status} ${statusText})`
+    : error.message;
+
+  const normalizedError = new Error(message);
+  normalizedError.name = "ApiClientError";
+  return normalizedError;
+};
+
+apiClient.interceptors.response.use(
+  (response) => response,
+  (error: unknown) => {
+    if (axios.isAxiosError(error)) {
+      return Promise.reject(normalizeAxiosError(error));
+    }
+
+    return Promise.reject(error);
+  },
+);
+
+export const request = async <T>(
+  url: string,
+  options: RequestOptions = {},
+): Promise<T> => {
+  const config: AxiosRequestConfig = {
+    url,
+    method: options.method ?? "GET",
+    headers: options.headers,
+    params: options.params,
+    data: options.body,
+    signal: options.signal,
+    timeout: options.timeoutMs ?? DEFAULT_TIMEOUT_MS,
+    withCredentials: options.withCredentials ?? false,
+  };
+
+  const response = await apiClient.request<T>(config);
+  return response.data;
+};

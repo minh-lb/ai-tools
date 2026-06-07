@@ -1,0 +1,4 @@
+interface:
+  display_name: "Spec Writer"
+  short_description: "Initialize or refresh project overview documentation"
+  default_prompt: "Use $spect-writer init-project to capture project purpose, stack, goals, users, and modules in docs/project-overview.md. For feature specs, use /autopilot spec instead."

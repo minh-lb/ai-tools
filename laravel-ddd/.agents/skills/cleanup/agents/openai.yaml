@@ -1,0 +1,4 @@
+interface:
+  display_name: "Cleanup"
+  short_description: "Inspect and fix housekeeping issues in the repository"
+  default_prompt: "Use $cleanup to check for debug logs, stale TODOs, unused imports, orphaned files, and doc inconsistencies. Run in check mode first, then fix only user-approved items."

@@ -1,0 +1,37 @@
+// Substitution required: replace every occurrence of "Feature"/"feature" with your feature name
+// (including the mock import path on line 3 — "feature" must match the mock file name).
+import { request } from "./api-client";
+import { getFeatureItemsMock, updateFeatureItemMock } from "./mockApi/feature.mock";
+
+export interface FeatureItemDto {
+  id: string;
+  name: string;
+}
+
+// Read inside each function so Next.js picks up runtime env changes without a server restart.
+
+const getFeatureItemsFromApi = async () => {
+  return request<FeatureItemDto[]>("/api/feature-items");
+};
+
+export const getFeatureItems = async () => {
+  if (process.env.EXTERNAL_API === "mock") {
+    return getFeatureItemsMock();
+  }
+
+  return getFeatureItemsFromApi();
+};
+
+const updateFeatureItemFromApi = async (item: FeatureItemDto) => {
+  // For 204 No Content responses, change return type to request<void>.
+  // To exclude id from body: const { id, ...payload } = item; request<...>(`.../${id}`, { body: payload })
+  return request<FeatureItemDto>(`/api/feature-items/${item.id}`, { method: "PUT", body: item });
+};
+
+export const updateFeatureItem = async (item: FeatureItemDto) => {
+  if (process.env.EXTERNAL_API === "mock") {
+    return updateFeatureItemMock(item);
+  }
+
+  return updateFeatureItemFromApi(item);
+};

@@ -1,0 +1,17 @@
+"use client";
+
+type ErrorPageProps = {
+  error: Error & { digest?: string };
+  reset: () => void;
+};
+
+export default function ErrorPage({ error, reset }: ErrorPageProps) {
+  return (
+    <div>
+      <p>Something went wrong: {error.message}</p>
+      <button onClick={reset} type="button">
+        Try again
+      </button>
+    </div>
+  );
+}

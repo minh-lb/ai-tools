@@ -1,0 +1,11 @@
+// Substitution required: replace "FeatureSection" with the actual component name (PascalCase).
+// Add "use client"; at the top if this component uses React hooks or browser APIs.
+// Use react-component-generator instead of this template for full component scaffolding (Rule 11).
+
+interface IProps {
+  title: string;
+}
+
+export default function FeatureSection({ title }: IProps) {
+  return <div>{title}</div>;
+}

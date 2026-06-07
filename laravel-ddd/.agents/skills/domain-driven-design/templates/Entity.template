@@ -1,0 +1,30 @@
+<?php declare(strict_types=1);
+
+namespace Modules\{Module}\Domain\Entities;
+
+class {Entity}
+{
+    /** @var list<object> */
+    private array $recordedEvents = [];
+
+    public function __construct(
+        public readonly string $id,
+    ) {}
+
+    // Add domain behaviors and invariant checks here.
+    // Call recordEvent() from domain behaviors when cross-module side effects are required.
+
+    /** @return list<object> */
+    public function releaseEvents(): array
+    {
+        $events = $this->recordedEvents;
+        $this->recordedEvents = [];
+
+        return $events;
+    }
+
+    protected function recordEvent(object $event): void
+    {
+        $this->recordedEvents[] = $event;
+    }
+}

@@ -1,0 +1,14 @@
+// Substitution required: replace every occurrence of "Feature"/"feature" with your feature name
+// (including the service import path on line 2 — "feature" must match the service file name).
+import type { FeatureItemDto } from "../feature.service";
+
+export const getFeatureItemsMock = async (): Promise<FeatureItemDto[]> => {
+  return [
+    { id: "item-1", name: "Mock Item 1" },
+    { id: "item-2", name: "Mock Item 2" },
+  ];
+};
+
+export const updateFeatureItemMock = async (item: FeatureItemDto): Promise<FeatureItemDto> => {
+  return item;
+};

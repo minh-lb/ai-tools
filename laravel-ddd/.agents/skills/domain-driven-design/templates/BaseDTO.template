@@ -1,0 +1,40 @@
+<?php declare(strict_types=1);
+
+namespace Modules\Shared\DTOs;
+
+use Modules\Shared\Attributes\Rules;
+use LogicException;
+use ReflectionClass;
+
+abstract class BaseDTO
+{
+    /**
+     * Derives validation rules from #[Rules] attributes on constructor parameters.
+     * Interfaces/FormRequests perform validation before constructing DTOs.
+     */
+    public static function rules(): array
+    {
+        $rules = [];
+        $constructor = (new ReflectionClass(static::class))->getConstructor();
+
+        if ($constructor === null) {
+            return $rules;
+        }
+
+        foreach ($constructor->getParameters() as $param) {
+            $attrs = $param->getAttributes(Rules::class);
+
+            if ($attrs === []) {
+                throw new LogicException(sprintf(
+                    'Missing #[Rules] attribute on %s::$%s.',
+                    static::class,
+                    $param->getName(),
+                ));
+            }
+
+            $rules[$param->getName()] = $attrs[0]->newInstance()->rules;
+        }
+
+        return $rules;
+    }
+}

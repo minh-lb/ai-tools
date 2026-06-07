@@ -1,0 +1,25 @@
+<?php declare(strict_types=1);
+
+namespace Modules\{Module}\Domain\Actions;
+
+use Modules\{Module}\Domain\Entities\{Entity};
+use Modules\{Module}\Domain\Repositories\{Entity}Repository;
+
+class {Action}Action
+{
+    public function __construct(
+        private readonly {Entity}Repository $repository,
+    ) {}
+
+    public function execute(string $id): {Entity}
+    {
+        $entity = $this->repository->find($id);
+
+        // Core business rules and state transitions live here.
+        // Record domain events on the Entity when cross-module side effects are required.
+
+        $this->repository->save($entity);
+
+        return $entity;
+    }
+}

@@ -1,0 +1,44 @@
+import { expect, test } from "@playwright/test";
+
+test.describe("feature route", () => {
+  test("renders main content on load", async ({ page }) => {
+    await page.goto("/feature-path");
+    await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+    await expect(page.getByRole("main")).toBeVisible();
+  });
+
+  test("shows empty state when list is empty", async ({ page }) => {
+    await page.route("**/api/feature-items", (route) =>
+      route.fulfill({ json: [] }),
+    );
+    await page.goto("/feature-path");
+    await expect(page.getByText(/no items/i)).toBeVisible();
+  });
+
+  test("shows error state when request fails", async ({ page }) => {
+    await page.route("**/api/feature-items", (route) =>
+      route.fulfill({ status: 500 }),
+    );
+    await page.goto("/feature-path");
+    await expect(page.getByText(/something went wrong/i)).toBeVisible();
+  });
+
+  // WARNING: This loading-state pattern is timing-sensitive. If your loading indicator
+  // renders and disappears faster than Playwright can assert, the test will fail spuriously.
+  // Consider testing the loading state in a component unit test instead for reliability.
+  test("shows loading state while request is in flight", async ({ page }) => {
+    let resolve: () => void;
+    const pending = new Promise<void>((r) => { resolve = r; });
+    await page.route("**/api/feature-items", async (route) => {
+      await pending;
+      await route.fulfill({ json: [] });
+    });
+    const nav = page.goto("/feature-path");
+    try {
+      await expect(page.getByText(/loading/i)).toBeVisible();
+    } finally {
+      resolve!();
+    }
+    await nav;
+  });
+});

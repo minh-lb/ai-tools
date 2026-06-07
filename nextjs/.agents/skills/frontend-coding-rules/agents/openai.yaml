@@ -1,0 +1,4 @@
+interface:
+  display_name: "Frontend Coding Rules"
+  short_description: "UI priority rules for the current frontend"
+  default_prompt: "Apply frontend coding rules: preserve image/reference intent when provided; let the screen-level design source win; use docs/design.md for shared defaults, load docs/design-extended.md only when detailed visual constraints are needed, follow docs/visual-acceptance.md for verification, and always use react-component-generator when creating components."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Autopilot"
+  short_description: "Spec-first AI dev pipeline: spec, plan, implement, test, commit"
+  default_prompt: "Use $autopilot to run the full development pipeline. Read AGENTS.md for context loading and docs/coding-standards.md for rules. Start with /autopilot spec {requirement} to create a spec, then /autopilot run to implement."

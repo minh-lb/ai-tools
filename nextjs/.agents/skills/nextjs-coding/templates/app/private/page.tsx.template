@@ -1,0 +1,6 @@
+// Replace FeatureContainer / feature-container with the actual container name (kebab-case path, PascalCase import).
+import FeatureContainer from "~/containers/feature-container";
+
+export default function FeaturePage() {
+  return <FeatureContainer />;
+}

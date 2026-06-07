@@ -1,0 +1,25 @@
+name: test-generation
+version: 1.4
+purpose: Add useful tests for existing behavior without unnecessary production changes.
+
+trigger:
+  when:
+    - user asks to add tests
+    - user asks to improve coverage
+    - user runs /autopilot testgen
+
+context:
+  core_context: provided_by_AGENTS.md
+  rules: docs/coding-standards.md
+  load_on_demand_only_if_needed:
+    - .agents/skills/autopilot/SKILL.md
+    - target production code and existing tests
+    - .agents/skills/domain-driven-design/SKILL.md for backend layering
+    - .agents/skills/api-response/SKILL.md for HTTP response assertions
+
+steps:
+  - inspect_behavior_inputs_outputs_side_effects_contracts
+  - choose_cases_by_regression_risk_success_failure_edge
+  - write_behavior_focused_tests_following_test_rules
+  - run_new_tests_then_related_or_full_suite
+  - summarize_with_AGENTS_output_format

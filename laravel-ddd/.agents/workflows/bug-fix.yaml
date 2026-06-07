@@ -1,0 +1,26 @@
+name: bug-fix
+version: 1.4
+purpose: Reproduce, diagnose, fix, and test a defect with the smallest safe change.
+
+trigger:
+  when:
+    - user reports a defect
+    - user runs /autopilot bugfix
+    - a failing test or runtime error needs investigation
+
+context:
+  core_context: provided_by_AGENTS.md
+  rules: docs/coding-standards.md
+  load_on_demand_only_if_needed:
+    - .agents/skills/autopilot/SKILL.md
+    - .agents/skills/domain-driven-design/SKILL.md for backend domain changes
+    - .agents/skills/api-response/SKILL.md for HTTP JSON changes
+  rule: Do not edit before root cause is clear.
+
+steps:
+  - reproduce_expected_vs_actual_and_trigger
+  - isolate_first_wrong_behavior_before_editing
+  - add_regression_test_when_practical
+  - apply_smallest_root_cause_fix_no_drive_by_refactor
+  - verify_regression_then_related_then_broader_tests
+  - summarize_with_AGENTS_output_format

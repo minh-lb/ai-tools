@@ -1,0 +1,4 @@
+interface:
+  display_name: "Next.js Coding"
+  short_description: "Generate code to match target architecture"
+  default_prompt: "Use $nextjs-coding to implement Next.js App Router code that follows the repository Target architecture, apply docs/design.md for core user-facing UI defaults, load docs/design-extended.md only when detailed visual constraints are needed, and use docs/visual-acceptance.md for UI verification when available."

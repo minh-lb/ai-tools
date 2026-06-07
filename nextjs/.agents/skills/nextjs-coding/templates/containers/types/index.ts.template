@@ -1,0 +1,3 @@
+// Substitution required: replace "feature" in the import path with your actual service name.
+// Re-export all types for this container. Import using: import type { ... } from "./types"
+export type { FeatureItemDto } from "~/services/feature.service";

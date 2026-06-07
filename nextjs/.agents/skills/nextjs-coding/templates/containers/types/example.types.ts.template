@@ -1,0 +1,7 @@
+// Use this file for container-local view models or DTOs not defined in the service layer.
+// For types already exported from the service, re-export them via index.ts instead.
+export interface FeatureViewModel {
+  id: string;
+  name: string;
+  displayLabel: string; // derived/formatted field for UI only
+}

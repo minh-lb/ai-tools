@@ -1,0 +1,48 @@
+name: feature-development
+version: 1.4
+purpose: Implement a reviewed feature spec with scoped inspection, Next.js architecture boundaries, tests, and explicit gates.
+
+trigger:
+  when:
+    - user asks to build a feature
+    - user provides or approves a spec
+    - user runs /autopilot run
+
+context:
+  core_context: provided_by_AGENTS.md
+  rules: docs/coding-standards.md
+  load_on_demand_only_if_needed:
+    - active spec file referenced in docs/current-feature.md (not current-feature.md itself — already loaded by AGENTS.md)
+    - .agents/skills/autopilot/SKILL.md
+    - docs/design.md only for user-facing UI work when the file exists
+    - docs/design-extended.md only when user-facing UI requires density, component-default, or motion details and the file exists
+    - docs/visual-acceptance.md only for user-facing UI work when the file exists
+    - .agents/skills/nextjs-coding/SKILL.md for App Router architecture
+    - .agents/skills/frontend-coding-rules/SKILL.md only for user-facing UI work
+    - .agents/skills/react-component-generator/SKILL.md only when creating/refactoring components
+    - .agents/skills/tanstack-query/SKILL.md only when implementing client-side data fetching with @tanstack/react-query (queries, mutations, cache invalidation)
+  rule: follow AGENT.SCOPED_READS and AGENT.MINIMAL_CHANGE
+
+gates:
+  plan_approval: optional; require only for high-risk/destructive/breaking changes or when user explicitly requests a review gate
+  commit_approval: always_required
+
+# These steps map to action files in .agents/skills/autopilot/actions/.
+# Steps marked with [action: X] are owned by that action file.
+# Steps without a separate action file are inline sub-steps executed within their parent action.
+steps:
+  - understand: identify goal, actor, input, output, side effects, UI states, and constraints.   # [action: analyze]
+  - inspect: read relevant source and tests only.                                                 # [action: analyze]
+  - plan: list files, order by dependency, include test plan, and follow SPEC.ATOMIC_STEPS.      # [action: plan]
+  - implement: follow coding-standards.md rule IDs, nextjs-coding skill layer map, and frontend-coding-rules for UI.  # [action: implement]
+  - write_tests: write/update behavior tests following TEST.BEHAVIOR_FIRST.                      # [action: implement]
+  - run_lint: run `npm run lint` when configured; fix violations before proceeding.              # [action: implement]
+  - run_typecheck: run `npm run typecheck` when configured; otherwise run `tsc --noEmit` when TypeScript is configured. Fix errors before tests/build.  # [action: implement]
+  - run_tests: run new and related test files when a test runner is configured; fix failures before proceeding.  # [action: implement]
+  - run_e2e: for changed user-facing flows, run E2E tests when Playwright (or existing E2E runner) is configured.  # [action: implement]
+  - build: run `npm run build`; fix all errors before proceeding.                                # [action: implement]
+  - verify_ui: for user-facing UI, run browser/screenshot verification when available; report viewport or interaction gaps.  # [action: implement] inline sub-step
+  - fix_loop: fix root causes up to 3 attempts, then stop and report.                            # [action: implement] inline sub-step
+  - review: check diff, secrets, unrelated changes, API compatibility.                           # [action: summary] inline sub-step
+  - summarize: use AGENTS.md output format.                                                      # [action: summary]
+  - commit: ask before committing; follow COMMIT.APPROVAL, COMMIT.SCOPED_STAGE, COMMIT.NO_AI_ATTRIBUTION, and COMMIT.BUILD_GATE.  # [action: commit]

@@ -1,0 +1,34 @@
+name: feature-development
+version: 1.4
+purpose: Implement a reviewed feature spec with scoped inspection, tests, and explicit gates.
+
+trigger:
+  when:
+    - user asks to build a feature
+    - user provides or approves a spec
+    - user runs /autopilot run
+
+context:
+  core_context: provided_by_AGENTS.md
+  rules: docs/coding-standards.md
+  load_on_demand_only_if_needed:
+    - active spec from docs/current-feature.md
+    - .agents/skills/autopilot/SKILL.md
+    - .agents/skills/domain-driven-design/SKILL.md for Laravel/backend modules
+    - .agents/skills/api-response/SKILL.md for HTTP JSON
+  rule: inspect only files related to the spec
+
+gates:
+  ownership: GATE.WORKFLOW_OWNERSHIP
+  commit_approval: always_required
+
+steps:
+  - understand
+  - inspect
+  - plan
+  - implement
+  - test
+  - fix_loop_max_3_then_stop_and_report
+  - review_diff_scope_and_risks
+  - summarize_with_AGENTS_output_format
+  - gate_commit_once_if_required
