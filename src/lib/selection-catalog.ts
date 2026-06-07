@@ -68,12 +68,14 @@ export async function loadSelectionCatalog(config: PackageConfig): Promise<Selec
     throw new Error(`Selection catalog "${config.selectionCatalogPath}" must use version 1.`);
   }
 
-  if (!Array.isArray(rawCatalog.skills) || !Array.isArray(rawCatalog.groups)) {
-    throw new Error(`Selection catalog "${config.selectionCatalogPath}" must contain skills and groups arrays.`);
+  if (!Array.isArray(rawCatalog.skills)) {
+    throw new Error(`Selection catalog "${config.selectionCatalogPath}" must contain a skills array.`);
   }
 
   const skills = rawCatalog.skills.map((entry, index) => validateSelectionEntry(entry, "skill", index)) as SelectionSkill[];
-  const groups = rawCatalog.groups.map((entry, index) => validateSelectionEntry(entry, "group", index)) as SelectionGroup[];
+  const groups = Array.isArray(rawCatalog.groups)
+    ? (rawCatalog.groups.map((entry, index) => validateSelectionEntry(entry, "group", index)) as SelectionGroup[])
+    : [];
 
   return {
     version: 1,

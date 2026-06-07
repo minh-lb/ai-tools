@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "documents": [
+    {
+      "id": "current-project",
+      "label": "Current project",
+      "description": "Use the current repository as the target for project docs installation."
+    }
+  ]
+}

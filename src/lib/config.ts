@@ -9,6 +9,7 @@ interface PackageJsonShape {
   aiTools?: {
     github?: Partial<PackageConfig["github"]>;
     selectionCatalogPath?: string;
+    projectDocsCatalogPath?: string;
   };
 }
 
@@ -25,6 +26,7 @@ export async function loadPackageConfig(): Promise<PackageConfig> {
   return {
     packageRoot: PACKAGE_ROOT,
     selectionCatalogPath: aiTools.selectionCatalogPath || "selection-catalog.json",
+    projectDocsCatalogPath: aiTools.projectDocsCatalogPath || "project-docs-catalog.json",
     github: {
       owner: aiTools.github.owner,
       repo: aiTools.github.repo,

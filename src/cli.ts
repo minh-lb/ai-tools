@@ -1,14 +1,32 @@
 import * as process from "node:process";
 import { parseArgs, printHelp } from "./lib/args.js";
 import { loadPackageConfig } from "./lib/config.js";
-import { createPromptSession, promptConfirm, promptSingleSelect } from "./lib/prompts.js";
+import { createPromptSession, promptConfirm } from "./lib/prompts.js";
 import { createGitHubClient } from "./lib/github.js";
 import { detectExistingTargets, installPlannedItems, planInstallations, resolveInstallRoot } from "./lib/install.js";
+import { loadProjectDocsCatalog } from "./lib/project-docs-catalog.js";
 import { loadSelectionCatalog, resolveSelectionItems } from "./lib/selection-catalog.js";
+import { runEntryMenu, type EntryMenuAction } from "./lib/tui-entry-menu.js";
+import { runProjectDocsWizard } from "./lib/tui-project-docs.js";
 import { runTabbedWizard } from "./lib/tui-wizard.js";
 import type { Agent, CliOptions, InstallLocation, SelectionCatalog } from "./lib/types.js";
 
-type EntryAction = "install-skills" | "install-libs";
+function printSectionHeader(title: string, subtitle: string): void {
+  const lines = [
+    `AI-TOOLS :: ${title}`,
+    subtitle
+  ];
+  const width = Math.max(...lines.map((line) => line.length)) + 4;
+  const border = "+".padEnd(width - 1, "-") + "+";
+
+  console.log("");
+  console.log(border);
+  for (const line of lines) {
+    console.log(`| ${line.padEnd(width - 4, " ")} |`);
+  }
+  console.log(border);
+  console.log("");
+}
 
 function ensureNonInteractiveInputs(selectionCatalog: SelectionCatalog, options: CliOptions): void {
   const missing: string[] = [];
@@ -52,6 +70,8 @@ async function resolveSelections(
   selectedGroups: string[];
   locations: InstallLocation[];
   agents: Agent[];
+} | {
+  backToMenu: true;
 }> {
   if (!process.stdin.isTTY || !process.stdout.isTTY) {
     ensureNonInteractiveInputs(selectionCatalog, options);
@@ -63,134 +83,151 @@ async function resolveSelections(
     };
   }
 
-  return runTabbedWizard(selectionCatalog, options);
+  return runTabbedWizard(selectionCatalog, options, "Install agent skills");
 }
 
-async function resolveEntryAction(rawArgs: string[]): Promise<EntryAction | null> {
+async function resolveEntryAction(rawArgs: string[]): Promise<EntryMenuAction | null> {
   if (rawArgs.length > 0 || !process.stdin.isTTY || !process.stdout.isTTY) {
     return null;
   }
 
-  const prompt = createPromptSession();
-  try {
-    return await promptSingleSelect<EntryAction>(prompt, {
-      message: "Choose an action",
-      choices: [
-        {
-          value: "install-skills",
-          label: "Install agent skills",
-          description: "Open the terminal UI to install skills for Codex and Claude."
-        },
-        {
-          value: "install-libs",
-          label: "Install libs for AI",
-          description: "Install shared AI libraries and tooling."
-        }
-      ]
-    });
-  } finally {
-    await prompt.close();
-  }
+  return runEntryMenu();
 }
 
 export async function runCli(argv: string[] = process.argv): Promise<void> {
   const rawArgs = argv.slice(2);
-  const entryAction = await resolveEntryAction(rawArgs);
+  const useMainMenu = rawArgs.length === 0 && process.stdin.isTTY && process.stdout.isTTY;
 
-  if (entryAction === "install-libs") {
-    console.log("Install libs for AI is not implemented yet.");
-    return;
-  }
+  while (true) {
+    const entryAction = useMainMenu ? await resolveEntryAction(rawArgs) : null;
 
-  const effectiveArgs = entryAction === "install-skills" ? ["install"] : rawArgs;
-  const { command, options } = parseArgs(effectiveArgs);
+    if (entryAction === "install-libs") {
+      printSectionHeader("Install libs for AI", "Shared AI libraries and tooling are not implemented yet.");
+      console.log("Install libs for AI is not implemented yet.");
+      return;
+    }
 
-  if (options.help || command === "help") {
-    printHelp();
-    return;
-  }
+    if (entryAction === "install-project-docs") {
+      const config = await loadPackageConfig();
+      const projectDocsCatalog = await loadProjectDocsCatalog(config);
+      const projectDocsResult = await runProjectDocsWizard(projectDocsCatalog);
 
-  if (command !== "install") {
-    throw new Error(`Unsupported command "${command}". Only "install" is available.`);
-  }
+      if ("backToMenu" in projectDocsResult) {
+        if (useMainMenu) {
+          continue;
+        }
+        return;
+      }
 
-  const config = await loadPackageConfig();
-  const selectionCatalog = await loadSelectionCatalog(config);
+      printSectionHeader("Install project docs", "Project documentation installation is not implemented yet.");
+      console.log(`Selected documents: ${projectDocsResult.selectedDocuments.map((document) => document.label).join(", ")}`);
+      console.log("Install project docs is not implemented yet.");
+      return;
+    }
 
-  if (selectionCatalog.skills.length === 0 && selectionCatalog.groups.length === 0) {
-    throw new Error("Selection catalog is empty. Add skills or groups before running the installer.");
-  }
+    if (entryAction === "cancel") {
+      return;
+    }
 
-  const { selectedSkills, selectedGroups, locations, agents } = await resolveSelections(selectionCatalog, options);
+    const effectiveArgs = entryAction === "install-skills" ? ["install"] : rawArgs;
+    const { command, options } = parseArgs(effectiveArgs);
 
-  console.log("");
-  console.log("Resolving selected sources...");
-  const client = createGitHubClient(config.github);
-  const finalItems = await resolveSelectionItems({
-    client,
-    config,
-    selectionCatalog,
-    selectedSkillIds: selectedSkills,
-    selectedGroupIds: selectedGroups
-  });
+    if (options.help || command === "help") {
+      printHelp();
+      return;
+    }
 
-  if (finalItems.length === 0) {
-    throw new Error("No installable items were resolved from the selected sources.");
-  }
+    if (command !== "install") {
+      throw new Error(`Unsupported command "${command}". Only "install" is available.`);
+    }
 
-  const plannedItems = locations.flatMap((location) =>
-    agents.flatMap((agent) =>
-      planInstallations({
-        items: finalItems,
-        agent,
-        installRoot: resolveInstallRoot({ agent, location, cwd: process.cwd() })
-      })
-    )
-  );
+    const config = await loadPackageConfig();
+    const selectionCatalog = await loadSelectionCatalog(config);
 
-  const existingTargets = await detectExistingTargets(plannedItems);
-  let overwriteExisting = options.yes;
+    if (selectionCatalog.skills.length === 0 && selectionCatalog.groups.length === 0) {
+      throw new Error("Selection catalog is empty. Add skills or groups before running the installer.");
+    }
 
-  if (existingTargets.length > 0 && !overwriteExisting) {
+    const selectionResult = await resolveSelections(selectionCatalog, options);
+    if ("backToMenu" in selectionResult) {
+      if (useMainMenu) {
+        continue;
+      }
+      return;
+    }
+
+    const { selectedSkills, selectedGroups, locations, agents } = selectionResult;
+
     console.log("");
-    console.log("Existing targets detected:");
-    for (const item of existingTargets) {
-      console.log(`- ${item.id}: ${item.targetPath}`);
+    console.log("Resolving selected sources...");
+    const client = createGitHubClient(config.github);
+    const finalItems = await resolveSelectionItems({
+      client,
+      config,
+      selectionCatalog,
+      selectedSkillIds: selectedSkills,
+      selectedGroupIds: selectedGroups
+    });
+
+    if (finalItems.length === 0) {
+      throw new Error("No installable items were resolved from the selected sources.");
     }
 
-    if (!process.stdin.isTTY || !process.stdout.isTTY) {
-      throw new Error("Existing targets require --yes in non-interactive mode.");
+    const plannedItems = locations.flatMap((location) =>
+      agents.flatMap((agent) =>
+        planInstallations({
+          items: finalItems,
+          agent,
+          installRoot: resolveInstallRoot({ agent, location, cwd: process.cwd() })
+        })
+      )
+    );
+
+    const existingTargets = await detectExistingTargets(plannedItems);
+    let overwriteExisting = options.yes;
+
+    if (existingTargets.length > 0 && !overwriteExisting) {
+      console.log("");
+      console.log("Existing targets detected:");
+      for (const item of existingTargets) {
+        console.log(`- ${item.id}: ${item.targetPath}`);
+      }
+
+      if (!process.stdin.isTTY || !process.stdout.isTTY) {
+        throw new Error("Existing targets require --yes in non-interactive mode.");
+      }
+
+      const prompt = createPromptSession();
+      try {
+        overwriteExisting = await promptConfirm(prompt, {
+          message: "Overwrite all existing targets?",
+          defaultValue: false
+        });
+      } finally {
+        await prompt.close();
+      }
+
+      if (!overwriteExisting) {
+        throw new Error("Installation cancelled because existing targets would be overwritten.");
+      }
     }
 
-    const prompt = createPromptSession();
-    try {
-      overwriteExisting = await promptConfirm(prompt, {
-        message: "Overwrite all existing targets?",
-        defaultValue: false
-      });
-    } finally {
-      await prompt.close();
-    }
+    console.log("");
+    console.log("Installing...");
+    const results = await installPlannedItems({
+      plannedItems,
+      client,
+      overwriteExisting,
+      onProgress(item) {
+        console.log(`- ${item.id} from ${item.sourceBranch} -> ${item.targetPath}`);
+      }
+    });
 
-    if (!overwriteExisting) {
-      throw new Error("Installation cancelled because existing targets would be overwritten.");
+    console.log("");
+    console.log("Install complete");
+    for (const result of results) {
+      console.log(`- ${result.id}: ${result.targetPath}`);
     }
-  }
-
-  console.log("");
-  console.log("Installing...");
-  const results = await installPlannedItems({
-    plannedItems,
-    client,
-    overwriteExisting,
-    onProgress(item) {
-      console.log(`- ${item.id} from ${item.sourceBranch} -> ${item.targetPath}`);
-    }
-  });
-
-  console.log("");
-  console.log("Install complete");
-  for (const result of results) {
-    console.log(`- ${result.id}: ${result.targetPath}`);
+    return;
   }
 }

@@ -288,6 +288,7 @@ test("resolveSelectionItems loads manifests only after the user has made selecti
     config: {
       packageRoot: "/tmp/project",
       selectionCatalogPath: "selection-catalog.json",
+      projectDocsCatalogPath: "project-docs-catalog.json",
       github: client.config
     },
     selectionCatalog,

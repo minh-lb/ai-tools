@@ -11,12 +11,5 @@
       "label": "MQL5 UI Designer",
       "description": "Design and scaffold MetaTrader 5 interfaces"
     }
-  ],
-  "groups": [
-    {
-      "id": "laravel-ddd",
-      "label": "Laravel DDD",
-      "description": "Install the Laravel DDD skill group"
-    }
   ]
 }

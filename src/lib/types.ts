@@ -106,6 +106,17 @@ export interface SelectionCatalog {
   groups: SelectionGroup[];
 }
 
+export interface ProjectDocsDocument {
+  id: string;
+  label: string;
+  description: string;
+}
+
+export interface ProjectDocsCatalog {
+  version: 1;
+  documents: ProjectDocsDocument[];
+}
+
 export interface PackageGithubConfig {
   owner: string;
   repo: string;
@@ -119,6 +130,7 @@ export interface PackageConfig {
   packageRoot: string;
   github: PackageGithubConfig;
   selectionCatalogPath: string;
+  projectDocsCatalogPath: string;
 }
 
 export interface GitHubClient {

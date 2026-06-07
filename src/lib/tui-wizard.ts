@@ -3,8 +3,7 @@ import type { Agent, CliOptions, InstallLocation, SelectionCatalog } from "./typ
 import { resolveInstallRoot } from "./install.js";
 
 type WizardTab = "skills" | "locations" | "agents" | "review";
-type ReviewAction = "confirm" | "cancel";
-type SkillItemKind = "skill" | "group";
+type ReviewAction = "confirm" | "back" | "cancel";
 
 interface WizardState {
   activeTab: WizardTab;
@@ -21,7 +20,7 @@ interface TabItem {
   id: string;
   label: string;
   description: string;
-  kind: WizardTab | SkillItemKind;
+  kind: WizardTab | "skill";
 }
 
 const TAB_ORDER: WizardTab[] = ["skills", "locations", "agents", "review"];
@@ -53,20 +52,12 @@ function currentTabItems(
   selectionCatalog: SelectionCatalog
 ): TabItem[] {
   if (state.activeTab === "skills") {
-    return [
-      ...selectionCatalog.skills.map((skill) => ({
-        id: skill.id,
-        label: `[Skill] ${skill.label}`,
-        description: skill.description,
-        kind: "skill" as const
-      })),
-      ...selectionCatalog.groups.map((group) => ({
-        id: group.id,
-        label: `[Group] ${group.label}`,
-        description: group.description,
-        kind: "group" as const
-      }))
-    ];
+    return selectionCatalog.skills.map((skill) => ({
+      id: skill.id,
+      label: `[Skill] ${skill.label}`,
+      description: skill.description,
+      kind: "skill" as const
+    }));
   }
 
   if (state.activeTab === "locations") {
@@ -111,6 +102,12 @@ function currentTabItems(
       kind: "review"
     },
     {
+      id: "back",
+      label: "Back to main menu",
+      description: "Leave this installer and return to the main menu.",
+      kind: "review"
+    },
+    {
       id: "cancel",
       label: "Cancel",
       description: "Exit without installing anything.",
@@ -122,10 +119,6 @@ function currentTabItems(
 function isItemLocked(item: TabItem, options: CliOptions): boolean {
   if (item.kind === "skill") {
     return options.skills.length > 0;
-  }
-
-  if (item.kind === "group") {
-    return options.groups.length > 0;
   }
 
   if (item.kind === "locations") {
@@ -157,10 +150,6 @@ function isItemSelected(item: TabItem, state: WizardState): boolean {
     return state.selectedSkills.has(item.id);
   }
 
-  if (item.kind === "group") {
-    return state.selectedGroups.has(item.id);
-  }
-
   if (item.kind === "locations") {
     return state.selectedLocations.has(item.id as InstallLocation);
   }
@@ -178,15 +167,6 @@ function toggleItem(item: TabItem, state: WizardState): void {
       state.selectedSkills.delete(item.id);
     } else {
       state.selectedSkills.add(item.id);
-    }
-    return;
-  }
-
-  if (item.kind === "group") {
-    if (state.selectedGroups.has(item.id)) {
-      state.selectedGroups.delete(item.id);
-    } else {
-      state.selectedGroups.add(item.id);
     }
     return;
   }
@@ -253,10 +233,13 @@ function renderReviewSummary(state: WizardState, selectionCatalog: SelectionCata
   const lines = [
     "{bold}Selections{/bold}",
     `Skills: ${selectedSkillLabels.length ? selectedSkillLabels.join(", ") : "none"}`,
-    `Groups: ${selectedGroupLabels.length ? selectedGroupLabels.join(", ") : "none"}`,
     `Locations: ${selectedLocations.length ? selectedLocations.join(", ") : "none"}`,
     `Agents: ${selectedAgents.length ? selectedAgents.join(", ") : "none"}`
   ];
+
+  if (selectedGroupLabels.length > 0) {
+    lines.splice(2, 0, `Groups: ${selectedGroupLabels.join(", ")}`);
+  }
 
   if (selectedLocations.length > 0 && selectedAgents.length > 0) {
     lines.push("", "{bold}Targets{/bold}");
@@ -336,7 +319,7 @@ function moveCursor(state: WizardState, selectionCatalog: SelectionCatalog, delt
   state.listCursor[state.activeTab] = next;
 
   if (state.activeTab === "review") {
-    state.reviewAction = next === 0 ? "confirm" : "cancel";
+    state.reviewAction = items[next]?.id as ReviewAction;
   }
 }
 
@@ -389,14 +372,26 @@ function syncListSelection(
   listBox.scrollTo(cursor);
 }
 
+function renderHeader(title: string, subtitle: string): string {
+  return [
+    "{black-fg}{cyan-bg} AI-TOOLS {/cyan-bg}{/black-fg}",
+    `{bold}${title}{/bold}`,
+    `{gray-fg}${subtitle}{/gray-fg}`,
+    "{cyan-fg}------------------------------------------------------------------------{/cyan-fg}"
+  ].join("\n");
+}
+
 export async function runTabbedWizard(
   selectionCatalog: SelectionCatalog,
-  options: CliOptions
+  options: CliOptions,
+  headerTitle = "Install agent skills"
 ): Promise<{
   selectedSkills: string[];
   selectedGroups: string[];
   locations: InstallLocation[];
   agents: Agent[];
+} | {
+  backToMenu: true;
 }> {
   return new Promise((resolve, reject) => {
     const state = buildInitialState(options);
@@ -409,9 +404,19 @@ export async function runTabbedWizard(
       title: "ai-tools"
     });
 
-    const tabsBox = blessed.box({
+    const headerBox = blessed.box({
       parent: screen,
       top: 0,
+      left: 0,
+      width: "100%",
+      height: 4,
+      tags: true,
+      wrap: true
+    });
+
+    const tabsBox = blessed.box({
+      parent: screen,
+      top: 4,
       left: 0,
       width: "100%",
       height: 1,
@@ -420,7 +425,7 @@ export async function runTabbedWizard(
 
     const titleBox = blessed.box({
       parent: screen,
-      top: 2,
+      top: 6,
       left: 0,
       width: "100%",
       height: 1,
@@ -429,10 +434,10 @@ export async function runTabbedWizard(
 
     const listBox = blessed.list({
       parent: screen,
-      top: 4,
+      top: 8,
       left: 0,
       width: "100%",
-      height: "100%-9",
+      height: "100%-13",
       tags: true,
       keys: false,
       vi: false,
@@ -487,14 +492,24 @@ export async function runTabbedWizard(
       });
     }
 
+    function finishBackToMenu(): void {
+      cleanup();
+      resolve({
+        backToMenu: true
+      });
+    }
+
     function render(): void {
       const stepTitle = {
-        skills: "Select skills and skill groups",
+        skills: "Select skills",
         locations: "Select installation locations",
         agents: "Select agents",
         review: "Review selections"
       }[state.activeTab];
 
+      headerBox.setContent(
+        renderHeader(headerTitle, "Browse items, move across tabs, and confirm only after review.")
+      );
       tabsBox.setContent(renderTabs(state));
       titleBox.setContent(`{bold}${stepTitle}{/bold}`);
       syncListSelection(listBox, state, selectionCatalog, options);
@@ -515,6 +530,11 @@ export async function runTabbedWizard(
       lastToggleAt = Date.now();
 
       if (state.activeTab === "review") {
+        if (state.reviewAction === "back") {
+          finishBackToMenu();
+          return;
+        }
+
         if (state.reviewAction === "cancel") {
           finishWithError("Installation cancelled.");
           return;

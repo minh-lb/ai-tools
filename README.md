@@ -15,9 +15,12 @@ Use `← →` to switch tabs, `↑ ↓` to move within a tab, `space` or `enter`
 Running `ai-tools` now shows a top-level menu with:
 
 1. `Install agent skills`
-2. `Install libs for AI`
+2. `Install project docs`
+3. `Install libs for AI`
+4. `Cancel`
 
-The second option is currently a placeholder and exits with a clear message until the libs install flow is implemented.
+`Install project docs` now opens its own terminal UI with two tabs: `Documents` and `Review`.
+`Install libs for AI` is still a placeholder until that flow is implemented.
 
 ## Supported Flow
 
@@ -28,6 +31,11 @@ The interactive installer asks for:
 3. Installation locations: `global`, `local`, or both
 4. Target agents: `codex`, `claude`, or both
 5. A review tab where you can confirm or cancel after navigating back and forth with the tab bar
+
+The project docs installer asks for:
+
+1. Documents from the local `project-docs-catalog.json`
+2. A `Review` tab where you can confirm, go back to the main menu, or cancel
 
 The wizard does not validate GitHub branches or manifests while you are selecting options. Source validation only starts after you confirm the review step.
 
