@@ -2,7 +2,6 @@ import { checkbox, confirm, select } from "@inquirer/prompts";
 import type {
   PromptConfirmOptions,
   PromptMultiSelectOptions,
-  PromptSession,
   PromptSingleSelectOptions
 } from "./types.js";
 
@@ -10,19 +9,7 @@ const PROMPT_CONTEXT = {
   clearPromptOnDone: true
 } as const;
 
-export function createPromptSession(): PromptSession {
-  return {
-    async ask(): Promise<string> {
-      throw new Error("PromptSession.ask is not used with checkbox/select prompts.");
-    },
-    async close(): Promise<void> {
-      // No-op. @inquirer/prompts manages its own lifecycle.
-    }
-  };
-}
-
 export async function promptMultiSelect<T extends string>(
-  _prompt: PromptSession,
   options: PromptMultiSelectOptions<T>
 ): Promise<T[]> {
   if (options.choices.length === 0) {
@@ -47,7 +34,6 @@ export async function promptMultiSelect<T extends string>(
 }
 
 export async function promptSingleSelect<T extends string>(
-  _prompt: PromptSession,
   options: PromptSingleSelectOptions<T>
 ): Promise<T> {
   if (options.choices.length === 0) {
@@ -69,7 +55,6 @@ export async function promptSingleSelect<T extends string>(
 }
 
 export async function promptConfirm(
-  _prompt: PromptSession,
   options: PromptConfirmOptions
 ): Promise<boolean> {
   return confirm({

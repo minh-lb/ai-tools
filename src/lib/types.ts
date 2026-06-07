@@ -1,30 +1,10 @@
 export type Agent = "codex" | "claude";
 export type InstallLocation = "global" | "local";
-export type Command = "install" | "help";
-
-export interface CliOptions {
-  help: boolean;
-  yes: boolean;
-  agents: Agent[];
-  locations: InstallLocation[];
-  skills: string[];
-  groups: string[];
-}
-
-export interface ParseArgsResult {
-  command: Command;
-  options: CliOptions;
-}
 
 export interface PromptChoice<T extends string = string> {
   value: T;
   label: string;
   description: string;
-}
-
-export interface PromptSession {
-  ask(question: string): Promise<string>;
-  close(): Promise<void>;
 }
 
 export interface PromptMultiSelectOptions<T extends string = string> {
@@ -50,6 +30,7 @@ export interface BranchInfo {
 
 export interface TargetConfig {
   type: "directory" | "file";
+  sourcePath?: string;
   outputPath?: string;
 }
 
@@ -92,6 +73,7 @@ export interface SelectionSkill {
   description: string;
   sourceBranch?: string;
   sourcePath?: string;
+  targets?: Partial<Record<Agent, TargetConfig>>;
 }
 
 export interface SelectionGroup {

@@ -7,7 +7,7 @@ function isCancellationMessage(message: string): boolean {
     || message === "Installation cancelled because existing targets would be overwritten.";
 }
 
-runCli(process.argv).catch((error: unknown) => {
+runCli().catch((error: unknown) => {
   const message = error instanceof Error ? error.message : String(error);
 
   if (isCancellationMessage(message)) {

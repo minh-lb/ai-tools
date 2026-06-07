@@ -1,4 +1,5 @@
 import blessed from "blessed";
+import { canRun, DEBOUNCE_MOVE_MS, DEBOUNCE_SELECT_MS, renderBannerHeader } from "./tui-utils.js";
 
 export type EntryMenuAction = "install-skills" | "install-project-docs" | "install-libs" | "cancel";
 
@@ -30,15 +31,6 @@ const MENU_ITEMS: EntryMenuItem[] = [
     description: "Exit without running any installer."
   }
 ];
-
-function renderHeader(): string {
-  return [
-    "{black-fg}{cyan-bg} AI-TOOLS {/cyan-bg}{/black-fg}",
-    "{bold}Main menu{/bold}",
-    "{gray-fg}Choose the workflow you want to run.{/gray-fg}",
-    "{cyan-fg}------------------------------------------------------------------------{/cyan-fg}"
-  ].join("\n");
-}
 
 function renderItem(item: EntryMenuItem, isActive: boolean): string {
   const text = `${isActive ? "> " : "  "}${item.label}`;
@@ -110,7 +102,7 @@ export async function runEntryMenu(): Promise<EntryMenuAction> {
     }
 
     function render(): void {
-      headerBox.setContent(renderHeader());
+      headerBox.setContent(renderBannerHeader("Main menu", "Choose the workflow you want to run."));
       listBox.setItems(MENU_ITEMS.map((item, index) => renderItem(item, index === cursor)));
       listBox.select(cursor);
       detailBox.setContent(`{bold}Details{/bold}\n${MENU_ITEMS[cursor].description}`);
@@ -118,12 +110,8 @@ export async function runEntryMenu(): Promise<EntryMenuAction> {
       screen.render();
     }
 
-    function canRun(lastAt: number, thresholdMs: number): boolean {
-      return Date.now() - lastAt >= thresholdMs;
-    }
-
     screen.key(["up"], () => {
-      if (!canRun(lastMoveAt, 100)) {
+      if (!canRun(lastMoveAt, DEBOUNCE_MOVE_MS)) {
         return;
       }
       lastMoveAt = Date.now();
@@ -132,7 +120,7 @@ export async function runEntryMenu(): Promise<EntryMenuAction> {
     });
 
     screen.key(["down"], () => {
-      if (!canRun(lastMoveAt, 100)) {
+      if (!canRun(lastMoveAt, DEBOUNCE_MOVE_MS)) {
         return;
       }
       lastMoveAt = Date.now();
@@ -141,7 +129,7 @@ export async function runEntryMenu(): Promise<EntryMenuAction> {
     });
 
     screen.key(["enter"], () => {
-      if (!canRun(lastSelectAt, 120)) {
+      if (!canRun(lastSelectAt, DEBOUNCE_SELECT_MS)) {
         return;
       }
       lastSelectAt = Date.now();

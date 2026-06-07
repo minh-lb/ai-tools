@@ -1,6 +1,14 @@
-import blessed from "blessed";
-import type { Agent, CliOptions, InstallLocation, SelectionCatalog } from "./types.js";
+import type { Agent, InstallLocation, SelectionCatalog } from "./types.js";
 import { resolveInstallRoot } from "./install.js";
+import {
+  canRun,
+  createTabbedLayout,
+  DEBOUNCE_MOVE_MS,
+  DEBOUNCE_SELECT_MS,
+  renderBannerHeader,
+  selectionArray,
+  type TabbedLayout
+} from "./tui-utils.js";
 
 type WizardTab = "skills" | "locations" | "agents" | "review";
 type ReviewAction = "confirm" | "back" | "cancel";
@@ -25,13 +33,13 @@ interface TabItem {
 
 const TAB_ORDER: WizardTab[] = ["skills", "locations", "agents", "review"];
 
-function buildInitialState(options: CliOptions): WizardState {
+function buildInitialState(): WizardState {
   return {
     activeTab: "skills",
-    selectedSkills: new Set(options.skills),
-    selectedGroups: new Set(options.groups),
-    selectedLocations: new Set(options.locations),
-    selectedAgents: new Set(options.agents),
+    selectedSkills: new Set(),
+    selectedGroups: new Set(),
+    selectedLocations: new Set(),
+    selectedAgents: new Set(),
     listCursor: {
       skills: 0,
       locations: 0,
@@ -41,10 +49,6 @@ function buildInitialState(options: CliOptions): WizardState {
     reviewAction: "confirm",
     notice: ""
   };
-}
-
-function selectionArray<T>(items: Set<T>): T[] {
-  return [...items];
 }
 
 function currentTabItems(
@@ -116,35 +120,6 @@ function currentTabItems(
   ];
 }
 
-function isItemLocked(item: TabItem, options: CliOptions): boolean {
-  if (item.kind === "skill") {
-    return options.skills.length > 0;
-  }
-
-  if (item.kind === "locations") {
-    return options.locations.length > 0;
-  }
-
-  if (item.kind === "agents") {
-    return options.agents.length > 0;
-  }
-
-  return false;
-}
-
-function areAllItemsLocked(
-  state: WizardState,
-  selectionCatalog: SelectionCatalog,
-  options: CliOptions
-): boolean {
-  if (state.activeTab === "review") {
-    return false;
-  }
-
-  const items = currentTabItems(state, selectionCatalog);
-  return items.length > 0 && items.every((item) => isItemLocked(item, options));
-}
-
 function isItemSelected(item: TabItem, state: WizardState): boolean {
   if (item.kind === "skill") {
     return state.selectedSkills.has(item.id);
@@ -204,7 +179,6 @@ function renderTabs(state: WizardState): string {
 function formatListItem(
   item: TabItem,
   state: WizardState,
-  options: CliOptions,
   isCursorRow: boolean
 ): string {
   const cursorPrefix = isCursorRow ? "> " : "  ";
@@ -216,8 +190,7 @@ function formatListItem(
   }
 
   const checked = isItemSelected(item, state) ? "x" : " ";
-  const locked = isItemLocked(item, options) ? " {yellow-fg}(locked){/yellow-fg}" : "";
-  return wrapCursorRow(`${cursorPrefix}[${checked}] ${item.label}${locked}`);
+  return wrapCursorRow(`${cursorPrefix}[${checked}] ${item.label}`);
 }
 
 function renderReviewSummary(state: WizardState, selectionCatalog: SelectionCatalog): string {
@@ -257,11 +230,7 @@ function renderReviewSummary(state: WizardState, selectionCatalog: SelectionCata
   return lines.join("\n");
 }
 
-function renderDetailBody(
-  state: WizardState,
-  selectionCatalog: SelectionCatalog,
-  options: CliOptions
-): string {
+function renderDetailBody(state: WizardState, selectionCatalog: SelectionCatalog): string {
   if (state.activeTab === "review") {
     return renderReviewSummary(state, selectionCatalog);
   }
@@ -274,10 +243,6 @@ function renderDetailBody(
     lines.push(`{yellow-fg}${state.notice}{/yellow-fg}`, "");
   }
 
-  if (areAllItemsLocked(state, selectionCatalog, options)) {
-    lines.push("{yellow-fg}Locked by CLI options. Use flags to change these values.{/yellow-fg}", "");
-  }
-
   if (current) {
     lines.push("{bold}Details{/bold}", current.description);
   }
@@ -285,13 +250,9 @@ function renderDetailBody(
   return lines.join("\n");
 }
 
-function renderFooter(state: WizardState, selectionCatalog: SelectionCatalog, options: CliOptions): string {
+function renderFooter(state: WizardState): string {
   if (state.activeTab === "review") {
     return "← → switch tab • ↑ ↓ move • enter confirm action • q quit";
-  }
-
-  if (areAllItemsLocked(state, selectionCatalog, options)) {
-    return "← → switch tab • ↑ ↓ move • q quit";
   }
 
   return "← → switch tab • ↑ ↓ move • space/enter toggle • a toggle all • q quit";
@@ -323,18 +284,14 @@ function moveCursor(state: WizardState, selectionCatalog: SelectionCatalog, delt
   }
 }
 
-function toggleCurrentItem(
-  state: WizardState,
-  selectionCatalog: SelectionCatalog,
-  options: CliOptions
-): void {
+function toggleCurrentItem(state: WizardState, selectionCatalog: SelectionCatalog): void {
   if (state.activeTab === "review") {
     return;
   }
 
   const items = currentTabItems(state, selectionCatalog);
   const current = items[state.listCursor[state.activeTab]];
-  if (!current || isItemLocked(current, options)) {
+  if (!current) {
     return;
   }
 
@@ -358,32 +315,21 @@ function validateBeforeConfirm(state: WizardState): string | null {
 }
 
 function syncListSelection(
-  listBox: ReturnType<typeof blessed.list>,
+  listBox: TabbedLayout["listBox"],
   state: WizardState,
-  selectionCatalog: SelectionCatalog,
-  options: CliOptions
+  selectionCatalog: SelectionCatalog
 ): void {
   const items = currentTabItems(state, selectionCatalog);
   const maxIndex = Math.max(items.length - 1, 0);
   const cursor = Math.min(state.listCursor[state.activeTab], maxIndex);
   state.listCursor[state.activeTab] = cursor;
-  listBox.setItems(items.map((item, index) => formatListItem(item, state, options, index === cursor)));
+  listBox.setItems(items.map((item, index) => formatListItem(item, state, index === cursor)));
   listBox.select(cursor);
   listBox.scrollTo(cursor);
 }
 
-function renderHeader(title: string, subtitle: string): string {
-  return [
-    "{black-fg}{cyan-bg} AI-TOOLS {/cyan-bg}{/black-fg}",
-    `{bold}${title}{/bold}`,
-    `{gray-fg}${subtitle}{/gray-fg}`,
-    "{cyan-fg}------------------------------------------------------------------------{/cyan-fg}"
-  ].join("\n");
-}
-
 export async function runTabbedWizard(
   selectionCatalog: SelectionCatalog,
-  options: CliOptions,
   headerTitle = "Install agent skills"
 ): Promise<{
   selectedSkills: string[];
@@ -394,84 +340,11 @@ export async function runTabbedWizard(
   backToMenu: true;
 }> {
   return new Promise((resolve, reject) => {
-    const state = buildInitialState(options);
+    const state = buildInitialState();
     let lastTabSwitchAt = 0;
     let lastMoveAt = 0;
     let lastToggleAt = 0;
-    const screen = blessed.screen({
-      smartCSR: true,
-      fullUnicode: true,
-      title: "ai-tools"
-    });
-
-    const headerBox = blessed.box({
-      parent: screen,
-      top: 0,
-      left: 0,
-      width: "100%",
-      height: 4,
-      tags: true,
-      wrap: true
-    });
-
-    const tabsBox = blessed.box({
-      parent: screen,
-      top: 4,
-      left: 0,
-      width: "100%",
-      height: 1,
-      tags: true
-    });
-
-    const titleBox = blessed.box({
-      parent: screen,
-      top: 6,
-      left: 0,
-      width: "100%",
-      height: 1,
-      tags: true
-    });
-
-    const listBox = blessed.list({
-      parent: screen,
-      top: 8,
-      left: 0,
-      width: "100%",
-      height: "100%-13",
-      tags: true,
-      keys: false,
-      vi: false,
-      mouse: false,
-      interactive: false,
-      scrollable: true,
-      alwaysScroll: true,
-      style: {
-        selected: {
-          bold: true,
-          fg: "black",
-          bg: "yellow"
-        }
-      }
-    });
-
-    const detailBox = blessed.box({
-      parent: screen,
-      left: 0,
-      bottom: 1,
-      width: "100%",
-      height: 4,
-      tags: true,
-      wrap: true
-    });
-
-    const footerBox = blessed.box({
-      parent: screen,
-      bottom: 0,
-      left: 0,
-      width: "100%",
-      height: 1,
-      tags: true
-    });
+    const { screen, headerBox, tabsBox, titleBox, listBox, detailBox, footerBox } = createTabbedLayout();
 
     function cleanup(): void {
       screen.destroy();
@@ -508,22 +381,18 @@ export async function runTabbedWizard(
       }[state.activeTab];
 
       headerBox.setContent(
-        renderHeader(headerTitle, "Browse items, move across tabs, and confirm only after review.")
+        renderBannerHeader(headerTitle, "Browse items, move across tabs, and confirm only after review.")
       );
       tabsBox.setContent(renderTabs(state));
       titleBox.setContent(`{bold}${stepTitle}{/bold}`);
-      syncListSelection(listBox, state, selectionCatalog, options);
-      detailBox.setContent(renderDetailBody(state, selectionCatalog, options));
-      footerBox.setContent(renderFooter(state, selectionCatalog, options));
+      syncListSelection(listBox, state, selectionCatalog);
+      detailBox.setContent(renderDetailBody(state, selectionCatalog));
+      footerBox.setContent(renderFooter(state));
       screen.render();
     }
 
-    function canRun(lastAt: number, thresholdMs: number): boolean {
-      return Date.now() - lastAt >= thresholdMs;
-    }
-
     function handleToggleOrConfirm(): void {
-      if (!canRun(lastToggleAt, 120)) {
+      if (!canRun(lastToggleAt, DEBOUNCE_SELECT_MS)) {
         return;
       }
 
@@ -551,7 +420,7 @@ export async function runTabbedWizard(
         return;
       }
 
-      toggleCurrentItem(state, selectionCatalog, options);
+      toggleCurrentItem(state, selectionCatalog);
       render();
     }
 
@@ -560,7 +429,7 @@ export async function runTabbedWizard(
         return;
       }
 
-      const items = currentTabItems(state, selectionCatalog).filter((item) => !isItemLocked(item, options));
+      const items = currentTabItems(state, selectionCatalog);
       if (items.length === 0) {
         return;
       }
@@ -579,7 +448,7 @@ export async function runTabbedWizard(
     }
 
     screen.key(["left"], () => {
-      if (!canRun(lastTabSwitchAt, 120)) {
+      if (!canRun(lastTabSwitchAt, DEBOUNCE_SELECT_MS)) {
         return;
       }
       lastTabSwitchAt = Date.now();
@@ -588,7 +457,7 @@ export async function runTabbedWizard(
     });
 
     screen.key(["right"], () => {
-      if (!canRun(lastTabSwitchAt, 120)) {
+      if (!canRun(lastTabSwitchAt, DEBOUNCE_SELECT_MS)) {
         return;
       }
       lastTabSwitchAt = Date.now();
@@ -597,7 +466,7 @@ export async function runTabbedWizard(
     });
 
     screen.key(["up"], () => {
-      if (!canRun(lastMoveAt, 100)) {
+      if (!canRun(lastMoveAt, DEBOUNCE_MOVE_MS)) {
         return;
       }
       lastMoveAt = Date.now();
@@ -606,7 +475,7 @@ export async function runTabbedWizard(
     });
 
     screen.key(["down"], () => {
-      if (!canRun(lastMoveAt, 100)) {
+      if (!canRun(lastMoveAt, DEBOUNCE_MOVE_MS)) {
         return;
       }
       lastMoveAt = Date.now();

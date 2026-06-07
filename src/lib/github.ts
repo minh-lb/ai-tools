@@ -4,6 +4,8 @@ import * as path from "node:path";
 import { spawn } from "node:child_process";
 import type { BranchInfo, GitHubClient, PackageGithubConfig } from "./types.js";
 
+const ARCHIVE_CACHE_ROOT = path.join(os.homedir(), ".ai-tools", "cache", "archives");
+
 async function ensureDirectory(dirPath: string): Promise<void> {
   await mkdir(dirPath, { recursive: true });
 }
@@ -110,8 +112,7 @@ interface GitHubBranchApiResponse {
 }
 
 export function createGitHubClient(config: PackageGithubConfig): GitHubClient {
-  const cacheRoot = path.join(os.homedir(), ".ai-tools", "cache");
-  const archiveCacheRoot = path.join(cacheRoot, "archives");
+  const archiveCacheRoot = ARCHIVE_CACHE_ROOT;
 
   async function listBranches(): Promise<BranchInfo[]> {
     const url = `https://api.github.com/repos/${config.owner}/${config.repo}/branches?per_page=100`;

@@ -1,8 +1,9 @@
 import { readFile } from "node:fs/promises";
 import * as path from "node:path";
-import { mergeSelectedItems, validateManifest } from "./catalog.js";
+import { mergeSelectedItems, validateManifest, validateTarget } from "./catalog.js";
 import { normalizeManifestPath } from "./paths.js";
 import type {
+  Agent,
   GitHubClient,
   ManifestFile,
   ManifestItem,
@@ -10,7 +11,8 @@ import type {
   SelectionCatalog,
   SelectionGroup,
   SelectionSkill,
-  SkillGroup
+  SkillGroup,
+  TargetConfig
 } from "./types.js";
 
 interface RawSelectionEntry {
@@ -19,6 +21,7 @@ interface RawSelectionEntry {
   description?: unknown;
   sourceBranch?: unknown;
   sourcePath?: unknown;
+  targets?: unknown;
 }
 
 interface RawSelectionCatalog {
@@ -54,6 +57,20 @@ function validateSelectionEntry(
       ? normalizeManifestPath(entry.sourcePath, `${entry.id}.sourcePath`)
       : undefined;
 
+  let targets: Partial<Record<Agent, TargetConfig>> | undefined;
+  if (entry.targets && typeof entry.targets === "object" && !Array.isArray(entry.targets)) {
+    const rawTargets = entry.targets as Record<string, unknown>;
+    targets = {};
+    for (const agent of ["codex", "claude"] as Agent[]) {
+      if (rawTargets[agent]) {
+        targets[agent] = validateTarget(rawTargets[agent], agent, entry.id.trim());
+      }
+    }
+    if (Object.keys(targets).length === 0) {
+      targets = undefined;
+    }
+  }
+
   return {
     id: entry.id.trim(),
     label: entry.label.trim(),
@@ -62,7 +79,8 @@ function validateSelectionEntry(
         ? entry.description.trim()
         : "",
     sourceBranch,
-    sourcePath
+    sourcePath,
+    targets
   };
 }
 
@@ -146,11 +164,7 @@ export async function resolveSelectionItems(input: {
         description: selection.description,
         sourceBranch,
         sourcePath: selection.sourcePath,
-        targets: {
-          codex: {
-            type: "directory"
-          }
-        }
+        targets: selection.targets ?? { codex: { type: "directory" }, claude: { type: "directory" } }
       });
       continue;
     }

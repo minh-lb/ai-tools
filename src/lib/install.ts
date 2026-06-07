@@ -13,21 +13,24 @@ import type {
   ProjectDocsSkill
 } from "./types.js";
 
+const AGENT_INSTALL_DIR: Record<Agent, string> = {
+  codex: ".codex",
+  claude: ".claude"
+};
+
 export function resolveInstallRoot(input: {
   agent: Agent;
   location: InstallLocation;
   cwd: string;
 }): string {
-  const homeDir = os.homedir();
-  const globalRoot = input.agent === "codex" ? path.join(homeDir, ".codex") : path.join(homeDir, ".claude");
-  const localRoot = input.agent === "codex" ? path.join(input.cwd, ".codex") : path.join(input.cwd, ".claude");
+  const dir = AGENT_INSTALL_DIR[input.agent];
 
   if (input.location === "global") {
-    return globalRoot;
+    return path.join(os.homedir(), dir);
   }
 
   if (input.location === "local") {
-    return localRoot;
+    return path.join(input.cwd, dir);
   }
 
   throw new Error(`Unsupported install location "${input.location}".`);
@@ -37,12 +40,8 @@ export function resolveProjectDocsRoot(cwd: string): string {
   return cwd;
 }
 
-function defaultOutputPath(item: ManifestItem, agent: Agent): string {
-  if (agent === "codex") {
-    return path.posix.join("skills", item.id);
-  }
-
-  return path.posix.join("agents", `${item.id}.md`);
+function defaultOutputPath(item: ManifestItem): string {
+  return path.posix.join("skills", item.id);
 }
 
 export function planInstallations(input: {
@@ -50,24 +49,25 @@ export function planInstallations(input: {
   agent: Agent;
   installRoot: string;
 }): PlannedInstallation[] {
-  return input.items.map((item) => {
+  return input.items.flatMap((item) => {
     const target = item.targets[input.agent];
     if (!target) {
-      throw new Error(`Skill "${item.id}" does not support the "${input.agent}" agent.`);
+      return [];
     }
 
     const outputPath = normalizeManifestPath(
-      target.outputPath || defaultOutputPath(item, input.agent),
+      target.outputPath || defaultOutputPath(item),
       `${item.id}.${input.agent}.outputPath`
     );
 
-    return {
+    return [{
       ...item,
+      sourcePath: target.sourcePath ?? item.sourcePath,
       agent: input.agent,
       targetType: target.type,
       outputPath,
       targetPath: resolveInsideRoot(input.installRoot, outputPath)
-    };
+    }];
   });
 }
 
@@ -84,12 +84,6 @@ export async function detectExistingTargets(plannedItems: PlannedInstallation[])
   }
 
   return existingItems;
-}
-
-export async function detectExistingProjectDocsTargets(
-  plannedItems: ProjectDocsPlannedInstallation[]
-): Promise<ProjectDocsPlannedInstallation[]> {
-  return [];
 }
 
 export function planProjectDocsInstallations(input: {

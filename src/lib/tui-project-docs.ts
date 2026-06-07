@@ -1,5 +1,12 @@
-import blessed from "blessed";
 import type { ProjectDocsCatalog, ProjectDocsSkill } from "./types.js";
+import {
+  canRun,
+  createTabbedLayout,
+  DEBOUNCE_MOVE_MS,
+  DEBOUNCE_SELECT_MS,
+  renderBannerHeader,
+  type TabbedLayout
+} from "./tui-utils.js";
 
 type ProjectDocsTab = "skills" | "review";
 type ReviewAction = "confirm" | "back" | "cancel";
@@ -32,10 +39,6 @@ function buildInitialState(): ProjectDocsState {
     reviewAction: "confirm",
     notice: ""
   };
-}
-
-function selectionArray<T>(items: Set<T>): T[] {
-  return [...items];
 }
 
 function currentTabItems(state: ProjectDocsState, catalog: ProjectDocsCatalog): TabItem[] {
@@ -109,15 +112,6 @@ function formatListItem(item: TabItem, state: ProjectDocsState, isCursorRow: boo
 
   const checked = isItemSelected(item, state) ? "x" : " ";
   return wrapCursorRow(`${cursorPrefix}[${checked}] ${item.label}`);
-}
-
-function renderHeader(): string {
-  return [
-    "{black-fg}{cyan-bg} AI-TOOLS {/cyan-bg}{/black-fg}",
-    "{bold}Install project docs{/bold}",
-    "{gray-fg}Choose skills first, then confirm from review.{/gray-fg}",
-    "{cyan-fg}------------------------------------------------------------------------{/cyan-fg}"
-  ].join("\n");
 }
 
 function renderReviewSummary(state: ProjectDocsState, catalog: ProjectDocsCatalog): string {
@@ -196,7 +190,7 @@ function validateBeforeConfirm(state: ProjectDocsState): string | null {
 }
 
 function syncListSelection(
-  listBox: ReturnType<typeof blessed.list>,
+  listBox: TabbedLayout["listBox"],
   state: ProjectDocsState,
   catalog: ProjectDocsCatalog
 ): void {
@@ -217,81 +211,7 @@ export async function runProjectDocsWizard(
     let lastTabSwitchAt = 0;
     let lastMoveAt = 0;
     let lastToggleAt = 0;
-
-    const screen = blessed.screen({
-      smartCSR: true,
-      fullUnicode: true,
-      title: "ai-tools"
-    });
-
-    const headerBox = blessed.box({
-      parent: screen,
-      top: 0,
-      left: 0,
-      width: "100%",
-      height: 4,
-      tags: true,
-      wrap: true
-    });
-
-    const tabsBox = blessed.box({
-      parent: screen,
-      top: 4,
-      left: 0,
-      width: "100%",
-      height: 1,
-      tags: true
-    });
-
-    const titleBox = blessed.box({
-      parent: screen,
-      top: 6,
-      left: 0,
-      width: "100%",
-      height: 1,
-      tags: true
-    });
-
-    const listBox = blessed.list({
-      parent: screen,
-      top: 8,
-      left: 0,
-      width: "100%",
-      height: "100%-13",
-      tags: true,
-      keys: false,
-      vi: false,
-      mouse: false,
-      interactive: false,
-      scrollable: true,
-      alwaysScroll: true,
-      style: {
-        selected: {
-          bold: true,
-          fg: "black",
-          bg: "yellow"
-        }
-      }
-    });
-
-    const detailBox = blessed.box({
-      parent: screen,
-      left: 0,
-      bottom: 1,
-      width: "100%",
-      height: 4,
-      tags: true,
-      wrap: true
-    });
-
-    const footerBox = blessed.box({
-      parent: screen,
-      bottom: 0,
-      left: 0,
-      width: "100%",
-      height: 1,
-      tags: true
-    });
+    const { screen, headerBox, tabsBox, titleBox, listBox, detailBox, footerBox } = createTabbedLayout();
 
     function cleanup(): void {
       screen.destroy();
@@ -299,17 +219,13 @@ export async function runProjectDocsWizard(
 
     function render(): void {
       const stepTitle = state.activeTab === "skills" ? "Select skills" : "Review selections";
-      headerBox.setContent(renderHeader());
+      headerBox.setContent(renderBannerHeader("Install project docs", "Choose skills first, then confirm from review."));
       tabsBox.setContent(renderTabs(state));
       titleBox.setContent(`{bold}${stepTitle}{/bold}`);
       syncListSelection(listBox, state, catalog);
       detailBox.setContent(renderDetailBody(state, catalog));
       footerBox.setContent(renderFooter(state));
       screen.render();
-    }
-
-    function canRun(lastAt: number, thresholdMs: number): boolean {
-      return Date.now() - lastAt >= thresholdMs;
     }
 
     function finishBackToMenu(): void {
@@ -330,7 +246,7 @@ export async function runProjectDocsWizard(
     }
 
     function handleToggleOrConfirm(): void {
-      if (!canRun(lastToggleAt, 120)) {
+      if (!canRun(lastToggleAt, DEBOUNCE_SELECT_MS)) {
         return;
       }
 
@@ -386,7 +302,7 @@ export async function runProjectDocsWizard(
     }
 
     screen.key(["left"], () => {
-      if (!canRun(lastTabSwitchAt, 120)) {
+      if (!canRun(lastTabSwitchAt, DEBOUNCE_SELECT_MS)) {
         return;
       }
       lastTabSwitchAt = Date.now();
@@ -395,7 +311,7 @@ export async function runProjectDocsWizard(
     });
 
     screen.key(["right"], () => {
-      if (!canRun(lastTabSwitchAt, 120)) {
+      if (!canRun(lastTabSwitchAt, DEBOUNCE_SELECT_MS)) {
         return;
       }
       lastTabSwitchAt = Date.now();
@@ -404,7 +320,7 @@ export async function runProjectDocsWizard(
     });
 
     screen.key(["up"], () => {
-      if (!canRun(lastMoveAt, 100)) {
+      if (!canRun(lastMoveAt, DEBOUNCE_MOVE_MS)) {
         return;
       }
       lastMoveAt = Date.now();
@@ -413,7 +329,7 @@ export async function runProjectDocsWizard(
     });
 
     screen.key(["down"], () => {
-      if (!canRun(lastMoveAt, 100)) {
+      if (!canRun(lastMoveAt, DEBOUNCE_MOVE_MS)) {
         return;
       }
       lastMoveAt = Date.now();

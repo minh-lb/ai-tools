@@ -363,6 +363,9 @@ test("resolveSelectionItems supports direct branch folders without a manifest", 
       targets: {
         codex: {
           type: "directory"
+        },
+        claude: {
+          type: "directory"
         }
       }
     }

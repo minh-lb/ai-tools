@@ -1,7 +1,5 @@
 import * as process from "node:process";
-import { parseArgs, printHelp } from "./lib/args.js";
 import { loadPackageConfig } from "./lib/config.js";
-import { createPromptSession, promptConfirm } from "./lib/prompts.js";
 import { createGitHubClient } from "./lib/github.js";
 import {
   detectExistingTargets,
@@ -14,10 +12,11 @@ import {
 } from "./lib/install.js";
 import { loadProjectDocsCatalog } from "./lib/project-docs-catalog.js";
 import { loadSelectionCatalog, resolveSelectionItems } from "./lib/selection-catalog.js";
-import { runEntryMenu, type EntryMenuAction } from "./lib/tui-entry-menu.js";
+import { blessedSelect } from "./lib/tui-utils.js";
+import { runEntryMenu } from "./lib/tui-entry-menu.js";
 import { runProjectDocsWizard } from "./lib/tui-project-docs.js";
 import { runTabbedWizard } from "./lib/tui-wizard.js";
-import type { Agent, CliOptions, InstallLocation, SelectionCatalog } from "./lib/types.js";
+import type { Agent, InstallLocation, SelectionCatalog } from "./lib/types.js";
 
 function printSectionHeader(title: string, subtitle: string): void {
   const lines = [
@@ -70,78 +69,13 @@ function printProjectDocsSelectionSummary(input: {
   console.log(`- Install root: ${resolveProjectDocsRoot(input.cwd)}`);
 }
 
-function ensureNonInteractiveInputs(selectionCatalog: SelectionCatalog, options: CliOptions): void {
-  const missing: string[] = [];
-
-  if (options.skills.length === 0 && options.groups.length === 0) {
-    missing.push("--skills and/or --groups");
-  }
-
-  if (options.locations.length === 0) {
-    missing.push("--location");
-  }
-
-  if (options.agents.length === 0) {
-    missing.push("--agent");
-  }
-
-  if (missing.length > 0) {
-    throw new Error(`Non-interactive mode requires ${missing.join(", ")}. Run in a TTY for prompts.`);
-  }
-
-  const unknownSkills = options.skills.filter(
-    (skillId) => !selectionCatalog.skills.some((item) => item.id === skillId)
-  );
-  if (unknownSkills.length > 0) {
-    throw new Error(`Unknown skill id(s): ${unknownSkills.join(", ")}`);
-  }
-
-  const unknownGroups = options.groups.filter(
-    (groupId) => !selectionCatalog.groups.some((group) => group.id === groupId)
-  );
-  if (unknownGroups.length > 0) {
-    throw new Error(`Unknown group id(s): ${unknownGroups.join(", ")}`);
-  }
-}
-
-async function resolveSelections(
-  selectionCatalog: SelectionCatalog,
-  options: CliOptions
-): Promise<{
-  selectedSkills: string[];
-  selectedGroups: string[];
-  locations: InstallLocation[];
-  agents: Agent[];
-} | {
-  backToMenu: true;
-}> {
-  if (!process.stdin.isTTY || !process.stdout.isTTY) {
-    ensureNonInteractiveInputs(selectionCatalog, options);
-    return {
-      selectedSkills: options.skills,
-      selectedGroups: options.groups,
-      locations: options.locations,
-      agents: options.agents
-    };
-  }
-
-  return runTabbedWizard(selectionCatalog, options, "Install agent skills");
-}
-
-async function resolveEntryAction(rawArgs: string[]): Promise<EntryMenuAction | null> {
-  if (rawArgs.length > 0 || !process.stdin.isTTY || !process.stdout.isTTY) {
-    return null;
-  }
-
-  return runEntryMenu();
-}
-
-export async function runCli(argv: string[] = process.argv): Promise<void> {
-  const rawArgs = argv.slice(2);
-  const useMainMenu = rawArgs.length === 0 && process.stdin.isTTY && process.stdout.isTTY;
-
+export async function runCli(): Promise<void> {
   while (true) {
-    const entryAction = useMainMenu ? await resolveEntryAction(rawArgs) : null;
+    const entryAction = await runEntryMenu();
+
+    if (entryAction === "cancel") {
+      return;
+    }
 
     if (entryAction === "install-libs") {
       printSectionHeader("Install libs for AI", "Shared AI libraries and tooling are not implemented yet.");
@@ -155,10 +89,7 @@ export async function runCli(argv: string[] = process.argv): Promise<void> {
       const projectDocsResult = await runProjectDocsWizard(projectDocsCatalog);
 
       if ("backToMenu" in projectDocsResult) {
-        if (useMainMenu) {
-          continue;
-        }
-        return;
+        continue;
       }
 
       printSectionHeader("Install project docs", "Preparing selected project docs for resolution and installation.");
@@ -193,22 +124,7 @@ export async function runCli(argv: string[] = process.argv): Promise<void> {
       return;
     }
 
-    if (entryAction === "cancel") {
-      return;
-    }
-
-    const effectiveArgs = entryAction === "install-skills" ? ["install"] : rawArgs;
-    const { command, options } = parseArgs(effectiveArgs);
-
-    if (options.help || command === "help") {
-      printHelp();
-      return;
-    }
-
-    if (command !== "install") {
-      throw new Error(`Unsupported command "${command}". Only "install" is available.`);
-    }
-
+    // install-skills
     const config = await loadPackageConfig();
     const selectionCatalog = await loadSelectionCatalog(config);
 
@@ -216,25 +132,18 @@ export async function runCli(argv: string[] = process.argv): Promise<void> {
       throw new Error("Selection catalog is empty. Add skills or groups before running the installer.");
     }
 
-    const selectionResult = await resolveSelections(selectionCatalog, options);
+    const selectionResult = await runTabbedWizard(selectionCatalog, "Install agent skills");
+
     if ("backToMenu" in selectionResult) {
-      if (useMainMenu) {
-        continue;
-      }
-      return;
+      continue;
     }
 
     const { selectedSkills, selectedGroups, locations, agents } = selectionResult;
 
     printSectionHeader("Install agent skills", "Preparing selected skills for resolution and installation.");
-    printSkillSelectionSummary({
-      selectionCatalog,
-      selectedSkills,
-      selectedGroups,
-      locations,
-      agents
-    });
+    printSkillSelectionSummary({ selectionCatalog, selectedSkills, selectedGroups, locations, agents });
     console.log("Resolving selected sources...");
+
     const client = createGitHubClient(config.github);
     const finalItems = await resolveSelectionItems({
       client,
@@ -248,39 +157,52 @@ export async function runCli(argv: string[] = process.argv): Promise<void> {
       throw new Error("No installable items were resolved from the selected sources.");
     }
 
-    const plannedItems = locations.flatMap((location) =>
-      agents.flatMap((agent) =>
-        planInstallations({
+    const plannedItems: ReturnType<typeof planInstallations> = [];
+    const skipped: string[] = [];
+
+    for (const location of locations) {
+      for (const agent of agents) {
+        const agentItems = planInstallations({
           items: finalItems,
           agent,
           installRoot: resolveInstallRoot({ agent, location, cwd: process.cwd() })
-        })
-      )
-    );
+        });
+        plannedItems.push(...agentItems);
+
+        for (const item of finalItems) {
+          if (!agentItems.some((p) => p.id === item.id)) {
+            skipped.push(`  - ${item.id} (no ${agent} target)`);
+          }
+        }
+      }
+    }
+
+    if (skipped.length > 0) {
+      console.log("");
+      console.log("Skipped (agent not supported by skill):");
+      for (const line of skipped) {
+        console.log(line);
+      }
+    }
 
     const existingTargets = await detectExistingTargets(plannedItems);
-    let overwriteExisting = options.yes;
+    let overwriteExisting = false;
 
-    if (existingTargets.length > 0 && !overwriteExisting) {
+    if (existingTargets.length > 0) {
       console.log("");
       console.log("Existing targets detected:");
       for (const item of existingTargets) {
         console.log(`- ${item.id}: ${item.targetPath}`);
       }
 
-      if (!process.stdin.isTTY || !process.stdout.isTTY) {
-        throw new Error("Existing targets require --yes in non-interactive mode.");
-      }
-
-      const prompt = createPromptSession();
-      try {
-        overwriteExisting = await promptConfirm(prompt, {
-          message: "Overwrite all existing targets?",
-          defaultValue: false
-        });
-      } finally {
-        await prompt.close();
-      }
+      const answer = await blessedSelect({
+        message: "Overwrite all existing targets?",
+        choices: [
+          { value: "no", label: "No — keep existing files" },
+          { value: "yes", label: "Yes — overwrite all" }
+        ]
+      });
+      overwriteExisting = answer === "yes";
 
       if (!overwriteExisting) {
         throw new Error("Installation cancelled because existing targets would be overwritten.");

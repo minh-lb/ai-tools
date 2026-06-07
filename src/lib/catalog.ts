@@ -25,23 +25,28 @@ interface RawManifestItem {
   targets?: Record<string, unknown>;
 }
 
-function validateTarget(target: unknown, agent: string, skillId: string): TargetConfig {
+export function validateTarget(target: unknown, agent: string, skillId: string): TargetConfig {
   if (!target || typeof target !== "object") {
     throw new Error(`Skill "${skillId}" has an invalid ${agent} target.`);
   }
 
-  const targetRecord = target as { type?: unknown; outputPath?: unknown };
+  const targetRecord = target as { type?: unknown; sourcePath?: unknown; outputPath?: unknown };
   const type = targetRecord.type || "directory";
   if (type !== "directory" && type !== "file") {
     throw new Error(`Skill "${skillId}" has an invalid ${agent} target type "${String(type)}".`);
   }
+
+  const sourcePath =
+    typeof targetRecord.sourcePath === "string" && targetRecord.sourcePath.trim() !== ""
+      ? normalizeManifestPath(targetRecord.sourcePath, `${skillId}.${agent}.sourcePath`)
+      : undefined;
 
   const outputPath =
     typeof targetRecord.outputPath === "string" && targetRecord.outputPath.trim() !== ""
       ? normalizeManifestPath(targetRecord.outputPath, `${skillId}.${agent}.outputPath`)
       : undefined;
 
-  return { type, outputPath };
+  return { type, sourcePath, outputPath };
 }
 
 function attachBranchMetadata(items: ManifestItem[], branch: string, sha: string): ManifestItem[] {
