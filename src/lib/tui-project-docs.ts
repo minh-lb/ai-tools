@@ -5,6 +5,10 @@ import {
   DEBOUNCE_MOVE_MS,
   DEBOUNCE_SELECT_MS,
   renderBannerHeader,
+  renderKeycaps,
+  renderListRow,
+  renderStepSummary,
+  renderTabBar,
   type TabbedLayout
 } from "./tui-utils.js";
 
@@ -74,10 +78,11 @@ function currentTabItems(state: ProjectDocsState, catalog: ProjectDocsCatalog): 
 }
 
 function renderTabs(state: ProjectDocsState): string {
-  return TAB_ORDER.map((tab) => {
-    const label = tab.charAt(0).toUpperCase() + tab.slice(1);
-    return state.activeTab === tab ? `{inverse}${label}{/inverse}` : label;
-  }).join("  ");
+  return renderTabBar(TAB_ORDER.map((tab, index) => ({
+    label: `${index + 1}. ${tab.charAt(0).toUpperCase() + tab.slice(1)}`,
+    meta: tab === "skills" ? `${state.selectedSkills.size} selected` : "ready",
+    active: state.activeTab === tab
+  })));
 }
 
 function isItemSelected(item: TabItem, state: ProjectDocsState): boolean {
@@ -102,16 +107,21 @@ function toggleItem(item: TabItem, state: ProjectDocsState): void {
 }
 
 function formatListItem(item: TabItem, state: ProjectDocsState, isCursorRow: boolean): string {
-  const cursorPrefix = isCursorRow ? "> " : "  ";
-  const wrapCursorRow = (value: string): string =>
-    isCursorRow ? `{black-fg}{yellow-bg}${value}{/yellow-bg}{/black-fg}` : value;
-
   if (item.kind === "review") {
-    return wrapCursorRow(`${cursorPrefix}${state.reviewAction === item.id ? "[x]" : "[ ]"} ${item.label}`);
+    return renderListRow({
+      active: isCursorRow,
+      selected: state.reviewAction === item.id,
+      label: item.label,
+      meta: item.description
+    });
   }
 
-  const checked = isItemSelected(item, state) ? "x" : " ";
-  return wrapCursorRow(`${cursorPrefix}[${checked}] ${item.label}`);
+  return renderListRow({
+    active: isCursorRow,
+    selected: isItemSelected(item, state),
+    label: item.label,
+    meta: item.description
+  });
 }
 
 function renderReviewSummary(state: ProjectDocsState, catalog: ProjectDocsCatalog): string {
@@ -121,7 +131,7 @@ function renderReviewSummary(state: ProjectDocsState, catalog: ProjectDocsCatalo
 
   const lines = [
     "{bold}Selections{/bold}",
-    `Skills: ${selectedSkills.length ? selectedSkills.join(", ") : "none"}`
+    `Skills  ${selectedSkills.length ? selectedSkills.join(", ") : "none"}`
   ];
 
   if (state.notice) {
@@ -145,7 +155,13 @@ function renderDetailBody(state: ProjectDocsState, catalog: ProjectDocsCatalog):
   }
 
   if (current) {
-    lines.push("{bold}Details{/bold}", current.description);
+    lines.push(
+      "{bold}Selected in this step{/bold}",
+      `${state.selectedSkills.size} of ${items.length}`,
+      "",
+      "{bold}About current item{/bold}",
+      current.description
+    );
   }
 
   return lines.join("\n");
@@ -153,10 +169,21 @@ function renderDetailBody(state: ProjectDocsState, catalog: ProjectDocsCatalog):
 
 function renderFooter(state: ProjectDocsState): string {
   if (state.activeTab === "review") {
-    return "← → switch tab • ↑ ↓ move • enter confirm action • q quit";
+    return renderKeycaps([
+      { key: "LEFT/RIGHT", label: "switch tab" },
+      { key: "UP/DOWN", label: "move" },
+      { key: "ENTER", label: "confirm action" },
+      { key: "Q", label: "quit" }
+    ]);
   }
 
-  return "← → switch tab • ↑ ↓ move • space/enter toggle • a toggle all • q quit";
+  return renderKeycaps([
+    { key: "LEFT/RIGHT", label: "switch tab" },
+    { key: "UP/DOWN", label: "move" },
+    { key: "SPACE", label: "toggle" },
+    { key: "A", label: "toggle all" },
+    { key: "Q", label: "quit" }
+  ]);
 }
 
 function moveTab(state: ProjectDocsState, delta: number): void {
@@ -218,10 +245,30 @@ export async function runProjectDocsWizard(
     }
 
     function render(): void {
+      const currentStep = TAB_ORDER.indexOf(state.activeTab) + 1;
       const stepTitle = state.activeTab === "skills" ? "Select skills" : "Review selections";
-      headerBox.setContent(renderBannerHeader("Install project docs", "Choose skills first, then confirm from review."));
+      const stepDescription = state.activeTab === "skills"
+        ? "Choose the project docs packages to copy into this repository."
+        : "Double-check the selected docs before installation starts.";
+      const stepStatus = state.activeTab === "skills"
+        ? `${state.selectedSkills.size} selected`
+        : state.notice || "Ready for confirmation";
+
+      headerBox.setContent(renderBannerHeader(
+        "Install project docs",
+        "Choose skills first, then confirm from review.",
+        [
+          { label: `${state.selectedSkills.size} selected`, tone: "accent" },
+          { label: "Current repository", tone: "muted" }
+        ]
+      ));
       tabsBox.setContent(renderTabs(state));
-      titleBox.setContent(`{bold}${stepTitle}{/bold}`);
+      titleBox.setContent(renderStepSummary({
+        step: `STEP ${currentStep}/${TAB_ORDER.length}`,
+        title: stepTitle,
+        description: stepDescription,
+        status: stepStatus
+      }));
       syncListSelection(listBox, state, catalog);
       detailBox.setContent(renderDetailBody(state, catalog));
       footerBox.setContent(renderFooter(state));

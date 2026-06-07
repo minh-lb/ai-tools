@@ -6,6 +6,10 @@ import {
   DEBOUNCE_MOVE_MS,
   DEBOUNCE_SELECT_MS,
   renderBannerHeader,
+  renderKeycaps,
+  renderListRow,
+  renderStepSummary,
+  renderTabBar,
   selectionArray,
   type TabbedLayout
 } from "./tui-utils.js";
@@ -170,27 +174,43 @@ function toggleItem(item: TabItem, state: WizardState): void {
 }
 
 function renderTabs(state: WizardState): string {
-  return TAB_ORDER.map((tab) => {
-    const label = tab.charAt(0).toUpperCase() + tab.slice(1);
-    return state.activeTab === tab ? `{inverse}${label}{/inverse}` : label;
-  }).join("  ");
+  const counts = {
+    skills: state.selectedSkills.size + state.selectedGroups.size,
+    locations: state.selectedLocations.size,
+    agents: state.selectedAgents.size,
+    review: state.reviewAction === "confirm" ? 1 : 0
+  };
+
+  return renderTabBar(TAB_ORDER.map((tab, index) => ({
+    label: `${index + 1}. ${tab.charAt(0).toUpperCase() + tab.slice(1)}`,
+    meta: tab === "review" ? "ready" : `${counts[tab]} selected`,
+    active: state.activeTab === tab
+  })));
 }
 
 function formatListItem(
   item: TabItem,
   state: WizardState,
-  isCursorRow: boolean
+  isCursorRow: boolean,
+  index: number
 ): string {
-  const cursorPrefix = isCursorRow ? "> " : "  ";
-  const wrapCursorRow = (value: string): string =>
-    isCursorRow ? `{black-fg}{yellow-bg}${value}{/yellow-bg}{/black-fg}` : value;
-
   if (item.kind === "review") {
-    return wrapCursorRow(`${cursorPrefix}${state.reviewAction === item.id ? "[x]" : "[ ]"} ${item.label}`);
+    return renderListRow({
+      active: isCursorRow,
+      selected: state.reviewAction === item.id,
+      label: item.label,
+      meta: item.description,
+      index
+    });
   }
 
-  const checked = isItemSelected(item, state) ? "x" : " ";
-  return wrapCursorRow(`${cursorPrefix}[${checked}] ${item.label}`);
+  return renderListRow({
+    active: isCursorRow,
+    selected: isItemSelected(item, state),
+    label: item.label,
+    meta: item.description,
+    index
+  });
 }
 
 function renderReviewSummary(state: WizardState, selectionCatalog: SelectionCatalog): string {
@@ -205,17 +225,17 @@ function renderReviewSummary(state: WizardState, selectionCatalog: SelectionCata
 
   const lines = [
     "{bold}Selections{/bold}",
-    `Skills: ${selectedSkillLabels.length ? selectedSkillLabels.join(", ") : "none"}`,
-    `Locations: ${selectedLocations.length ? selectedLocations.join(", ") : "none"}`,
-    `Agents: ${selectedAgents.length ? selectedAgents.join(", ") : "none"}`
+    `Skills     ${selectedSkillLabels.length ? selectedSkillLabels.join(", ") : "none"}`,
+    `Locations  ${selectedLocations.length ? selectedLocations.join(", ") : "none"}`,
+    `Agents     ${selectedAgents.length ? selectedAgents.join(", ") : "none"}`
   ];
 
   if (selectedGroupLabels.length > 0) {
-    lines.splice(2, 0, `Groups: ${selectedGroupLabels.join(", ")}`);
+    lines.splice(2, 0, `Groups     ${selectedGroupLabels.join(", ")}`);
   }
 
   if (selectedLocations.length > 0 && selectedAgents.length > 0) {
-    lines.push("", "{bold}Targets{/bold}");
+    lines.push("", "{bold}Resolved targets{/bold}");
     for (const agent of selectedAgents) {
       for (const location of selectedLocations) {
         lines.push(`- ${agent} + ${location}: ${resolveInstallRoot({ agent, location, cwd: process.cwd() })}`);
@@ -244,7 +264,14 @@ function renderDetailBody(state: WizardState, selectionCatalog: SelectionCatalog
   }
 
   if (current) {
-    lines.push("{bold}Details{/bold}", current.description);
+    const selectedCount = items.filter((item) => isItemSelected(item, state)).length;
+    lines.push(
+      "{bold}Selected in this step{/bold}",
+      `${selectedCount} of ${items.length}`,
+      "",
+      "{bold}About current item{/bold}",
+      current.description
+    );
   }
 
   return lines.join("\n");
@@ -252,10 +279,21 @@ function renderDetailBody(state: WizardState, selectionCatalog: SelectionCatalog
 
 function renderFooter(state: WizardState): string {
   if (state.activeTab === "review") {
-    return "← → switch tab • ↑ ↓ move • enter confirm action • q quit";
+    return renderKeycaps([
+      { key: "LEFT/RIGHT", label: "switch tab" },
+      { key: "UP/DOWN", label: "move" },
+      { key: "ENTER", label: "confirm action" },
+      { key: "Q", label: "quit" }
+    ]);
   }
 
-  return "← → switch tab • ↑ ↓ move • space/enter toggle • a toggle all • q quit";
+  return renderKeycaps([
+    { key: "LEFT/RIGHT", label: "switch tab" },
+    { key: "UP/DOWN", label: "move" },
+    { key: "SPACE", label: "toggle" },
+    { key: "A", label: "toggle all" },
+    { key: "Q", label: "quit" }
+  ]);
 }
 
 function setNotice(state: WizardState, message: string): void {
@@ -323,7 +361,7 @@ function syncListSelection(
   const maxIndex = Math.max(items.length - 1, 0);
   const cursor = Math.min(state.listCursor[state.activeTab], maxIndex);
   state.listCursor[state.activeTab] = cursor;
-  listBox.setItems(items.map((item, index) => formatListItem(item, state, index === cursor)));
+  listBox.setItems(items.map((item, index) => formatListItem(item, state, index === cursor, index)));
   listBox.select(cursor);
   listBox.scrollTo(cursor);
 }
@@ -373,18 +411,44 @@ export async function runTabbedWizard(
     }
 
     function render(): void {
+      const currentStep = TAB_ORDER.indexOf(state.activeTab) + 1;
       const stepTitle = {
         skills: "Select skills",
         locations: "Select installation locations",
         agents: "Select agents",
         review: "Review selections"
       }[state.activeTab];
+      const stepDescription = {
+        skills: "Choose the skills you want to install.",
+        locations: "Pick where the installer should place the files.",
+        agents: "Pick which agent format should be generated.",
+        review: "Verify selections before writing anything to disk."
+      }[state.activeTab];
+      const stepStatus = {
+        skills: `${state.selectedSkills.size + state.selectedGroups.size} selected`,
+        locations: `${state.selectedLocations.size} selected`,
+        agents: `${state.selectedAgents.size} selected`,
+        review: state.notice || "Ready for confirmation"
+      }[state.activeTab];
 
       headerBox.setContent(
-        renderBannerHeader(headerTitle, "Browse items, move across tabs, and confirm only after review.")
+        renderBannerHeader(
+          headerTitle,
+          "Browse items, move across tabs, and confirm only after review.",
+          [
+            { label: `${state.selectedSkills.size + state.selectedGroups.size} skills`, tone: "accent" },
+            { label: `${state.selectedLocations.size} locations`, tone: "muted" },
+            { label: `${state.selectedAgents.size} agents`, tone: "success" }
+          ]
+        )
       );
       tabsBox.setContent(renderTabs(state));
-      titleBox.setContent(`{bold}${stepTitle}{/bold}`);
+      titleBox.setContent(renderStepSummary({
+        step: `STEP ${currentStep}/${TAB_ORDER.length}`,
+        title: stepTitle,
+        description: stepDescription,
+        status: stepStatus
+      }));
       syncListSelection(listBox, state, selectionCatalog);
       detailBox.setContent(renderDetailBody(state, selectionCatalog));
       footerBox.setContent(renderFooter(state));
