@@ -125,12 +125,15 @@ export function createGitHubClient(config: PackageGithubConfig): GitHubClient {
   async function getArchive(input: { branch: string; sha: string }): Promise<string> {
     await ensureDirectory(archiveCacheRoot);
     const archivePath = path.join(archiveCacheRoot, `${input.branch}-${input.sha}.tar.gz`);
+    const shouldBypassCache = input.sha === "latest";
 
-    try {
-      await stat(archivePath);
-      return archivePath;
-    } catch {
-      // Download on cache miss.
+    if (!shouldBypassCache) {
+      try {
+        await stat(archivePath);
+        return archivePath;
+      } catch {
+        // Download on cache miss.
+      }
     }
 
     const archiveUrl = `https://codeload.github.com/${config.owner}/${config.repo}/tar.gz/refs/heads/${encodeURIComponent(input.branch)}`;

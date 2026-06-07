@@ -5,13 +5,15 @@
       "id": "laravel-ddd",
       "label": "Laravel DDD",
       "description": "Folder: laravel-ddd",
-      "sourceBranch": "project-docs"
+      "sourceBranch": "project-docs",
+      "sourcePath": "laravel-ddd"
     },
     {
       "id": "nextjs",
       "label": "NextJS",
       "description": "Folder: nextjs",
-      "sourceBranch": "project-docs"
+      "sourceBranch": "project-docs",
+      "sourcePath": "nextjs"
     }
   ]
 }

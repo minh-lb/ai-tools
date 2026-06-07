@@ -1,6 +1,7 @@
 import { readFile } from "node:fs/promises";
 import * as path from "node:path";
 import { mergeSelectedItems, validateManifest } from "./catalog.js";
+import { normalizeManifestPath } from "./paths.js";
 import type {
   GitHubClient,
   ManifestFile,
@@ -17,6 +18,7 @@ interface RawSelectionEntry {
   label?: unknown;
   description?: unknown;
   sourceBranch?: unknown;
+  sourcePath?: unknown;
 }
 
 interface RawSelectionCatalog {
@@ -47,6 +49,10 @@ function validateSelectionEntry(
     typeof entry.sourceBranch === "string" && entry.sourceBranch.trim() !== ""
       ? entry.sourceBranch.trim()
       : undefined;
+  const sourcePath =
+    typeof entry.sourcePath === "string" && entry.sourcePath.trim() !== ""
+      ? normalizeManifestPath(entry.sourcePath, `${entry.id}.sourcePath`)
+      : undefined;
 
   return {
     id: entry.id.trim(),
@@ -55,7 +61,8 @@ function validateSelectionEntry(
       typeof entry.description === "string" && entry.description.trim() !== ""
         ? entry.description.trim()
         : "",
-    sourceBranch
+    sourceBranch,
+    sourcePath
   };
 }
 
@@ -131,6 +138,23 @@ export async function resolveSelectionItems(input: {
     }
 
     const sourceBranch = selection.sourceBranch || input.config.github.skillsBranch;
+
+    if (selection.sourcePath) {
+      selectedSkills.push({
+        id: selection.id,
+        label: selection.label,
+        description: selection.description,
+        sourceBranch,
+        sourcePath: selection.sourcePath,
+        targets: {
+          codex: {
+            type: "directory"
+          }
+        }
+      });
+      continue;
+    }
+
     const manifest = await getManifest(sourceBranch);
     const manifestItem = manifest.items.find((item) => item.id === selection.id);
 

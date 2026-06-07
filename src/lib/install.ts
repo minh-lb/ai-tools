@@ -1,4 +1,4 @@
-import { access, cp, mkdir, mkdtemp, rm } from "node:fs/promises";
+import { access, cp, mkdir, mkdtemp, readdir, rm } from "node:fs/promises";
 import * as os from "node:os";
 import * as path from "node:path";
 import { normalizeManifestPath, resolveInsideRoot } from "./paths.js";
@@ -8,7 +8,9 @@ import type {
   InstallLocation,
   InstallResult,
   ManifestItem,
-  PlannedInstallation
+  PlannedInstallation,
+  ProjectDocsPlannedInstallation,
+  ProjectDocsSkill
 } from "./types.js";
 
 export function resolveInstallRoot(input: {
@@ -29,6 +31,10 @@ export function resolveInstallRoot(input: {
   }
 
   throw new Error(`Unsupported install location "${input.location}".`);
+}
+
+export function resolveProjectDocsRoot(cwd: string): string {
+  return cwd;
 }
 
 function defaultOutputPath(item: ManifestItem, agent: Agent): string {
@@ -80,6 +86,38 @@ export async function detectExistingTargets(plannedItems: PlannedInstallation[])
   return existingItems;
 }
 
+export async function detectExistingProjectDocsTargets(
+  plannedItems: ProjectDocsPlannedInstallation[]
+): Promise<ProjectDocsPlannedInstallation[]> {
+  return [];
+}
+
+export function planProjectDocsInstallations(input: {
+  skills: ProjectDocsSkill[];
+  cwd: string;
+}): ProjectDocsPlannedInstallation[] {
+  const installRoot = resolveProjectDocsRoot(input.cwd);
+
+  return input.skills.map((skill) => {
+    if (!skill.sourceBranch) {
+      throw new Error(`Project docs skill "${skill.id}" is missing sourceBranch.`);
+    }
+
+    if (!skill.sourcePath) {
+      throw new Error(`Project docs skill "${skill.id}" is missing sourcePath.`);
+    }
+
+    return {
+      id: skill.id,
+      label: skill.label,
+      description: skill.description,
+      sourceBranch: skill.sourceBranch,
+      sourcePath: skill.sourcePath,
+      targetPath: installRoot
+    };
+  });
+}
+
 async function copyToTarget(input: {
   sourcePath: string;
   targetPath: string;
@@ -98,6 +136,30 @@ async function copyToTarget(input: {
     force: input.overwriteExisting,
     errorOnExist: !input.overwriteExisting
   });
+}
+
+async function copyDirectoryContents(input: {
+  sourceDir: string;
+  targetDir: string;
+  overwriteExisting: boolean;
+}): Promise<void> {
+  await mkdir(input.targetDir, { recursive: true });
+  const entries = await readdir(input.sourceDir, { withFileTypes: true });
+
+  for (const entry of entries) {
+    const sourcePath = path.join(input.sourceDir, entry.name);
+    const targetPath = path.join(input.targetDir, entry.name);
+
+    if (input.overwriteExisting) {
+      await rm(targetPath, { recursive: true, force: true });
+    }
+
+    await cp(sourcePath, targetPath, {
+      recursive: entry.isDirectory(),
+      force: input.overwriteExisting,
+      errorOnExist: !input.overwriteExisting
+    });
+  }
 }
 
 export async function installPlannedItems(input: {
@@ -132,6 +194,49 @@ export async function installPlannedItems(input: {
       sourcePath: extractedPath,
       targetPath: item.targetPath,
       targetType: item.targetType,
+      overwriteExisting: input.overwriteExisting
+    });
+
+    results.push({
+      id: item.id,
+      targetPath: item.targetPath
+    });
+  }
+
+  return results;
+}
+
+export async function installProjectDocsItems(input: {
+  plannedItems: ProjectDocsPlannedInstallation[];
+  client: GitHubClient;
+  overwriteExisting: boolean;
+  onProgress?: (item: ProjectDocsPlannedInstallation) => void;
+}): Promise<InstallResult[]> {
+  const results: InstallResult[] = [];
+  const archiveCache = new Map<string, string>();
+
+  for (const item of input.plannedItems) {
+    input.onProgress?.(item);
+
+    let archivePath = archiveCache.get(item.sourceBranch);
+    if (!archivePath) {
+      archivePath = await input.client.getArchive({
+        branch: item.sourceBranch,
+        sha: "latest"
+      });
+      archiveCache.set(item.sourceBranch, archivePath);
+    }
+
+    const tempDir = await mkdtemp(path.join(os.tmpdir(), "ai-tools-project-docs-"));
+    const extractedPath = await input.client.extractArchiveEntry({
+      archivePath,
+      entryPath: item.sourcePath,
+      destinationDir: tempDir
+    });
+
+    await copyDirectoryContents({
+      sourceDir: extractedPath,
+      targetDir: item.targetPath,
       overwriteExisting: input.overwriteExisting
     });
 

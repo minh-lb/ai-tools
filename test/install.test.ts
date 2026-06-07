@@ -1,11 +1,17 @@
 import { test } from "node:test";
 import * as assert from "node:assert/strict";
-import { mkdir, mkdtemp, readFile, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, readdir, writeFile } from "node:fs/promises";
 import * as os from "node:os";
 import * as path from "node:path";
 import { spawn } from "node:child_process";
-import { installPlannedItems, planInstallations, resolveInstallRoot } from "../src/lib/install.js";
-import type { GitHubClient, PlannedInstallation } from "../src/lib/types.js";
+import {
+  installPlannedItems,
+  installProjectDocsItems,
+  planInstallations,
+  planProjectDocsInstallations,
+  resolveInstallRoot
+} from "../src/lib/install.js";
+import type { GitHubClient, PlannedInstallation, ProjectDocsPlannedInstallation } from "../src/lib/types.js";
 
 function runTar(args: string[], cwd: string): Promise<void> {
   return new Promise((resolve, reject) => {
@@ -123,4 +129,85 @@ test("installPlannedItems extracts and copies a skill directory", async () => {
   );
 
   assert.equal(installedSkill, "# Skill One\n");
+});
+
+test("planProjectDocsInstallations targets the current working directory", () => {
+  const planned = planProjectDocsInstallations({
+    cwd: "/tmp/project",
+    skills: [
+      {
+        id: "laravel-ddd",
+        label: "Laravel DDD",
+        description: "",
+        sourceBranch: "project-docs",
+        sourcePath: "laravel-ddd"
+      }
+    ]
+  });
+
+  assert.equal(planned[0].targetPath, "/tmp/project");
+});
+
+test("installProjectDocsItems copies only the folder contents into cwd", async () => {
+  const tempRoot = await mkdtemp(path.join(os.tmpdir(), "ai-tools-project-docs-test-"));
+  const archiveSourceRoot = path.join(tempRoot, "repo-main");
+  const docsDir = path.join(archiveSourceRoot, "laravel-ddd");
+  const installRoot = path.join(tempRoot, "install-root");
+  const archivePath = path.join(tempRoot, "project-docs-latest.tar.gz");
+
+  await mkdir(path.join(docsDir, "guides"), { recursive: true });
+  await mkdir(installRoot, { recursive: true });
+  await writeFile(path.join(docsDir, "README.md"), "# Laravel DDD\n");
+  await writeFile(path.join(docsDir, "guides", "intro.md"), "intro\n");
+  await runTar(["-czf", archivePath, path.basename(archiveSourceRoot)], tempRoot);
+
+  const plannedItems: ProjectDocsPlannedInstallation[] = [
+    {
+      id: "laravel-ddd",
+      label: "Laravel DDD",
+      description: "",
+      sourceBranch: "project-docs",
+      sourcePath: "laravel-ddd",
+      targetPath: installRoot
+    }
+  ];
+
+  const client: GitHubClient = {
+    config: {
+      owner: "minhluudev",
+      repo: "ai-tools",
+      defaultBranch: "main",
+      skillsBranch: "skill-general",
+      manifestPath: "ai-tools.catalog.json",
+      excludeBranches: ["main", "master"]
+    },
+    async listBranches() {
+      return [];
+    },
+    async fetchManifest() {
+      return {};
+    },
+    async getArchive() {
+      return archivePath;
+    },
+    async extractArchiveEntry(input) {
+      const extractedRoot = path.join(input.destinationDir, "repo-main");
+      await runTar(["-xzf", input.archivePath, "-C", input.destinationDir, `repo-main/${input.entryPath}`], tempRoot);
+      return path.join(extractedRoot, input.entryPath);
+    }
+  };
+
+  await installProjectDocsItems({
+    plannedItems,
+    client,
+    overwriteExisting: true
+  });
+
+  const installedReadme = await readFile(path.join(installRoot, "README.md"), "utf8");
+  const installedGuide = await readFile(path.join(installRoot, "guides", "intro.md"), "utf8");
+  const installRootEntries = await readdir(installRoot);
+
+  assert.equal(installedReadme, "# Laravel DDD\n");
+  assert.equal(installedGuide, "intro\n");
+  assert.ok(!installRootEntries.includes("laravel-ddd"));
 });

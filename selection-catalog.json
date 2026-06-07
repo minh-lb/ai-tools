@@ -5,13 +5,15 @@
       "id": "git-engineering-workflow",
       "label": "Git engineering workflow",
       "description": "Folder: git-engineering-workflow",
-      "sourceBranch": "agent-skills"
+      "sourceBranch": "agent-skills",
+      "sourcePath": "git-engineering-workflow"
     },
     {
       "id": "review-code",
       "label": "Review code",
       "description": "Folder: review-code",
-      "sourceBranch": "agent-skills"
+      "sourceBranch": "agent-skills",
+      "sourcePath": "review-code"
     }
   ]
 }

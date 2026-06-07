@@ -3,7 +3,15 @@ import { parseArgs, printHelp } from "./lib/args.js";
 import { loadPackageConfig } from "./lib/config.js";
 import { createPromptSession, promptConfirm } from "./lib/prompts.js";
 import { createGitHubClient } from "./lib/github.js";
-import { detectExistingTargets, installPlannedItems, planInstallations, resolveInstallRoot } from "./lib/install.js";
+import {
+  detectExistingTargets,
+  installPlannedItems,
+  installProjectDocsItems,
+  planInstallations,
+  planProjectDocsInstallations,
+  resolveInstallRoot,
+  resolveProjectDocsRoot
+} from "./lib/install.js";
 import { loadProjectDocsCatalog } from "./lib/project-docs-catalog.js";
 import { loadSelectionCatalog, resolveSelectionItems } from "./lib/selection-catalog.js";
 import { runEntryMenu, type EntryMenuAction } from "./lib/tui-entry-menu.js";
@@ -26,6 +34,40 @@ function printSectionHeader(title: string, subtitle: string): void {
   }
   console.log(border);
   console.log("");
+}
+
+function printSkillSelectionSummary(input: {
+  selectionCatalog: SelectionCatalog;
+  selectedSkills: string[];
+  selectedGroups: string[];
+  locations: InstallLocation[];
+  agents: Agent[];
+}): void {
+  const selectedSkillLabels = input.selectionCatalog.skills
+    .filter((skill) => input.selectedSkills.includes(skill.id))
+    .map((skill) => skill.label);
+  const selectedGroupLabels = input.selectionCatalog.groups
+    .filter((group) => input.selectedGroups.includes(group.id))
+    .map((group) => group.label);
+
+  console.log("Selected items:");
+  console.log(`- Skills: ${selectedSkillLabels.length ? selectedSkillLabels.join(", ") : "none"}`);
+
+  if (selectedGroupLabels.length > 0) {
+    console.log(`- Groups: ${selectedGroupLabels.join(", ")}`);
+  }
+
+  console.log(`- Locations: ${input.locations.length ? input.locations.join(", ") : "none"}`);
+  console.log(`- Agents: ${input.agents.length ? input.agents.join(", ") : "none"}`);
+}
+
+function printProjectDocsSelectionSummary(input: {
+  selectedSkills: { label: string }[];
+  cwd: string;
+}): void {
+  console.log("Selected items:");
+  console.log(`- Skills: ${input.selectedSkills.map((skill) => skill.label).join(", ")}`);
+  console.log(`- Install root: ${resolveProjectDocsRoot(input.cwd)}`);
 }
 
 function ensureNonInteractiveInputs(selectionCatalog: SelectionCatalog, options: CliOptions): void {
@@ -119,9 +161,35 @@ export async function runCli(argv: string[] = process.argv): Promise<void> {
         return;
       }
 
-      printSectionHeader("Install project docs", "Project documentation installation is not implemented yet.");
-      console.log(`Selected skills: ${projectDocsResult.selectedSkills.map((skill) => skill.label).join(", ")}`);
-      console.log("Install project docs is not implemented yet.");
+      printSectionHeader("Install project docs", "Preparing selected project docs for resolution and installation.");
+      printProjectDocsSelectionSummary({
+        selectedSkills: projectDocsResult.selectedSkills,
+        cwd: process.cwd()
+      });
+      console.log("Resolving selected sources...");
+
+      const client = createGitHubClient(config.github);
+      const plannedItems = planProjectDocsInstallations({
+        skills: projectDocsResult.selectedSkills,
+        cwd: process.cwd()
+      });
+
+      console.log("");
+      console.log("Installing...");
+      const results = await installProjectDocsItems({
+        plannedItems,
+        client,
+        overwriteExisting: false,
+        onProgress(item) {
+          console.log(`- ${item.id} from ${item.sourceBranch} -> ${item.targetPath}`);
+        }
+      });
+
+      console.log("");
+      console.log("Install complete");
+      for (const result of results) {
+        console.log(`- ${result.id}: ${result.targetPath}`);
+      }
       return;
     }
 
@@ -158,7 +226,14 @@ export async function runCli(argv: string[] = process.argv): Promise<void> {
 
     const { selectedSkills, selectedGroups, locations, agents } = selectionResult;
 
-    console.log("");
+    printSectionHeader("Install agent skills", "Preparing selected skills for resolution and installation.");
+    printSkillSelectionSummary({
+      selectionCatalog,
+      selectedSkills,
+      selectedGroups,
+      locations,
+      agents
+    });
     console.log("Resolving selected sources...");
     const client = createGitHubClient(config.github);
     const finalItems = await resolveSelectionItems({

@@ -35,6 +35,7 @@ The project docs installer asks for:
 
 1. Skills from the local `project-docs-catalog.json`
 2. A `Review` tab where you can confirm, go back to the main menu, or cancel
+3. Copy the contents inside the selected folder directly into the current working directory
 
 The wizard does not validate GitHub branches or manifests while you are selecting options. Source validation only starts after you confirm the review step.
 

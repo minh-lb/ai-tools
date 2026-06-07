@@ -91,6 +91,7 @@ export interface SelectionSkill {
   label: string;
   description: string;
   sourceBranch?: string;
+  sourcePath?: string;
 }
 
 export interface SelectionGroup {
@@ -111,6 +112,7 @@ export interface ProjectDocsSkill {
   label: string;
   description: string;
   sourceBranch?: string;
+  sourcePath?: string;
 }
 
 export interface ProjectDocsCatalog {
@@ -159,5 +161,14 @@ export interface PlannedInstallation extends ManifestItem {
 
 export interface InstallResult {
   id: string;
+  targetPath: string;
+}
+
+export interface ProjectDocsPlannedInstallation {
+  id: string;
+  label: string;
+  description: string;
+  sourceBranch: string;
+  sourcePath: string;
   targetPath: string;
 }

@@ -301,3 +301,70 @@ test("resolveSelectionItems loads manifests only after the user has made selecti
     ["skill-1", "skill-2"]
   );
 });
+
+test("resolveSelectionItems supports direct branch folders without a manifest", async () => {
+  const selectionCatalog = {
+    version: 1 as const,
+    skills: [
+      {
+        id: "git-engineering-workflow",
+        label: "Git engineering workflow",
+        description: "Folder: git-engineering-workflow",
+        sourceBranch: "agent-skills",
+        sourcePath: "git-engineering-workflow"
+      }
+    ],
+    groups: []
+  };
+
+  const client: GitHubClient = {
+    config: {
+      owner: "minhluudev",
+      repo: "ai-tools",
+      defaultBranch: "main",
+      skillsBranch: "skill-general",
+      manifestPath: "ai-tools.catalog.json",
+      excludeBranches: ["main", "master"]
+    },
+    async listBranches() {
+      return [];
+    },
+    async fetchManifest() {
+      throw new Error("manifest should not be loaded for direct branch folders");
+    },
+    async getArchive() {
+      return "";
+    },
+    async extractArchiveEntry() {
+      return "";
+    }
+  };
+
+  const items = await resolveSelectionItems({
+    client,
+    config: {
+      packageRoot: "/tmp/project",
+      selectionCatalogPath: "selection-catalog.json",
+      projectDocsCatalogPath: "project-docs-catalog.json",
+      github: client.config
+    },
+    selectionCatalog,
+    selectedSkillIds: ["git-engineering-workflow"],
+    selectedGroupIds: []
+  });
+
+  assert.deepEqual(items, [
+    {
+      id: "git-engineering-workflow",
+      label: "Git engineering workflow",
+      description: "Folder: git-engineering-workflow",
+      sourceBranch: "agent-skills",
+      sourcePath: "git-engineering-workflow",
+      targets: {
+        codex: {
+          type: "directory"
+        }
+      }
+    }
+  ]);
+});

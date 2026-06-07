@@ -1,5 +1,6 @@
 import { readFile } from "node:fs/promises";
 import * as path from "node:path";
+import { normalizeManifestPath } from "./paths.js";
 import type { PackageConfig, ProjectDocsCatalog, ProjectDocsSkill } from "./types.js";
 
 interface RawProjectDocsEntry {
@@ -7,6 +8,7 @@ interface RawProjectDocsEntry {
   label?: unknown;
   description?: unknown;
   sourceBranch?: unknown;
+  sourcePath?: unknown;
 }
 
 interface RawProjectDocsCatalog {
@@ -32,6 +34,10 @@ function validateSkillEntry(rawEntry: unknown, index: number): ProjectDocsSkill 
     typeof entry.sourceBranch === "string" && entry.sourceBranch.trim() !== ""
       ? entry.sourceBranch.trim()
       : undefined;
+  const sourcePath =
+    typeof entry.sourcePath === "string" && entry.sourcePath.trim() !== ""
+      ? normalizeManifestPath(entry.sourcePath, `${entry.id}.sourcePath`)
+      : undefined;
 
   return {
     id: entry.id.trim(),
@@ -40,7 +46,8 @@ function validateSkillEntry(rawEntry: unknown, index: number): ProjectDocsSkill 
       typeof entry.description === "string" && entry.description.trim() !== ""
         ? entry.description.trim()
         : "",
-    sourceBranch
+    sourceBranch,
+    sourcePath
   };
 }
 
