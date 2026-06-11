@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import * as assert from "node:assert/strict";
 import { loadCatalogIndex, mergeSelectedItems, validateManifest } from "../src/lib/catalog.js";
-import { resolveSelectionItems } from "../src/lib/selection-catalog.js";
+import { loadSelectionCatalog, resolveSelectionItems } from "../src/lib/selection-catalog.js";
 import type { GitHubClient } from "../src/lib/types.js";
 
 test("validateManifest normalizes a valid manifest", () => {
@@ -370,4 +370,32 @@ test("resolveSelectionItems supports direct branch folders without a manifest", 
       }
     }
   ]);
+});
+
+test("loadSelectionCatalog includes the bugfix skill in installer choices", async () => {
+  const catalog = await loadSelectionCatalog({
+    packageRoot: process.cwd(),
+    selectionCatalogPath: "selection-catalog.json",
+    projectDocsCatalogPath: "project-docs-catalog.json",
+    github: {
+      owner: "minhluudev",
+      repo: "ai-tools",
+      defaultBranch: "main",
+      skillsBranch: "skill-general",
+      manifestPath: "ai-tools.catalog.json",
+      excludeBranches: ["main", "master"]
+    }
+  });
+
+  assert.deepEqual(
+    catalog.skills.find((skill) => skill.id === "bugfix"),
+    {
+      id: "bugfix",
+      label: "Bugfix",
+      description: "Folder: bugfix",
+      sourceBranch: "agent-skills",
+      sourcePath: "bugfix",
+      targets: undefined
+    }
+  );
 });
