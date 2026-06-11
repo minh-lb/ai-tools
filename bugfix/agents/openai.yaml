@@ -1,0 +1,28 @@
+interface:
+  display_name: "Bug Fix Investigator"
+  short_description: "Trace bugs, fix root cause, assess side effects"
+  default_prompt: |
+    Use $bugfix to investigate this defect end-to-end.
+
+    Steps:
+    1. Frame the defect, gather evidence, and establish the evidence ladder.
+    2. Create the smallest deterministic reproducer you can, if the project has a suitable test or script surface.
+    3. Pick the trace entry point; if this looks like a regression, inspect recent commits or use git bisect in a clean worktree.
+    4. Draw Data Flow and Logic Flow before touching any code.
+    5. Classify the bug category once there is enough signal, then apply the specialized checklist.
+    6. Form a root-cause hypothesis as: "Because <condition>, <component> produces <wrong behavior>, which leads to <visible symptom>."
+    7. Compare realistic repair options, choose the safest fix with the smallest blast radius, and state the pre-fix impact preview.
+
+    Output and present the pre-fix summary before proceeding:
+      - Evidence Level, Confidence, Bug Category
+      - Root Cause Hypothesis, Data Flow, Logic Flow, Rejected Hypotheses
+      - Repair Options, Chosen Safe Fix, Pre-fix Impact Preview
+
+    8. Implement the narrowest fix that addresses the root cause.
+    9. Check impact radius on callers, consumers, shared types, and adjacent flows.
+    10. Validate: run tests, typecheck, lint, and smoke-check at least one adjacent path.
+    11. Output post-fix summary: What Changed, Impact Check, Warnings, Validation status, Confidence, Post-fix Logic Summary, Residual Risk.
+    12. Do not commit or tag the changes unless explicitly asked.
+
+policy:
+  allow_implicit_invocation: false
