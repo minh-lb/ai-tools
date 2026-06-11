@@ -12,7 +12,7 @@ Use this skill to debug and fix a defect end-to-end. Do not jump straight to cod
 1. Reproduce or approximate the bug first. If exact reproduction is impossible, gather the closest artifact available: failing test, logs, stack trace, screenshot, payload, command history, or user steps.
 2. If the user provides a starting point, begin tracing there. Treat it as the first node of the investigation, not proof of root cause.
 3. If the user does not provide a starting point, identify one yourself from the most concrete signal available: failing entry point, recent regression area, error site, suspicious dependency, or mismatched data boundary.
-4. Trace the full path before editing code. Cover both upstream producers and downstream consumers until the effect is fully explained.
+4. Trace the full path before editing code. Cover both upstream producers and downstream consumers until the effect is fully explained. If the bug description names N services in the call chain, read the relevant handler in **every** service before proposing any fix. A suspicious finding at hop 1 is a hypothesis, not a root cause — keep tracing downstream until the chain is exhausted.
 5. Draw `Data Flow` and `Logic Flow` before proposing or applying a fix.
 6. Rank hypotheses before fixing. If more than one root cause is plausible, state the leading hypothesis and why it wins.
 7. Prefer the smallest fix that addresses the root cause without changing unrelated behavior.
@@ -20,6 +20,7 @@ Use this skill to debug and fix a defect end-to-end. Do not jump straight to cod
 9. End with a concise summary of the corrected logic.
 10. Do not claim a bug is fixed unless you validated the relevant path or explicitly state what remains unverified.
 11. Do not commit, amend, or create git tags after fixing the bug unless the user explicitly asks for it.
+12. Verify the contract at every service boundary before fixing. When a call crosses a service boundary (HTTP, gRPC, queue), read both the sender (what it sends) and the receiver (how it interprets the input) before forming a root cause hypothesis. A bug that looks like "wrong data sent" at the caller may actually be "wrong interpretation" at the callee, or both.
 
 ## Investigation Workflow
 
@@ -428,6 +429,7 @@ Pause and raise a warning before editing when any of these apply:
 - The workspace contains conflicting user changes in the same area and intent is unclear
 - The bug category is race condition or concurrency and no lock/transaction strategy has been identified
 - The fix touches auth checks, access control, input validation, or multi-tenant data boundaries — verify security invariants still hold before proceeding
+- The bug involves a multi-service call chain and any downstream service has not yet been read — do not fix at an upstream service until all hops are traced
 
 ## Response Contract
 
