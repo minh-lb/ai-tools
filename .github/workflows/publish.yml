@@ -1,4 +1,10 @@
 name: Publish to npm
+run-name: >-
+  ${{
+    github.event_name == 'workflow_dispatch'
+      && format('Manual publish by @{0}', github.actor)
+      || format('Publish {0}', github.ref_name)
+  }}
 
 on:
   push:
