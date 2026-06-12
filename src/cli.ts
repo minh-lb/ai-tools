@@ -1,4 +1,5 @@
 import * as process from "node:process";
+import { buildLibInstallPlan, executeLibInstallPlan } from "./lib/ai-libs.js";
 import { loadPackageConfig } from "./lib/config.js";
 import { createGitHubClient } from "./lib/github.js";
 import {
@@ -13,10 +14,11 @@ import {
 import { loadProjectDocsCatalog } from "./lib/project-docs-catalog.js";
 import { loadSelectionCatalog, resolveSelectionItems } from "./lib/selection-catalog.js";
 import { blessedConfirm } from "./lib/tui-utils.js";
+import { runAiLibsWizard } from "./lib/tui-ai-libs.js";
 import { runEntryMenu } from "./lib/tui-entry-menu.js";
 import { runProjectDocsWizard } from "./lib/tui-project-docs.js";
 import { runTabbedWizard } from "./lib/tui-wizard.js";
-import type { Agent, InstallLocation, SelectionCatalog } from "./lib/types.js";
+import type { Agent, InstallLocation, LibInstallPlan, SelectionCatalog } from "./lib/types.js";
 
 const ANSI = {
   reset: "\u001B[0m",
@@ -196,6 +198,17 @@ function printProjectDocsSelectionSummary(input: {
   ]);
 }
 
+function printLibInstallSelectionSummary(plan: LibInstallPlan): void {
+  printLabeledRows("Selected items", [
+    ["Mode", plan.mode],
+    ["Libraries", plan.libraries.length ? plan.libraries.join(", ") : "none"],
+    ["Agents", plan.agents.length ? plan.agents.join(", ") : "none"],
+    ["OS", plan.os],
+    ["Scope", plan.scope],
+    ["Host OS", plan.hostOs ?? "unsupported"]
+  ]);
+}
+
 export async function runCli(): Promise<void> {
   while (true) {
     const entryAction = await runEntryMenu();
@@ -205,8 +218,57 @@ export async function runCli(): Promise<void> {
     }
 
     if (entryAction === "install-libs") {
-      printSectionHeader("Install libs for AI", "Shared AI libraries and tooling are not implemented yet.");
-      printStatusLine("todo", "Install libs for AI is not implemented yet.", "warning");
+      const libsResult = await runAiLibsWizard();
+
+      if ("backToMenu" in libsResult) {
+        continue;
+      }
+
+      const plan = buildLibInstallPlan({
+        mode: libsResult.mode,
+        os: libsResult.os,
+        scope: libsResult.scope,
+        agents: libsResult.agents,
+        libraries: libsResult.libraries
+      });
+
+      printSectionHeader(
+        "Install libs for AI",
+        libsResult.mode === "install"
+          ? "Preparing upstream RTK and ICM installers."
+          : "Preparing safe RTK and ICM removal steps."
+      );
+      printLibInstallSelectionSummary(plan);
+
+      if (plan.notes.length > 0) {
+        printBulletPanel("Notes", plan.notes, "warning");
+      }
+
+      printBulletPanel(
+        `Execution plan (${plan.steps.length})`,
+        plan.steps.map((step) => `${step.title}: ${step.command}`),
+        "muted"
+      );
+
+      printStatusLine(
+        plan.mode === "install" ? "install" : "uninstall",
+        plan.mode === "install"
+          ? "Running selected library installers and setup commands..."
+          : "Running selected library cleanup and uninstall commands..."
+      );
+      await executeLibInstallPlan({
+        cwd: process.cwd(),
+        plan,
+        onProgress(step) {
+          printStatusLine("run", `${step.title} -> ${step.command}`, "muted");
+        }
+      });
+
+      printBulletPanel(
+        `Install complete (${plan.steps.length})`,
+        plan.steps.map((step) => step.title),
+        "success"
+      );
       return;
     }
 

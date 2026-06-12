@@ -33,8 +33,8 @@ const MENU_ITEMS: EntryMenuItem[] = [
   {
     id: "install-libs",
     label: "Install libs for AI",
-    description: "Install shared AI libraries and tooling.",
-    meta: "Coming soon"
+    description: "Install RTK and ICM, then run agent-specific setup for Codex and Claude.",
+    meta: "Mac + Linux"
   },
   {
     id: "cancel",

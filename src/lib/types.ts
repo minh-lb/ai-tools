@@ -1,5 +1,9 @@
 export type Agent = "codex" | "claude";
 export type InstallLocation = "global" | "local";
+export type AiLibrary = "rtk" | "icm";
+export type SupportedOs = "mac" | "linux";
+export type InstallScope = "global" | "local";
+export type LibraryMode = "install" | "uninstall";
 
 export interface PromptChoice<T extends string = string> {
   value: T;
@@ -144,6 +148,28 @@ export interface PlannedInstallation extends ManifestItem {
 export interface InstallResult {
   id: string;
   targetPath: string;
+}
+
+export interface LibInstallStep {
+  id: string;
+  library: AiLibrary;
+  phase: "install" | "configure" | "uninstall" | "cleanup";
+  title: string;
+  description: string;
+  command: string;
+  runner?: "shell" | "remove-binary" | "cleanup-icm-local";
+  path?: string;
+}
+
+export interface LibInstallPlan {
+  mode: LibraryMode;
+  os: SupportedOs;
+  hostOs: SupportedOs | null;
+  scope: InstallScope;
+  agents: Agent[];
+  libraries: AiLibrary[];
+  steps: LibInstallStep[];
+  notes: string[];
 }
 
 export interface ProjectDocsPlannedInstallation {
