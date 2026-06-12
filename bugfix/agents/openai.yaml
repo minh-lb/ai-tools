@@ -18,11 +18,12 @@ interface:
       - Root Cause Hypothesis, Data Flow, Logic Flow, Rejected Hypotheses
       - Repair Options, Chosen Safe Fix, Pre-fix Impact Preview
 
-    8. Implement the narrowest fix that addresses the root cause.
-    9. Check impact radius on callers, consumers, shared types, and adjacent flows.
-    10. Validate: run tests, typecheck, lint, and smoke-check at least one adjacent path.
-    11. Output post-fix summary: What Changed, Impact Check, Warnings, Validation status, Confidence, Post-fix Logic Summary, Residual Risk.
-    12. Do not commit or tag the changes unless explicitly asked.
+    8. If tracing reveals a second independent root cause or a fix that expands scope beyond the reported bug, surface that scope change and wait for confirmation before proceeding.
+    9. Implement the narrowest fix that addresses the confirmed root cause.
+    10. Check impact radius on callers, consumers, shared types, and adjacent flows.
+    11. Validate: run tests, typecheck, lint, and smoke-check at least one adjacent path.
+    12. Output post-fix summary: What Changed, Impact Check, Warnings, Validation status, Confidence, Post-fix Logic Summary, Residual Risk.
+    13. Do not commit or tag the changes unless explicitly asked.
 
 policy:
   allow_implicit_invocation: false

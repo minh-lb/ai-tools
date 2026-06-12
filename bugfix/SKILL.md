@@ -20,7 +20,8 @@ Use this skill to debug and fix a defect end-to-end. Do not jump straight to cod
 9. End with a concise summary of the corrected logic.
 10. Do not claim a bug is fixed unless you validated the relevant path or explicitly state what remains unverified.
 11. Do not commit, amend, or create git tags after fixing the bug unless the user explicitly asks for it.
-12. Verify the contract at every service boundary before fixing. When a call crosses a service boundary (HTTP, gRPC, queue), read both the sender (what it sends) and the receiver (how it interprets the input) before forming a root cause hypothesis. A bug that looks like "wrong data sent" at the caller may actually be "wrong interpretation" at the callee, or both.
+12. Verify the contract at every service boundary before fixing. When a call crosses a service boundary (HTTP, gRPC, queue), read both the sender (what it sends) and the receiver (how it interprets the input) before forming a root cause hypothesis. A bug that looks like "wrong data sent" at the caller may actually be "wrong interpretation" at the callee, or both. For gRPC: always read the `.proto` definition — missing or mismatched fields in message types are a common root cause that is invisible at the call site.
+13. When tracing reveals a second independent root cause, stop and surface it before fixing anything. Do not silently absorb it into the current fix. State clearly: "Found additional root cause N." Wait for user confirmation before proceeding with that additional root cause or any scope expansion beyond the original bug report.
 
 ## Investigation Workflow
 
@@ -384,6 +385,23 @@ Classify once there is enough signal. Treat the category as a working hypothesis
 
 ---
 
+### Status Transition / State Machine Bug
+
+**Signals**: records stuck in an intermediate state (`in_process`, `pending`), status never advances to terminal state, status reverts unexpectedly, idempotency guard missing so a stale message can overwrite a final state.
+
+**Investigation checklist**:
+- Draw the full state machine: every state, every valid transition, every trigger. Mark terminal states explicitly.
+- For each intermediate state, identify the code path that is supposed to advance it — confirm the path is reachable and has no silent failure that leaves the record stuck.
+- Check idempotency guards: does each transition check the *current* state before writing? Guards that only check one terminal state (e.g. `completed`) and miss others (e.g. `cancelled`) allow stale events to resurrect finalized records.
+- For async flows (queue, Kafka, cron): identify the safety net — is there a `resetStuckInProcess` / timeout sweep? What does it transition to, and is that state retryable?
+- Check that error paths always land in a retryable state, not a silent dead-end. A record that transitions to an unrecognized state will be ignored by all processors.
+- For child rows or related entities that mirror a parent status: verify that row-level transitions remain consistent with the parent, especially on failure or rollback paths.
+- Check all consumers of the state (cron, Kafka consumer, API) — do they agree on which states are "actionable"? A mismatch means one processor retries records another has already finalized.
+
+**Fix heuristic**: fix the transition gap closest to where state is written, not at every reader. Add a state machine diagram to the PR description so reviewers can verify completeness.
+
+---
+
 ### Cache Invalidation Bug
 
 **Signals**: stale data shown after an update, behavior differs between first request and subsequent requests, data correct after cache flush but wrong otherwise, inconsistency between environments with different cache configurations.
@@ -430,6 +448,7 @@ Pause and raise a warning before editing when any of these apply:
 - The bug category is race condition or concurrency and no lock/transaction strategy has been identified
 - The fix touches auth checks, access control, input validation, or multi-tenant data boundaries — verify security invariants still hold before proceeding
 - The bug involves a multi-service call chain and any downstream service has not yet been read — do not fix at an upstream service until all hops are traced
+- **Scope has expanded beyond the original bug report**: more than one independent root cause found, or the fix now requires refactors, new abstractions, or changes to unrelated flows — flag to the user and confirm before continuing
 
 ## Response Contract
 
