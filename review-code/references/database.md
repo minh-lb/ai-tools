@@ -20,6 +20,9 @@ Review whether schema changes, queries, writes, and transactions are safe for da
 - Are writes atomic where invariants require them to be atomic?
 - Does the query rely on implicit ordering or non-unique keys?
 - Are nullability, defaults, and uniqueness rules aligned with business expectations?
+- Does a batch write or update operation hold row or table locks long enough to block concurrent reads or writes from other users?
+- Is there a statement timeout or query timeout configured for long-running queries? What happens to the caller if the query exceeds it?
+- For large table operations (backfills, reindexing, mass updates): is the operation chunked and throttled, or does it lock the whole table for the duration?
 
 ## Red Flags
 
@@ -29,6 +32,9 @@ Review whether schema changes, queries, writes, and transactions are safe for da
 - Read-modify-write sequence without transaction or concurrency control (if the race involves concurrent actors or queue workers rather than pure DB isolation, see [Concurrency](concurrency.md) — raise one combined finding, not two)
 - Missing tenant scoping in queries or uniqueness constraints
 - Application-level data integrity assumption without database enforcement where it matters
+- Batch UPDATE or DELETE on large tables without chunking — one long-running transaction that holds locks and blocks other queries
+- No statement timeout on queries that scan large tables or perform expensive joins; an outlier query can exhaust the connection pool
+- `SELECT FOR UPDATE` or advisory lock held across a network call or user-facing request — lock duration grows with external latency and blocks concurrent access
 
 ## Evidence
 

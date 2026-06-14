@@ -13,6 +13,21 @@ Review whether the change is safe to build, configure, deploy, roll back, and op
 - Service discovery, networking, TLS, and certificate handling
 - Feature flags, kill switches, and environment parity
 
+## Feature Flag Criteria
+
+A change **requires** a feature flag when any of these apply:
+- The behavior change affects active users before full validation (dark launch or canary needed)
+- The change is difficult or slow to roll back once deployed (schema writes, message-format changes, external contract updates)
+- The change is large-surface or high-risk and a kill switch would meaningfully reduce blast radius
+- The team has committed to a staged rollout for this path
+
+A feature flag is **not required** when:
+- The change is internal refactoring with no user-visible behavior
+- Rollback is instant (revert + redeploy with no state migration)
+- The blast radius is limited to a non-critical path with low traffic
+
+If a risky change lacks a flag and rollback is non-trivial, raise this as a High finding.
+
 ## Review Questions
 
 - Can this change be deployed safely in stages?
@@ -20,6 +35,7 @@ Review whether the change is safe to build, configure, deploy, roll back, and op
 - Does the code assume filesystem, clock, hostname, or network behavior that may differ across environments?
 - Is rollback safe after schema, config, or message-format changes?
 - Are resource limits and timeout settings compatible with the new behavior?
+- Does this change need a feature flag or kill switch, and if so, is one present?
 
 ## Red Flags
 
