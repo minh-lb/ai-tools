@@ -21,6 +21,13 @@
       "description": "Folder: review-code",
       "sourceBranch": "agent-skills",
       "sourcePath": "review-code"
+    },
+    {
+      "id": "agent-team",
+      "label": "Agent team",
+      "description": "Folder: agent-team",
+      "sourceBranch": "agent-skills",
+      "sourcePath": "agent-team"
     }
   ]
 }
