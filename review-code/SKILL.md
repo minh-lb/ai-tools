@@ -1,6 +1,6 @@
 ---
 name: review-code
-description: Structured code review for backend services, APIs, and server-side code — pull requests, commits, diffs, or AI-generated changes. Covers correctness, security, performance, architecture, database, API contracts, testing, maintainability, observability, concurrency, infrastructure, and backward compatibility. Produces prioritized findings with evidence and remediation guidance.
+description: Structured code review for backend services, APIs, and server-side code. Use ONLY when the user explicitly calls /review-code. Do NOT auto-trigger for ordinary coding, debugging, or any task where code review was not requested.
 argument-hint: codebase|git-diff
 ---
 
