@@ -5,13 +5,15 @@ description: Opt-in multi-agent coordination skill for a leader/coder/reviewer w
 
 ## On invocation — do this immediately
 
-1. Call `TeamCreate` with team name `ai_team` and the following teammates:
-   - leader : ./references/leader.md
-   - coder : ./references/coder.md
-   - reviewer : ./references/reviewer.md
+1. Call `TeamCreate` with team name `ai_team`.
 2. If `TeamCreate` fails, stop and tell the user the orchestration layer is unavailable. Do not proceed.
-3. Send the user's task to `leader` via `SendMessage`.
-4. Wait for `leader`'s response and relay it to the user.
+3. Spawn the three teammates in parallel using the Agent tool — each with `team_name: "ai_team"` and **`model: "sonnet"`** (the model declared in their frontmatter):
+   - `name: "leader"`, prompt: read ./references/leader.md (relative to this skill's base directory), follow the bootstrap protocol (handshake coder then reviewer), then wait for task assignments.
+   - `name: "coder"`, prompt: read ./references/coder.md (relative to this skill's base directory), acknowledge any handshake from leader, then wait for assignments.
+   - `name: "reviewer"`, prompt: read ./references/reviewer.md (relative to this skill's base directory), acknowledge any handshake from leader, then wait for assignments.
+4. Wait for `leader` to confirm bootstrap complete (both coder and reviewer acknowledged).
+5. Send the user's task to `leader` via `SendMessage`.
+6. Wait for `leader`'s response and relay it to the user.
 
 Do not ask the user for confirmation before calling `TeamCreate`. Do not explain what you are about to do. Just do it.
 
