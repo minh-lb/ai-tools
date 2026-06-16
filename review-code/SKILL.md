@@ -88,7 +88,7 @@ For **Code Change Review**: for each dimension below, ask whether the change tou
 - [Performance](references/performance.md): Hot paths, loops, queries, serialization, caching, large payloads, batch jobs
 - [Architecture](references/architecture.md): Layering, module boundaries, coupling, domain design, extensibility
 - [Database](references/database.md): Migrations, queries, transactions, indexes, integrity, data lifecycle
-- [API](references/api.md): External or internal service contracts, schemas, status codes, pagination, idempotency
+- [API](references/api.md): External or internal service contracts, schemas, HTTP status code semantics, pagination, idempotency
 - [Testing](references/testing.md): Unit, integration, contract, regression, load, failure-path coverage
 - [Maintainability](references/maintainability.md): Complexity, duplication, naming, hidden assumptions, dead code
 - [Observability](references/observability.md): Logging, metrics, tracing, auditability, alertability
