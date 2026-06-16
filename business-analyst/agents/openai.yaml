@@ -1,0 +1,6 @@
+interface:
+  display_name: "Business Analyst SRS"
+  short_description: "Draft dev-ready and agent-ready SRS"
+  default_prompt: "Use $business-analyst to analyze the current project requirements and write or update developer-readable, agent-ready SRS files under docs/business-analyst/."
+policy:
+  allow_implicit_invocation: false
