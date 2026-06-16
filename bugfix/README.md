@@ -174,12 +174,19 @@ Trước khi sửa, skill sẽ trình bày:
 ```
 Evidence Level    — độ mạnh của bằng chứng (1 = failing test, 6 = code inspection only)
 Confidence        — mức độ chắc chắn của hypothesis
+Risk Level        — Low / Medium / High / Critical
 Bug Category      — loại bug được phân loại
 Root Cause Hypothesis — Because <condition>, <component> produces <wrong>, which leads to <symptom>
 Data Flow         — luồng dữ liệu từ input đến output
 Logic Flow        — các nhánh logic liên quan
 Rejected Hypotheses — các giả thuyết đã loại trừ và lý do
-Fix Plan          — kế hoạch sửa cụ thể
+Invariants to Preserve — các điều kiện không được phá vỡ sau khi sửa
+Repair Options    — các hướng sửa hoặc containment đã cân nhắc
+Fix vs Containment Decision — chọn Forward fix / Revert / Contain first và lý do
+Chosen Safe Fix   — hướng sửa an toàn được chọn
+Pre-fix Impact Preview — caller, contract, flow nào có thể bị ảnh hưởng
+Validation Plan   — sẽ kiểm tra gì sau sửa
+Approval Gate     — có cần dừng chờ user duyệt trước khi sửa hay không
 ```
 
 Sau khi sửa:
@@ -190,11 +197,26 @@ Impact Check      — các caller, consumer, contract bị ảnh hưởng
 Warnings          — hành vi có thể thay đổi ngoài phạm vi bug
 Validation        — những gì đã được kiểm tra và những gì chưa
 Confidence        — độ chắc chắn sau khi fix
+Review Verdict    — Pass hoặc Revise sau khi hậu kiểm
+Review Cycle      — vòng review hiện tại (1 hoặc 2)
+Review Findings   — findings phải đi trước summary, có severity và tag [new] / [unresolved]
+Rework Performed  — nếu phải sửa lại sau review thì đã sửa gì và validate lại ra sao
+Rollback / Containment — cách rollback hoặc containment nếu fix chưa đủ an toàn
+Observability     — log/metric/debug artifact nào được thêm hoặc cố ý không thêm
 Post-fix Logic Summary — logic sau khi sửa hoạt động như thế nào
 Residual Risk     — rủi ro còn lại cần theo dõi
 ```
 
 > Skill **không tự commit** sau khi fix. Bạn review output rồi quyết định có commit không.
+
+Workflow mới yêu cầu hậu kiểm sau khi fix:
+
+- Sau khi sửa và validate, skill phải tự review lại fix bằng code-review mindset.
+- Review phải ghi findings trước, có severity `Critical/Major/Minor/Suggestion`; chỉ được `Pass` khi không còn `Critical/Major`.
+- Nếu review thấy fix chưa chuẩn, quá rộng, hoặc validation còn yếu, skill phải quay lại sửa.
+- Nếu review làm thay đổi root cause hypothesis, risk level, invariants, hoặc hướng `Forward fix / Revert / Contain first`, skill phải quay lại pre-fix planning gate và phát lại pre-fix summary trước khi sửa tiếp.
+- Sau mỗi lần sửa lại, skill phải chạy lại `Impact Check` + `Validation` + review.
+- Giới hạn tối đa 2 vòng review-driven rework; quá ngưỡng này thì dừng và nêu rõ unresolved findings.
 
 ---
 

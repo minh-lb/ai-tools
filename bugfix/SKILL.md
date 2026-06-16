@@ -15,13 +15,16 @@ Use this skill to debug and fix a defect end-to-end. Do not jump straight to cod
 4. Trace the full path before editing code. Cover both upstream producers and downstream consumers until the effect is fully explained. If the bug description names N services in the call chain, read the relevant handler in **every** service before proposing any fix. A suspicious finding at hop 1 is a hypothesis, not a root cause — keep tracing downstream until the chain is exhausted.
 5. Draw `Data Flow` and `Logic Flow` before proposing or applying a fix.
 6. Rank hypotheses before fixing. If more than one root cause is plausible, state the leading hypothesis and why it wins.
-7. Prefer the smallest fix that addresses the root cause without changing unrelated behavior.
-8. After editing, inspect impact radius and warn about any behavior that may have changed outside the target bug.
-9. End with a concise summary of the corrected logic.
-10. Do not claim a bug is fixed unless you validated the relevant path or explicitly state what remains unverified.
-11. Do not commit, amend, or create git tags after fixing the bug unless the user explicitly asks for it.
-12. Verify the contract at every service boundary before fixing. When a call crosses a service boundary (HTTP, gRPC, queue), read both the sender (what it sends) and the receiver (how it interprets the input) before forming a root cause hypothesis. A bug that looks like "wrong data sent" at the caller may actually be "wrong interpretation" at the callee, or both. For gRPC: always read the `.proto` definition — missing or mismatched fields in message types are a common root cause that is invisible at the call site.
-13. When tracing reveals a second independent root cause, stop and surface it before fixing anything. Do not silently absorb it into the current fix. State clearly: "Found additional root cause N." Wait for user confirmation before proceeding with that additional root cause or any scope expansion beyond the original bug report.
+7. Classify the risk before editing: `Low`, `Medium`, `High`, or `Critical`. Also list the invariants that must remain true after the fix.
+8. For regressions, compare `forward-fix` against at least one containment option: revert the culprit change, disable via flag/config, or apply a temporary operational safeguard. Do not assume "write more code" is the best first move.
+9. Prefer the smallest fix that addresses the root cause without changing unrelated behavior.
+10. For `High`/`Critical` work, or any fix touching auth, money, destructive operations, data repair/migration, multi-tenant boundaries, or compatibility-sensitive contracts, stop at the pre-fix summary and wait for explicit user confirmation before editing.
+11. After editing, inspect impact radius and warn about any behavior that may have changed outside the target bug.
+12. End with a concise summary of the corrected logic.
+13. Do not claim a bug is fixed unless you validated the relevant path or explicitly state what remains unverified.
+14. Do not commit, amend, or create git tags after fixing the bug unless the user explicitly asks for it.
+15. Verify the contract at every service boundary before fixing. When a call crosses a service boundary (HTTP, gRPC, queue), read both the sender (what it sends) and the receiver (how it interprets the input) before forming a root cause hypothesis. A bug that looks like "wrong data sent" at the caller may actually be "wrong interpretation" at the callee, or both. For gRPC: always read the `.proto` definition — missing or mismatched fields in message types are a common root cause that is invisible at the call site.
+16. When tracing reveals a second independent root cause, stop and surface it before fixing anything. Do not silently absorb it into the current fix. State clearly: "Found additional root cause N." Wait for user confirmation before proceeding with that additional root cause or any scope expansion beyond the original bug report.
 
 ## Investigation Workflow
 
@@ -57,6 +60,24 @@ If the project has a reasonable test or script surface and no deterministic repr
 - Prefer a focused reproducer over broad end-to-end setup when both prove the same behavior.
 - Keep the reproducer if it adds regression coverage; otherwise remove temporary debug artifacts before finishing.
 - If you cannot build a deterministic reproducer, say so and continue with the strongest available evidence.
+
+### 1.7. Classify risk and invariants
+
+Before choosing a fix, classify the work:
+
+- `Low`: localized, reversible, clear validation path
+- `Medium`: multi-file or shared behavior change
+- `High`: shared abstraction, data correctness, money, auth, deployment, or compatibility risk
+- `Critical`: destructive, production-sensitive, or unclear-but-high-impact work
+
+Also list the invariants that must not break, such as:
+
+- authorization or tenant isolation
+- money totals or accounting correctness
+- idempotency or deduplication
+- API or event contract compatibility
+- state machine terminal-state guarantees
+- migration or data-integrity assumptions
 
 ### 2. Pick the trace entry
 
@@ -149,6 +170,8 @@ Before fixing, make sure the trace covers:
 - Returned output or user-visible side effect
 - Error path
 - Caller or downstream consumer assumptions
+- Last known good behavior or last known safe point
+- Ownership boundary: which layer actually owns the invariant being violated
 
 If any item is unknown, mark it as unknown instead of guessing.
 
@@ -173,9 +196,25 @@ For each option, assess:
 - Logic risk: invariants, branch behavior, state transitions, and error handling that might change
 - Validation cost: how confidently it can be tested with available checks
 
+For regressions, include at least one of these when realistic:
+
+- Revert the culprit change
+- Disable the broken path with feature flag or config
+- Add a temporary operational safeguard while preparing the root-cause fix
+
 Prefer the option that fixes the root cause with the smallest blast radius and the clearest validation path.
 
 If the safest option still touches a broad shared abstraction, say so explicitly before editing.
+
+### 5.5. Choose fix vs containment explicitly
+
+Decide and say which strategy you are taking:
+
+- `Forward fix`: change code now because the root cause is understood and validation is credible
+- `Revert`: restore last known-good behavior because the regression is recent and rollback is safer
+- `Contain first`: disable, guard, or operationally isolate the broken path before the full fix
+
+If you choose `Forward fix` over a safer `Revert` or `Contain first` option, explain why.
 
 ### 6. Implement the fix
 
@@ -185,6 +224,7 @@ If the safest option still touches a broad shared abstraction, say so explicitly
 - If no test exists, validate with the strongest available local check.
 - Prefer fixing invariant violations close to the source rather than masking bad state downstream.
 - Avoid mixing refactors with bug fixes unless the refactor is required to make the fix safe.
+- Remove temporary probes or debug-only code before finishing unless they are intentionally kept as observability improvements.
 
 ### 7. Check impact radius after the fix
 
@@ -197,6 +237,8 @@ Inspect all affected callers, consumers, and adjacent contracts. At minimum, rev
 - User-visible flows adjacent to the fixed path
 
 Warn explicitly when the fix changes behavior outside the reported bug, when coupled areas need follow-up, or when validation is incomplete. Also inspect: signature/return-shape changes, nullability changes, query/pagination behavior, cache key/TTL changes, retry/idempotency behavior, schema/event/API contract changes.
+
+Use code search or references, not guesswork, to enumerate affected callers and consumers.
 
 ### 8. Validate
 
@@ -215,7 +257,68 @@ Validation must cover both:
 - The reported bug path
 - At least one adjacent path that could regress because of the fix
 
+When feasible, expand this into a minimal validation matrix:
+
+- Reproducer before/after or failing test before/passing test after
+- Boundary case closest to the bug trigger
+- Failure path or invalid input path
+- One adjacent success path that should remain unchanged
+- Any contract or schema compatibility check affected by the fix
+
 If the bug was hard to locate due to missing logs or metrics, add targeted logging or a metric at the failure site as part of the fix — so the same class of bug is faster to diagnose next time.
+
+### 9. Review the fix before finalizing
+
+After validation, review the change again with a code-review mindset. Do not treat "tests pass" as sufficient by itself.
+Review it as if another engineer authored the fix and you are trying to disprove that it is safe to merge.
+
+Review at minimum:
+
+- Does the fix actually address the traced root cause, not just the visible symptom?
+- Did the change preserve the stated invariants?
+- Did the change introduce regression risk in callers, consumers, contracts, or adjacent flows?
+- Is the validation strong enough for the risk level?
+- Is the diff as narrow as claimed, or did accidental refactor/noise slip in?
+- Are temporary guards, logs, or containment steps still appropriate after the final fix?
+
+Write findings before any summary. Use this severity model:
+
+- `Critical`: likely data loss, security break, severe incorrect behavior, or unsafe rollout
+- `Major`: likely bug, regression, broken contract, weak root-cause fit, or missing important validation
+- `Minor`: real issue with narrower impact or a preventive correction worth making
+- `Suggestion`: optional improvement that is not required for acceptance
+
+Tag findings by review cycle:
+
+- First review: `[new]`
+- Re-review: `[new]` or `[unresolved from cycle N]`
+
+Produce a review verdict with these rules:
+
+- `Pass`: the fix is coherent and ready to report
+- `Revise`: one or more `Critical` or `Major` findings remain, or the evidence/validation is too weak to support `Pass`
+
+Minimum review checklist:
+
+- Root cause vs symptom: does the fix repair the traced cause, not just hide the symptom?
+- Caller and consumer compatibility: do direct callers and downstream dependents still make sense?
+- Contract safety: did return shapes, DTOs, schemas, events, or error semantics change?
+- Failure-path safety: do error paths, retries, nullability, cleanup, and rollback still hold?
+- Validation strength: does the evidence justify the confidence and risk level claimed?
+- Diff discipline: did unrelated cleanup, refactor, or debug leftovers slip in?
+- Security/invariant preservation: are auth, tenant, money, idempotency, and state-machine invariants still true when relevant?
+
+If the verdict is `Revise`:
+
+- State the concrete review findings
+- Decide whether the findings only require a local code correction, or whether they invalidate the current plan
+- If review findings change the root-cause hypothesis, risk level, invariants, fix-vs-containment decision, or blast radius, jump back to Sections `1.7`, `4`, `5`, and `5.5`, then issue an updated pre-fix summary before editing again
+- If the revised plan now qualifies for an approval gate, stop and wait for explicit user confirmation before continuing
+- Otherwise return to implementation
+- Re-run impact check and validation
+- Re-review the updated fix before finalizing
+
+Maximum review-rework loops: 2. If the second review still returns `Revise`, stop and surface the unresolved findings and residual risk to the user instead of looping again.
 
 ---
 
@@ -448,6 +551,10 @@ Pause and raise a warning before editing when any of these apply:
 - The bug category is race condition or concurrency and no lock/transaction strategy has been identified
 - The fix touches auth checks, access control, input validation, or multi-tenant data boundaries — verify security invariants still hold before proceeding
 - The bug involves a multi-service call chain and any downstream service has not yet been read — do not fix at an upstream service until all hops are traced
+- A recent regression has a clearly safer `Revert` or `Contain first` option, but you are still planning a broader `Forward fix` without a strong reason
+- The work is `High`/`Critical`, or touches money, destructive operations, data repair/migration, or compatibility-sensitive contracts, and the user has not yet approved the pre-fix plan
+- Post-fix review findings have changed the hypothesis, risk level, invariants, or chosen repair strategy, and you have not yet reissued the pre-fix summary / approval gate
+- Post-fix review has already required 2 revise cycles and the fix is still not review-clean
 - **Scope has expanded beyond the original bug report**: more than one independent root cause found, or the fix now requires refactors, new abstractions, or changes to unrelated flows — flag to the user and confirm before continuing
 
 ## Response Contract
@@ -459,14 +566,19 @@ Match the user's language unless they ask otherwise. Keep technical terms, code 
 ```text
 Evidence Level
 Confidence
+Risk Level
 Bug Category
 Root Cause Hypothesis
 Data Flow
 Logic Flow
 Rejected Hypotheses
+Invariants to Preserve
 Repair Options
+Fix vs Containment Decision
 Chosen Safe Fix
 Pre-fix Impact Preview
+Validation Plan
+Approval Gate
 ```
 
 **After implementing the fix**, output:
@@ -477,6 +589,12 @@ Impact Check
 Warnings
 Validation
 Confidence
+Review Verdict
+Review Cycle
+Review Findings
+Rework Performed
+Rollback / Containment
+Observability
 Post-fix Logic Summary
 Residual Risk
 ```
@@ -489,11 +607,19 @@ Stop after the code change, validation, and report. Leave version control action
 - Bug category identified early enough to sharpen tracing, and reclassified if evidence changes
 - Full-path trace before fix
 - Root cause, not symptom patching
+- Risk level and invariants stated before editing
 - Repair options compared when the fix is not obvious
+- Revert/disable/containment considered for regressions
 - Safest reasonable fix chosen before editing
+- High-risk edits paused at the pre-fix summary for explicit approval
 - Impact preview completed before code changes
 - Explicit impact analysis
 - Honest validation status
+- Validation covers bug path, adjacent path, and a boundary or failure path when feasible
+- Post-fix review performed before final handoff
+- Review findings are severity-based and findings-first
+- Review-driven scope/risk changes force a return to the pre-fix planning gate
+- Any review-triggered rework is followed by another impact check and validation pass
 - Concise final logic summary
 - Clear confidence level when evidence is weak
 - For regressions: culprit change identified, or `git bisect` used when the culprit commit is unknown and history is relevant

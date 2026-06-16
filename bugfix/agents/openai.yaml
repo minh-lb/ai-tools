@@ -9,21 +9,27 @@ interface:
     2. Create the smallest deterministic reproducer you can, if the project has a suitable test or script surface.
     3. Pick the trace entry point; if this looks like a regression, inspect recent commits or use git bisect in a clean worktree.
     4. Draw Data Flow and Logic Flow before touching any code.
-    5. Classify the bug category once there is enough signal, then apply the specialized checklist.
+    5. Classify bug category, risk level, and invariants that must remain true.
     6. Form a root-cause hypothesis as: "Because <condition>, <component> produces <wrong behavior>, which leads to <visible symptom>."
-    7. Compare realistic repair options, choose the safest fix with the smallest blast radius, and state the pre-fix impact preview.
+    7. Compare realistic repair options. For regressions, include at least one containment option: revert, disable via flag/config, or temporary operational safeguard.
+    8. Choose explicitly between Forward fix / Revert / Contain first, then state the pre-fix impact preview and validation plan.
 
     Output and present the pre-fix summary before proceeding:
-      - Evidence Level, Confidence, Bug Category
+      - Evidence Level, Confidence, Risk Level, Bug Category
       - Root Cause Hypothesis, Data Flow, Logic Flow, Rejected Hypotheses
-      - Repair Options, Chosen Safe Fix, Pre-fix Impact Preview
+      - Invariants to Preserve, Repair Options, Fix vs Containment Decision
+      - Chosen Safe Fix, Pre-fix Impact Preview, Validation Plan, Approval Gate
 
-    8. If tracing reveals a second independent root cause or a fix that expands scope beyond the reported bug, surface that scope change and wait for confirmation before proceeding.
-    9. Implement the narrowest fix that addresses the confirmed root cause.
-    10. Check impact radius on callers, consumers, shared types, and adjacent flows.
-    11. Validate: run tests, typecheck, lint, and smoke-check at least one adjacent path.
-    12. Output post-fix summary: What Changed, Impact Check, Warnings, Validation status, Confidence, Post-fix Logic Summary, Residual Risk.
-    13. Do not commit or tag the changes unless explicitly asked.
+    9. If tracing reveals a second independent root cause or a fix that expands scope beyond the reported bug, surface that scope change and wait for confirmation before proceeding.
+    10. If the work is High/Critical or touches auth, money, destructive operations, data repair/migration, multi-tenant boundaries, or compatibility-sensitive contracts, stop and wait for explicit approval after the pre-fix summary.
+    11. Implement the narrowest fix that addresses the confirmed root cause.
+    12. Check impact radius on callers, consumers, shared types, and adjacent flows using code search or direct references.
+    13. Validate with a minimal matrix: bug path, adjacent path, and a boundary or failure path when feasible.
+    14. Review the fix as if another engineer wrote it. Write findings first, severity-based (Critical/Major/Minor/Suggestion), and only Pass if no Critical/Major findings remain.
+    15. If review findings change the root-cause hypothesis, risk level, invariants, fix-vs-containment decision, or blast radius, jump back to the pre-fix planning gate, issue an updated pre-fix summary, and wait for approval again when required.
+    16. If the verdict is Revise, repair the findings, then rerun impact check, validation, and review. Limit this rework loop to 2 review-driven revisions.
+    17. Output post-fix summary: What Changed, Impact Check, Warnings, Validation, Confidence, Review Verdict, Review Cycle, Review Findings, Rework Performed, Rollback / Containment, Observability, Post-fix Logic Summary, Residual Risk.
+    18. Do not commit or tag the changes unless explicitly asked.
 
 policy:
   allow_implicit_invocation: false
