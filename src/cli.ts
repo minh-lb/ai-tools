@@ -252,8 +252,8 @@ export async function runCli(): Promise<void> {
       printSectionHeader(
         "Install libs for AI",
         libsResult.mode === "install"
-          ? "Preparing upstream RTK and ICM installers."
-          : "Preparing safe RTK and ICM removal steps."
+          ? "Preparing upstream RTK, ICM, and ECC installers."
+          : "Preparing safe RTK, ICM, and ECC removal steps."
       );
       printLibInstallSelectionSummary(plan);
 

@@ -1,6 +1,6 @@
 export type Agent = "codex" | "claude";
 export type InstallLocation = "global" | "local";
-export type AiLibrary = "rtk" | "icm";
+export type AiLibrary = "rtk" | "icm" | "ecc";
 export type McpServer = "antd" | "gitlab" | "github" | "figma" | "shadcn";
 export type McpMode = "install" | "uninstall";
 export type SupportedOs = "mac" | "linux";
@@ -159,7 +159,7 @@ export interface LibInstallStep {
   title: string;
   description: string;
   command: string;
-  runner?: "shell" | "remove-binary" | "cleanup-icm-local";
+  runner?: "shell" | "remove-binary" | "cleanup-icm-local" | "setup-ecc-claude" | "setup-ecc-codex";
   path?: string;
 }
 

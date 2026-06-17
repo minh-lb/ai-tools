@@ -64,14 +64,20 @@ function currentTabItems(state: WizardState): TabItem[] {
     return [
       {
         id: "rtk",
-        label: "Install rtk-ai/rtk",
+        label: "rtk-ai/rtk",
         description: "Token-saving CLI proxy with agent-specific init for Codex and Claude.",
         kind: "library"
       },
       {
         id: "icm",
-        label: "Install rtk-ai/icm",
+        label: "rtk-ai/icm",
         description: "Persistent agent memory with MCP, CLI instructions, rules, and hooks.",
+        kind: "library"
+      },
+      {
+        id: "ecc",
+        label: "affaan-m/ECC",
+        description: "Run ECC's upstream full manual installer with notes about Codex sync and Claude plugin overlap.",
         kind: "library"
       }
     ];
@@ -494,7 +500,7 @@ export async function runAiLibsWizard(): Promise<{
         review: "Review selections"
       }[state.activeTab];
       const stepDescription = {
-        libraries: "Choose one or both upstream AI libraries to install.",
+        libraries: "Choose one or more upstream AI libraries to install.",
         agents: "Pick which agent integrations should be configured.",
         os: "Choose the current host OS for sanity checking before install.",
         scope: "Choose whether setup should target global config or project-local files.",
@@ -513,7 +519,7 @@ export async function runAiLibsWizard(): Promise<{
       headerBox.setContent(
         renderBannerHeader(
           "Install libs for AI",
-          "Run upstream installers and init commands for RTK and ICM.",
+          "Run upstream installers and init commands for RTK, ICM, and ECC.",
           [
             { label: `${state.selectedLibraries.size} libraries`, tone: "accent" },
             { label: `${state.selectedAgents.size} agents`, tone: "success" },

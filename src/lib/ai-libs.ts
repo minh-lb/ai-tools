@@ -1,4 +1,4 @@
-import { rm, stat, writeFile, readFile } from "node:fs/promises";
+import { mkdtemp, readFile, rm, stat, writeFile } from "node:fs/promises";
 import * as os from "node:os";
 import * as path from "node:path";
 import { spawn } from "node:child_process";
@@ -14,6 +14,8 @@ import type {
 
 const ICM_INSTALL_COMMAND = "curl -fsSL https://raw.githubusercontent.com/rtk-ai/icm/main/install.sh | sh";
 const RTK_INSTALL_COMMAND = "curl -fsSL https://raw.githubusercontent.com/rtk-ai/rtk/refs/heads/master/install.sh | sh";
+const ECC_REPO_URL = "https://github.com/affaan-m/ECC.git";
+const ECC_TEMP_DIR_PREFIX = "ai-tools-ecc-";
 const ICM_MARKER_START = "<!-- icm:start -->";
 const ICM_MARKER_END = "<!-- icm:end -->";
 
@@ -199,6 +201,36 @@ function buildIcmUninstallSteps(scope: InstallScope): LibInstallStep[] {
   return [];
 }
 
+function buildEccInstallSteps(agents: Agent[]): LibInstallStep[] {
+  const steps: LibInstallStep[] = [];
+
+  if (agents.includes("claude")) {
+    steps.push({
+      id: "ecc-install-claude",
+      library: "ecc",
+      phase: "install",
+      title: "Set up ECC for Claude",
+      description: "Clone the upstream ECC repo into a temporary directory, install its dependencies, and run the documented full manual Claude setup.",
+      command: "temporary clone of affaan-m/ECC -> npm install -> bash ./install.sh --profile full",
+      runner: "setup-ecc-claude"
+    });
+  }
+
+  if (agents.includes("codex")) {
+    steps.push({
+      id: "ecc-install-codex",
+      library: "ecc",
+      phase: "configure",
+      title: "Set up ECC for Codex",
+      description: "Clone the upstream ECC repo into a temporary directory, install its dependencies, and run the documented Codex sync script.",
+      command: "temporary clone of affaan-m/ECC -> npm install -> bash ./scripts/sync-ecc-to-codex.sh",
+      runner: "setup-ecc-codex"
+    });
+  }
+
+  return steps;
+}
+
 export function buildLibInstallPlan(input: {
   mode: LibraryMode;
   os: SupportedOs;
@@ -247,10 +279,23 @@ export function buildLibInstallPlan(input: {
           notes.push("ICM local uninstall only strips ICM-managed blocks from project files in the current directory and leaves global ICM config untouched.");
         }
       }
+      continue;
+    }
+
+    if (library === "ecc") {
+      if (input.mode === "install") {
+        steps.push(...buildEccInstallSteps(agents));
+        notes.push("ECC install in this CLI clones the upstream repo into a temporary directory and runs the documented repo-based setup flow for each selected agent. It is user-level and not constrained to the selected scope.");
+        notes.push("If ECC is already installed in Claude via the upstream plugin path, do not run the full installer again here. Upstream warns that stacking both methods can duplicate skills, commands, and hooks.");
+        notes.push("For Codex, this CLI uses the upstream repo-based sync flow (`npm install && bash scripts/sync-ecc-to-codex.sh`) instead of `npx ecc-install`, because the package name and installer binary are published separately (`ecc-universal` vs `ecc-install`).");
+      } else {
+        notes.push("Automatic ECC uninstall is not supported in this CLI. Upstream documents repo-root lifecycle commands such as `node scripts/uninstall.js --dry-run` followed by `node scripts/uninstall.js` for manual cleanup.");
+        notes.push("If ECC was installed through the Claude plugin path, remove the plugin first and then delete only the specific ECC rule folders you copied manually.");
+      }
     }
   }
 
-  if (input.mode === "install") {
+  if (input.mode === "install" && libraries.some((library) => library === "rtk" || library === "icm")) {
     notes.unshift("Binary install still uses the upstream installer and writes to the user's bin directory even when scope is local.");
   }
 
@@ -295,7 +340,35 @@ export async function executeLibInstallPlan(input: {
       continue;
     }
 
+    if (step.runner === "setup-ecc-claude") {
+      await runEccRepoSetup("claude", input.cwd);
+      continue;
+    }
+
+    if (step.runner === "setup-ecc-codex") {
+      await runEccRepoSetup("codex", input.cwd);
+      continue;
+    }
+
     await runShellCommand(step.command, input.cwd);
+  }
+}
+
+async function runEccRepoSetup(target: "claude" | "codex", cwd: string): Promise<void> {
+  const tempRoot = await mkdtemp(path.join(os.tmpdir(), ECC_TEMP_DIR_PREFIX));
+
+  try {
+    await runShellCommand(`git clone --depth 1 ${ECC_REPO_URL} "${tempRoot}"`, cwd);
+    await runShellCommand("npm install", tempRoot);
+
+    if (target === "claude") {
+      await runShellCommand("bash ./install.sh --profile full", tempRoot);
+      return;
+    }
+
+    await runShellCommand("bash ./scripts/sync-ecc-to-codex.sh", tempRoot);
+  } finally {
+    await rm(tempRoot, { recursive: true, force: true });
   }
 }
 

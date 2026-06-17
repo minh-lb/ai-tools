@@ -70,6 +70,37 @@ test("buildLibInstallPlan maps local install scope to per-project ICM init", () 
   assert.ok(plan.notes.some((note) => note.includes("user's bin directory")));
 });
 
+test("buildLibInstallPlan adds ECC install step with upstream safety notes", () => {
+  const plan = buildLibInstallPlan({
+    mode: "install",
+    os: "mac",
+    scope: "local",
+    agents: ["claude", "codex"],
+    libraries: ["ecc"],
+    platform: "darwin"
+  });
+
+  assert.deepEqual(
+    plan.steps.map((step) => ({ id: step.id, runner: step.runner, command: step.command })),
+    [
+      {
+        id: "ecc-install-claude",
+        runner: "setup-ecc-claude",
+        command: "temporary clone of affaan-m/ECC -> npm install -> bash ./install.sh --profile full"
+      },
+      {
+        id: "ecc-install-codex",
+        runner: "setup-ecc-codex",
+        command: "temporary clone of affaan-m/ECC -> npm install -> bash ./scripts/sync-ecc-to-codex.sh"
+      }
+    ]
+  );
+  assert.ok(plan.notes.some((note) => note.includes("clones the upstream repo into a temporary directory")));
+  assert.ok(plan.notes.some((note) => note.includes("duplicate skills, commands, and hooks")));
+  assert.ok(plan.notes.some((note) => note.includes("ecc-universal")));
+  assert.equal(plan.notes.some((note) => note.includes("user's bin directory")), false);
+});
+
 test("buildLibInstallPlan maps local uninstall to scoped cleanup", () => {
   const plan = buildLibInstallPlan({
     mode: "uninstall",
@@ -90,6 +121,21 @@ test("buildLibInstallPlan maps local uninstall to scoped cleanup", () => {
   );
   assert.ok(plan.notes.some((note) => note.includes("leaves the global binary in place")));
   assert.ok(plan.notes.some((note) => note.includes("leaves global ICM config untouched")));
+});
+
+test("buildLibInstallPlan disables automatic ECC uninstall", () => {
+  const plan = buildLibInstallPlan({
+    mode: "uninstall",
+    os: "linux",
+    scope: "global",
+    agents: ["claude"],
+    libraries: ["ecc"],
+    platform: "linux"
+  });
+
+  assert.deepEqual(plan.steps, []);
+  assert.ok(plan.notes.some((note) => note.includes("Automatic ECC uninstall is not supported")));
+  assert.ok(plan.notes.some((note) => note.includes("node scripts/uninstall.js --dry-run")));
 });
 
 test("buildLibInstallPlan disables automatic global ICM uninstall", () => {

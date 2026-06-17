@@ -35,6 +35,12 @@ Controls:
 `Install project docs`
 - copies the contents inside the selected docs folder into the current working directory
 
+`Install libs for AI`
+- opens a guided workflow with tabs for `Libraries`, `Agents`, `OS`, `Scope`, `Mode`, and `Review`
+- supports `rtk-ai/rtk`, `rtk-ai/icm`, and `affaan-m/ECC`
+- runs the current upstream install flow for each selected library and prints safety notes when an upstream flow is broader than the selected agent or scope
+- for `ECC`, clones the upstream repo into a temporary directory and runs the documented repo-based setup flow for the selected agent, with warnings about the documented Claude plugin overlap
+
 `Install mcp`
 - opens a guided workflow with tabs for `Select MCP`, `Agent`, `Mode`, and `Review`
 - supports `Ant Design`, `GitLab`, `GitHub`, `Figma`, and `Shadcn`

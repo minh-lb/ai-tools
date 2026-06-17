@@ -33,7 +33,7 @@ const MENU_ITEMS: EntryMenuItem[] = [
   {
     id: "install-libs",
     label: "Install libs for AI",
-    description: "Install RTK and ICM, then run agent-specific setup for Codex and Claude.",
+    description: "Install RTK, ICM, or ECC, then run the supported setup flow for Codex and Claude.",
     meta: "Mac + Linux"
   },
   {
