@@ -45,6 +45,8 @@ feat: changes
 
 The PR title is the squash commit message. Treat it with the same care as a commit summary line.
 
+If the current PR title does not satisfy `<type>(<scope>): <summary>`, do not proceed with the merge. Propose a corrected title, explain why it fails, and wait for confirmation before continuing.
+
 ## When not to squash
 
 Do not squash by default when preserving the curated commit sequence matters more than compressing history.

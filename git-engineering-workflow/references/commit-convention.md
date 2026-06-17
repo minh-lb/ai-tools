@@ -105,6 +105,8 @@ For multi-module or repo-wide changes:
 
 If a single commit touches multiple subsystems with no clear dominant scope, split it into one commit per scope rather than using a vague or catch-all scope. One commit should have one clear scope.
 
+If two scopes are equally valid and the correct domain boundary is not obvious from the diff alone — for example, a change that could belong to either `payments` or `billing` — ask the user which scope is correct rather than guessing. An incorrect scope misleads future readers and breaks changelog tooling.
+
 Do not invent a one-off scope for every commit. Reuse stable scope names across the repository.
 
 Good:
@@ -572,6 +574,4 @@ Before committing:
 
 AI-generated code should be held to the same or higher bar than human-written code because it often changes more files than necessary.
 
-Do not add co-author attribution for AI assistance. Commit messages and squash messages must not include any `Co-authored-by` or `co-author` lines.
-
-Do not add co-author attribution for AI assistance. The commit author should remain the human owner of the change, and commit messages or squash messages must not include any `co-author` attribution such as `Co-authored-by`.
+Do not add co-author attribution for AI assistance. The commit author must remain the human owner of the change. Commit messages and squash messages must not include any `Co-authored-by` or co-author lines — not in the summary, body, or footer.

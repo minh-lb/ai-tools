@@ -1,12 +1,14 @@
 # Git Engineering Workflow
 
-Skill cho GitFlow-style repositories. Dùng khi cần agent thực hiện bất kỳ tác vụ Git nào liên quan đến branch, commit, merge, release, hoặc conflict.
+Skill for GitFlow-style repositories. Use it whenever an agent needs to perform any Git task involving branches, commits, merges, PRs, releases, conflicts, or worktrees.
+
+This skill activates automatically on any commit or amend request — no explicit invocation needed.
 
 ---
 
-## Các trường hợp sử dụng
+## Use cases
 
-### Tạo branch mới
+### Create a branch
 
 ```text
 Use git-engineering-workflow to create a branch for adding a payment webhook feature.
@@ -18,7 +20,7 @@ Use git-engineering-workflow to create a hotfix branch for the login timeout bug
 
 ---
 
-### Đặt tên branch
+### Name or validate a branch
 
 ```text
 Use git-engineering-workflow to suggest the correct branch name for a task that updates the CI pipeline.
@@ -30,11 +32,21 @@ Use git-engineering-workflow to validate whether the branch name "feature/misc-u
 
 ---
 
-### Viết commit message
+### Commit
 
 ```text
-Use git-engineering-workflow to write a commit message for these staged changes that add invoice export.
+commit
 ```
+
+```text
+commit only the staged files
+```
+
+```text
+commit just the changes in src/
+```
+
+### Validate a commit message
 
 ```text
 Use git-engineering-workflow to review whether this commit message follows our convention: "fix: bug fix".
@@ -44,9 +56,13 @@ Use git-engineering-workflow to review whether this commit message follows our c
 Use git-engineering-workflow to choose the correct commit type for a change that removes duplicate webhook processing.
 ```
 
+```text
+Use git-engineering-workflow to stop and split the staged changes if they should not be committed as one logical commit.
+```
+
 ---
 
-### Chuẩn bị PR
+### Prepare a PR
 
 ```text
 Use git-engineering-workflow to review whether this PR is ready to merge: branch name, commit messages, and checklist.
@@ -58,7 +74,7 @@ Use git-engineering-workflow to write a PR title for squash merging the feature/
 
 ---
 
-### Sync branch với develop
+### Sync a branch
 
 ```text
 Use git-engineering-workflow to bring feature/user-authentication up to date with develop.
@@ -70,7 +86,7 @@ Use git-engineering-workflow to sync the hotfix/payment-timeout branch with main
 
 ---
 
-### Giải quyết merge conflict
+### Resolve a merge conflict
 
 ```text
 Use git-engineering-workflow to guide me through resolving the merge conflict on feature/checkout-refactor.
@@ -82,7 +98,7 @@ Use git-engineering-workflow to decide which side to keep when resolving a confl
 
 ---
 
-### Chạy nhiều task song song với worktree
+### Run parallel tasks with worktrees
 
 ```text
 Use git-engineering-workflow to set up a worktree for working on bugfix/order-sync while feature/payment-webhook is still in progress.
@@ -94,7 +110,7 @@ Use git-engineering-workflow to list and clean up worktrees that are no longer n
 
 ---
 
-### Cắt release branch
+### Cut a release branch
 
 ```text
 Use git-engineering-workflow to create the release branch for version 2.3.0.
@@ -118,7 +134,7 @@ Use git-engineering-workflow to verify that the hotfix has been merged into both
 
 ---
 
-### Tách commit hoặc dọn dẹp lịch sử local
+### Split commits or clean up local history
 
 ```text
 Use git-engineering-workflow to split the staged changes into separate commits by logical boundary.
@@ -130,7 +146,7 @@ Use git-engineering-workflow to clean up the wip commit before pushing, without 
 
 ---
 
-### Kiểm tra Git hygiene trước khi commit
+### Check Git hygiene before committing
 
 ```text
 Use git-engineering-workflow to check the staged diff for debug artifacts, secrets, or unintended files before committing.
@@ -142,7 +158,27 @@ Use git-engineering-workflow to review AI-generated code before staging it.
 
 ---
 
-### Recovery và troubleshooting
+### Revert a merged commit
+
+```text
+Use git-engineering-workflow to revert a squash-merged commit that was already pushed to develop.
+```
+
+```text
+Use git-engineering-workflow to revert a merge commit on main using the correct parent flag.
+```
+
+---
+
+### Unstage accidentally staged files
+
+```text
+Use git-engineering-workflow to remove a file from the staging area without discarding its changes.
+```
+
+---
+
+### Recovery and troubleshooting
 
 ```text
 Use git-engineering-workflow to recover a commit that was accidentally overwritten.
@@ -158,8 +194,8 @@ Use git-engineering-workflow to decide what to do when a merge is going wrong an
 
 ---
 
-## Không dùng skill này khi
+## When not to use this skill
 
-- Repository release trực tiếp từ `main` (không có `develop`)
-- Repository dùng trunk-based development (không có release branch)
-- Repository không có integration branch
+- Repository releases directly from `main` with no `develop` branch
+- Repository uses trunk-based development with no release branches
+- Repository has no integration branch

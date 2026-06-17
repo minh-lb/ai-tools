@@ -73,6 +73,55 @@ Then compare local and remote history carefully, re-apply the intended changes a
 
 Do not push review burden downstream. Split the work into smaller branches or separate commits before requesting review.
 
+## Revert a commit that was already merged
+
+Do not use `git reset` — the merge is already in shared history.
+
+### Revert a squash-merged commit (one commit on develop)
+
+```bash
+git checkout develop
+git pull origin develop
+git revert <sha>
+git push origin develop
+```
+
+### Revert a merge commit (non-squash, e.g. hotfix or release merge)
+
+A merge commit has two parents. Use `-m 1` to tell Git which parent is the mainline:
+
+```bash
+git revert -m 1 <merge-sha>
+```
+
+`-m 1` keeps the first parent (the branch you merged into) and reverts the changes from the merged branch. If unsure which parent is mainline, run `git log --oneline --graph` to verify.
+
+After reverting, push to the correct branch and open a PR if the branch is shared.
+
+If the reverted feature needs to be re-applied later, you must revert the revert commit first — otherwise Git will see the changes as already applied and skip them.
+
+## Accidentally staged the wrong files
+
+Remove a file from the staging area without discarding changes:
+
+```bash
+git restore --staged <file>
+```
+
+Or unstage all staged files at once:
+
+```bash
+git restore --staged .
+```
+
+The working directory is not touched — changes remain but are no longer staged.
+
+If `git restore --staged` is not available (older Git), use:
+
+```bash
+git reset HEAD <file>
+```
+
 ## Golden Rules
 
 1. One task equals one branch.
