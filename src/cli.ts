@@ -13,12 +13,20 @@ import {
 } from "./lib/install.js";
 import { loadProjectDocsCatalog } from "./lib/project-docs-catalog.js";
 import { loadSelectionCatalog, resolveSelectionItems } from "./lib/selection-catalog.js";
+import {
+  buildMcpInstallPlan,
+  createMcpUninstallBackups,
+  executeMcpInstallPlan,
+  inspectMcpUninstallSafety,
+  verifyMcpUninstallExecutionSafety
+} from "./lib/mcp.js";
 import { blessedConfirm } from "./lib/tui-utils.js";
 import { runAiLibsWizard } from "./lib/tui-ai-libs.js";
 import { runEntryMenu } from "./lib/tui-entry-menu.js";
+import { runMcpWizard } from "./lib/tui-mcp.js";
 import { runProjectDocsWizard } from "./lib/tui-project-docs.js";
 import { runTabbedWizard } from "./lib/tui-wizard.js";
-import type { Agent, InstallLocation, LibInstallPlan, SelectionCatalog } from "./lib/types.js";
+import type { Agent, InstallLocation, LibInstallPlan, McpInstallPlan, McpServer, SelectionCatalog } from "./lib/types.js";
 
 const ANSI = {
   reset: "\u001B[0m",
@@ -209,6 +217,15 @@ function printLibInstallSelectionSummary(plan: LibInstallPlan): void {
   ]);
 }
 
+function printMcpInstallSelectionSummary(plan: McpInstallPlan): void {
+  printLabeledRows("Selected items", [
+    ["Mode", plan.mode],
+    ["Agents", plan.agents.length ? plan.agents.join(", ") : "none"],
+    ["MCPs", plan.servers.length ? plan.servers.join(", ") : "none"],
+    ["OS", plan.os === "mac" ? "MacOS" : "Linux"]
+  ]);
+}
+
 export async function runCli(): Promise<void> {
   while (true) {
     const entryAction = await runEntryMenu();
@@ -269,6 +286,131 @@ export async function runCli(): Promise<void> {
         plan.steps.map((step) => step.title),
         "success"
       );
+      return;
+    }
+
+    if (entryAction === "install-mcp") {
+      const mcpResult = await runMcpWizard();
+
+      if ("backToMenu" in mcpResult) {
+        continue;
+      }
+
+      const plan = buildMcpInstallPlan({
+        mode: mcpResult.mode,
+        agents: mcpResult.agents,
+        servers: mcpResult.servers,
+        os: mcpResult.os
+      });
+      const uninstallSafety = plan.mode === "uninstall"
+        ? await inspectMcpUninstallSafety({
+          cwd: process.cwd(),
+          plan
+        })
+        : null;
+      const effectiveServers: McpServer[] = uninstallSafety
+        ? [...new Set(uninstallSafety.effectiveSteps.map((s) => s.server))]
+        : plan.servers;
+      const effectivePlan = uninstallSafety
+        ? {
+          ...buildMcpInstallPlan({
+            mode: plan.mode,
+            agents: plan.agents,
+            servers: effectiveServers,
+            os: plan.os
+          }),
+          steps: uninstallSafety.effectiveSteps
+        }
+        : plan;
+
+      printSectionHeader(
+        "Install mcp",
+        plan.mode === "install"
+          ? "Preparing MCP registration commands from current official setup docs."
+          : "Preparing MCP removal commands from current official setup docs."
+      );
+      printMcpInstallSelectionSummary(effectivePlan);
+
+      if (effectivePlan.notes.length > 0) {
+        printBulletPanel("Notes", effectivePlan.notes, "warning");
+      }
+
+      if (effectivePlan.postInstallConfig.length > 0) {
+        printBulletPanel("Required configuration after install", effectivePlan.postInstallConfig, "warning");
+      }
+
+      if (uninstallSafety?.safeNotes.length) {
+        printBulletPanel("Uninstall safety check", uninstallSafety.safeNotes, "warning");
+      }
+
+      if (uninstallSafety?.skippedSteps.length) {
+        printBulletPanel(
+          "Skipped uninstall steps",
+          uninstallSafety.skippedSteps.map((item) => item.reason),
+          "warning"
+        );
+      }
+
+      printBulletPanel(
+        `Execution plan (${effectivePlan.steps.length})`,
+        effectivePlan.steps.map((step) => `${step.title}: ${step.command}`),
+        "muted"
+      );
+
+      if (effectivePlan.sources.length > 0) {
+        printBulletPanel(
+          "Sources",
+          effectivePlan.sources.map((source) => `${source.label}: ${source.url}`),
+          "muted"
+        );
+      }
+
+      printStatusLine(
+        effectivePlan.mode === "install" ? "install" : "uninstall",
+        effectivePlan.mode === "install"
+          ? "Running selected MCP setup commands..."
+          : "Running selected MCP removal commands..."
+      );
+
+      if (uninstallSafety?.effectiveSteps.length) {
+        const backupPaths = await createMcpUninstallBackups({
+          cwd: process.cwd(),
+          steps: uninstallSafety.effectiveSteps
+        });
+
+        if (backupPaths.length > 0) {
+          printBulletPanel(
+            "Config backups created",
+            backupPaths,
+            "warning"
+          );
+        }
+
+        await verifyMcpUninstallExecutionSafety({
+          cwd: process.cwd(),
+          originalPlan: plan,
+          expectedSteps: uninstallSafety.effectiveSteps
+        });
+        printStatusLine("verify", "Final uninstall verification passed.", "warning");
+      }
+
+      await executeMcpInstallPlan({
+        cwd: process.cwd(),
+        plan: effectivePlan,
+        onProgress(step) {
+          printStatusLine("run", `${step.title} -> ${step.command}`, "muted");
+        }
+      });
+
+      printBulletPanel(
+        `${effectivePlan.mode === "install" ? "Install" : "Uninstall"} complete (${effectivePlan.steps.length})`,
+        effectivePlan.steps.map((step) => step.title),
+        "success"
+      );
+
+      if (effectivePlan.postInstallConfig.length > 0) {
+        printBulletPanel("Next configuration steps", effectivePlan.postInstallConfig, "warning");
+      }
       return;
     }
 

@@ -1,6 +1,8 @@
 export type Agent = "codex" | "claude";
 export type InstallLocation = "global" | "local";
 export type AiLibrary = "rtk" | "icm";
+export type McpServer = "antd" | "gitlab" | "github" | "figma" | "shadcn";
+export type McpMode = "install" | "uninstall";
 export type SupportedOs = "mac" | "linux";
 export type InstallScope = "global" | "local";
 export type LibraryMode = "install" | "uninstall";
@@ -170,6 +172,43 @@ export interface LibInstallPlan {
   libraries: AiLibrary[];
   steps: LibInstallStep[];
   notes: string[];
+}
+
+export interface McpInstallStep {
+  id: string;
+  server: McpServer;
+  agent: Agent;
+  phase: "install" | "configure" | "authenticate" | "uninstall";
+  title: string;
+  description: string;
+  command: string;
+}
+
+export interface McpInstallSource {
+  server: McpServer;
+  label: string;
+  url: string;
+}
+
+export interface McpInstallPlan {
+  mode: McpMode;
+  agents: Agent[];
+  servers: McpServer[];
+  os: SupportedOs;
+  steps: McpInstallStep[];
+  notes: string[];
+  postInstallConfig: string[];
+  sources: McpInstallSource[];
+}
+
+export interface McpUninstallSafetyReport {
+  effectiveSteps: McpInstallStep[];
+  safeNotes: string[];
+  skippedSteps: Array<{
+    step: McpInstallStep;
+    reason: string;
+  }>;
+  backupTargets: string[];
 }
 
 export interface ProjectDocsPlannedInstallation {

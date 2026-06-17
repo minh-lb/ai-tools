@@ -4,7 +4,8 @@ import { runCli } from "../cli.js";
 
 function isCancellationMessage(message: string): boolean {
   return message === "Installation cancelled."
-    || message === "Installation cancelled because existing targets would be overwritten.";
+    || message === "Installation cancelled because existing targets would be overwritten."
+    || message === "MCP workflow cancelled.";
 }
 
 runCli().catch((error: unknown) => {

@@ -8,7 +8,7 @@ import {
   renderListRow
 } from "./tui-utils.js";
 
-export type EntryMenuAction = "install-skills" | "install-project-docs" | "install-libs" | "cancel";
+export type EntryMenuAction = "install-skills" | "install-project-docs" | "install-libs" | "install-mcp" | "cancel";
 
 interface EntryMenuItem {
   id: EntryMenuAction;
@@ -35,6 +35,12 @@ const MENU_ITEMS: EntryMenuItem[] = [
     label: "Install libs for AI",
     description: "Install RTK and ICM, then run agent-specific setup for Codex and Claude.",
     meta: "Mac + Linux"
+  },
+  {
+    id: "install-mcp",
+    label: "Install mcp",
+    description: "Add or remove Ant Design, GitLab, GitHub, and Figma MCP servers for Codex or Claude.",
+    meta: "Codex + Claude"
   },
   {
     id: "cancel",
