@@ -372,7 +372,7 @@ test("resolveSelectionItems supports direct branch folders without a manifest", 
   ]);
 });
 
-test("loadSelectionCatalog includes the bugfix skill in installer choices", async () => {
+test("loadSelectionCatalog includes curated local skills in installer choices", async () => {
   const catalog = await loadSelectionCatalog({
     packageRoot: process.cwd(),
     selectionCatalogPath: "selection-catalog.json",
@@ -395,6 +395,30 @@ test("loadSelectionCatalog includes the bugfix skill in installer choices", asyn
       description: "Folder: bugfix",
       sourceBranch: "agent-skills",
       sourcePath: "bugfix",
+      targets: undefined
+    }
+  );
+
+  assert.deepEqual(
+    catalog.skills.find((skill) => skill.id === "trace-bug"),
+    {
+      id: "trace-bug",
+      label: "Trace bug",
+      description: "Folder: trace-bug",
+      sourceBranch: "agent-skills",
+      sourcePath: "trace-bug",
+      targets: undefined
+    }
+  );
+
+  assert.deepEqual(
+    catalog.skills.find((skill) => skill.id === "business-analyst"),
+    {
+      id: "business-analyst",
+      label: "Business analyst",
+      description: "Folder: business-analyst",
+      sourceBranch: "agent-skills",
+      sourcePath: "business-analyst",
       targets: undefined
     }
   );

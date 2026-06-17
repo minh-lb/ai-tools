@@ -2,11 +2,32 @@
   "version": 1,
   "skills": [
     {
+      "id": "agent-team",
+      "label": "Agent team",
+      "description": "Folder: agent-team",
+      "sourceBranch": "agent-skills",
+      "sourcePath": "agent-team"
+    },
+    {
       "id": "bugfix",
       "label": "Bugfix",
       "description": "Folder: bugfix",
       "sourceBranch": "agent-skills",
       "sourcePath": "bugfix"
+    },
+    {
+      "id": "trace-bug",
+      "label": "Trace bug",
+      "description": "Folder: trace-bug",
+      "sourceBranch": "agent-skills",
+      "sourcePath": "trace-bug"
+    },
+    {
+      "id": "business-analyst",
+      "label": "Business analyst",
+      "description": "Folder: business-analyst",
+      "sourceBranch": "agent-skills",
+      "sourcePath": "business-analyst"
     },
     {
       "id": "git-engineering-workflow",
@@ -21,13 +42,6 @@
       "description": "Folder: review-code",
       "sourceBranch": "agent-skills",
       "sourcePath": "review-code"
-    },
-    {
-      "id": "agent-team",
-      "label": "Agent team",
-      "description": "Folder: agent-team",
-      "sourceBranch": "agent-skills",
-      "sourcePath": "agent-team"
     }
   ]
 }
