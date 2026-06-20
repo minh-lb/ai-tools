@@ -200,7 +200,6 @@ function formatListItem(
       active: isCursorRow,
       selected: state.reviewAction === item.id,
       label: item.label,
-      description: item.description,
       index
     });
   }
@@ -209,7 +208,6 @@ function formatListItem(
     active: isCursorRow,
     selected: isItemSelected(item, state),
     label: item.label,
-    description: item.description,
     index
   });
 }

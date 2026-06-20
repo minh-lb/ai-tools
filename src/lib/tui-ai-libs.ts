@@ -78,7 +78,7 @@ function currentTabItems(state: WizardState): TabItem[] {
       {
         id: "ecc",
         label: "◈  affaan-m/ECC",
-        description: "Run ECC's upstream full manual installer with notes about Codex sync and Claude plugin overlap.",
+        description: "Coding rules, agent instructions, hooks, and skills library for Claude Code and Codex.",
         kind: "library"
       }
     ];
@@ -89,13 +89,13 @@ function currentTabItems(state: WizardState): TabItem[] {
       {
         id: "codex",
         label: "◇  Codex",
-        description: "Configure the OpenAI Codex integration paths when supported upstream.",
+        description: "Apply library setup to OpenAI Codex config, AGENTS.md, and agent-specific directories.",
         kind: "agents"
       },
       {
         id: "claude",
         label: "◇  Claude",
-        description: "Configure the Claude integration paths when supported upstream.",
+        description: "Apply library setup to Claude Code config, CLAUDE.md, and agent-specific directories.",
         kind: "agents"
       }
     ];
@@ -129,7 +129,7 @@ function currentTabItems(state: WizardState): TabItem[] {
       {
         id: "local",
         label: "⊕  Local",
-        description: "Use project-scoped setup where the upstream library supports it.",
+        description: "Install into the project's own config dirs (.claude/, .codex/) instead of the home directory.",
         kind: "scope"
       }
     ];
@@ -264,7 +264,6 @@ function formatListItem(
       active: isCursorRow,
       selected: state.reviewAction === item.id,
       label: item.label,
-      description: item.description,
       index
     });
   }
@@ -273,7 +272,6 @@ function formatListItem(
     active: isCursorRow,
     selected: isItemSelected(item, state),
     label: item.label,
-    description: item.description,
     index
   });
 }

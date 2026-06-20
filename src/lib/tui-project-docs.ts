@@ -112,16 +112,14 @@ function formatListItem(item: TabItem, state: ProjectDocsState, isCursorRow: boo
     return renderListRow({
       active: isCursorRow,
       selected: state.reviewAction === item.id,
-      label: item.label,
-      description: item.description
+      label: item.label
     });
   }
 
   return renderListRow({
     active: isCursorRow,
     selected: isItemSelected(item, state),
-    label: item.label,
-    description: item.description
+    label: item.label
   });
 }
 
