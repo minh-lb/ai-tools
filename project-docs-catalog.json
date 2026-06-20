@@ -4,14 +4,14 @@
     {
       "id": "laravel-ddd",
       "label": "Laravel DDD",
-      "description": "Folder: laravel-ddd",
+      "description": "Domain-Driven Design conventions for Laravel — modules, bounded contexts, value objects, and repository patterns.",
       "sourceBranch": "project-docs",
       "sourcePath": "laravel-ddd"
     },
     {
       "id": "nextjs",
       "label": "NextJS",
-      "description": "Folder: nextjs",
+      "description": "Next.js project structure, routing conventions, data fetching patterns, and deployment configuration.",
       "sourceBranch": "project-docs",
       "sourcePath": "nextjs"
     }
