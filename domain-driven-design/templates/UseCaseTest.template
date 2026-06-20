@@ -1,0 +1,27 @@
+<?php declare(strict_types=1);
+
+use Illuminate\Support\Facades\Event;
+use Modules\{Module}\Application\DTOs\{Name}DTO;
+use Modules\{Module}\Application\UseCases\{Name}UseCase;
+use Modules\{Module}\Domain\Entities\{Entity};
+
+uses(Tests\TestCase::class, Illuminate\Foundation\Testing\RefreshDatabase::class);
+
+beforeEach(function (): void {
+    Event::fake();
+});
+
+test('{name} persists entity and dispatches domain events', function (): void {
+    $dto = {Name}DTO::fromArray([
+        'id' => 'test-uuid',
+        // Add all DTO fields.
+    ]);
+
+    /** @var {Name}UseCase $useCase */
+    $useCase = app({Name}UseCase::class);
+    $result = $useCase->handle($dto);
+
+    expect($result)->toBeInstanceOf({Entity}::class);
+    $this->assertDatabaseHas('{table}', ['id' => $result->id]);
+    // Event::assertDispatched({EventClass}::class);
+});

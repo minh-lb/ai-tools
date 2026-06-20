@@ -8,10 +8,7 @@ use ReflectionClass;
 
 abstract class BaseDTO
 {
-    /**
-     * Derives validation rules from #[Rules] attributes on constructor parameters.
-     * Interfaces/FormRequests perform validation before constructing DTOs.
-     */
+    // Derives validation rules from #[Rules] PHP attributes on constructor parameters via reflection.
     public static function rules(): array
     {
         $rules = [];

@@ -1,0 +1,28 @@
+<?php declare(strict_types=1);
+
+uses(Tests\TestCase::class, Illuminate\Foundation\Testing\RefreshDatabase::class);
+
+beforeEach(function (): void {
+    // Required: Request::authorize() returns $this->user() !== null by default.
+    $this->actingAs(\App\Models\User::factory()->create());
+});
+
+test('{name} returns created response for valid payload', function (): void {
+    $response = $this->postJson('{api_route}', [
+        // Add fields matching {Name}DTO rules.
+    ]);
+
+    $response
+        ->assertCreated()
+        ->assertJsonStructure(['success', 'code', 'message', 'data'])
+        ->assertJsonPath('success', true)
+        ->assertJsonPath('code', '{MODULE}.{ACTION}_SUCCESS');
+});
+
+test('{name} rejects missing required fields', function (): void {
+    $response = $this->postJson('{api_route}', []);
+
+    $response
+        ->assertUnprocessable()
+        ->assertJsonPath('success', false);
+});

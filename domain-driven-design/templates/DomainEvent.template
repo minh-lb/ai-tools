@@ -6,11 +6,13 @@ use DateTimeImmutable;
 
 final class {EventName}
 {
+    public readonly string $eventId;
     public readonly DateTimeImmutable $occurredAt;
 
     public function __construct(
         public readonly string $entityId,
     ) {
+        $this->eventId = bin2hex(random_bytes(16));
         $this->occurredAt = new DateTimeImmutable();
     }
 }

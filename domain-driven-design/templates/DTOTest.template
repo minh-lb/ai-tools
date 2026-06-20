@@ -1,0 +1,23 @@
+<?php declare(strict_types=1);
+
+use Modules\{Module}\Application\DTOs\{Name}DTO;
+
+uses(Tests\TestCase::class);
+
+test('{name} dto maps from array correctly', function (): void {
+    $dto = {Name}DTO::fromArray([
+        'id' => 'test-uuid',
+        // Add all DTO fields.
+    ]);
+
+    expect($dto->id)->toBe('test-uuid');
+    // Assert all other properties.
+});
+
+test('{name} dto exposes validation rules for every constructor property', function (): void {
+    $rules = {Name}DTO::rules();
+
+    expect($rules)->toHaveKey('id');
+    expect($rules['id'])->toContain('required');
+    // Assert rules for all other properties.
+});

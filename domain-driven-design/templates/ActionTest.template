@@ -1,0 +1,31 @@
+<?php declare(strict_types=1);
+
+use Modules\{Module}\Domain\Actions\{Action}Action;
+use Modules\{Module}\Domain\Entities\{Entity};
+use Modules\{Module}\Domain\Repositories\{Entity}Repository;
+
+uses(Tests\TestCase::class); // ensures Mockery teardown after each test
+
+test('{action} applies business rule and persists entity', function (): void {
+    $entity = new {Entity}(id: 'test-uuid');
+    $repository = Mockery::mock({Entity}Repository::class);
+    $repository->shouldReceive('find')->once()->with('test-uuid')->andReturn($entity);
+    $repository->shouldReceive('save')->once()->with($entity);
+
+    $result = (new {Action}Action($repository))->execute(id: 'test-uuid');
+
+    expect($result)->toBeInstanceOf({Entity}::class);
+});
+
+test('{action} records no domain event by default', function (): void {
+    $entity = new {Entity}(id: 'test-uuid');
+    $repository = Mockery::mock({Entity}Repository::class);
+    $repository->shouldReceive('find')->andReturn($entity);
+    $repository->shouldReceive('save');
+
+    $result = (new {Action}Action($repository))->execute(id: 'test-uuid');
+
+    expect($result->releaseEvents())->toBeEmpty();
+    // Uncomment when the action records a domain event:
+    // expect($result->releaseEvents())->toHaveCount(1);
+});

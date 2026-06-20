@@ -1,0 +1,17 @@
+<?php declare(strict_types=1);
+
+namespace Modules\{Module}\Domain\ValueObjects;
+
+final class {ValueObject}
+{
+    public function __construct(
+        public readonly {type} $value,
+    ) {
+        // Validate invariants here; throw \InvalidArgumentException on violation.
+    }
+
+    public function equals(self $other): bool
+    {
+        return $this->value === $other->value;
+    }
+}

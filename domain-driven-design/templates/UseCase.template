@@ -18,6 +18,7 @@ class {Name}UseCase
     {
         $entity = $this->action->execute(
             id: $dto->id,
+            // Pass all DTO fields as primitives or Value Objects — never pass the DTO itself.
         );
 
         foreach ($entity->releaseEvents() as $event) {

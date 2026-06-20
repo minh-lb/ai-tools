@@ -11,8 +11,13 @@ class {Action}Action
         private readonly {Entity}Repository $repository,
     ) {}
 
-    public function execute(string $id): {Entity}
-    {
+    public function execute(
+        string $id,
+        // Add one parameter per domain primitive or Value Object needed for the operation.
+        // CREATE flow: remove $id and generate it inside the action via Str::uuid()->toString().
+    ): {Entity} {
+        // CREATE flow: $entity = new {Entity}(id: \Illuminate\Support\Str::uuid()->toString(), ...primitives);
+        // UPDATE/DELETE flow: $entity = $this->repository->find($id);
         $entity = $this->repository->find($id);
 
         // Core business rules and state transitions live here.

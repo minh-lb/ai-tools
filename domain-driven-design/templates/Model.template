@@ -13,6 +13,7 @@ class {Entity}Model extends Model
     protected $keyType = 'string';
 
     protected $fillable = [
+        // Keep this in sync with RepositoryImpl::toPersistence().
         'id',
     ];
 

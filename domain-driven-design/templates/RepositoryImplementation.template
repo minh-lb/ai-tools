@@ -12,21 +12,34 @@ class {Entity}RepositoryImpl implements {Entity}Repository
     {
         $model = {Entity}Model::query()->findOrFail($id);
 
-        return new {Entity}(
-            id: (string) $model->getAttribute('id'),
-        );
+        return $this->toDomain($model);
     }
 
     public function save({Entity} $entity): void
     {
         {Entity}Model::query()->updateOrCreate(
             ['id' => $entity->id],
-            ['id' => $entity->id],
+            $this->toPersistence($entity),
         );
     }
 
     public function delete(string $id): void
     {
         {Entity}Model::query()->where('id', $id)->delete();
+    }
+
+    private function toDomain({Entity}Model $model): {Entity}
+    {
+        return new {Entity}(
+            id: (string) $model->getAttribute('id'),
+        );
+    }
+
+    private function toPersistence({Entity} $entity): array
+    {
+        return [
+            // Map every persisted field explicitly once the Entity has real state.
+            'id' => $entity->id,
+        ];
     }
 }

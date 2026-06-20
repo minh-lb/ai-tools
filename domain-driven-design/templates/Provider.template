@@ -10,6 +10,7 @@ class {Module}ServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
+        // Add one bind() per entity repository contract in this module.
         $this->app->bind({Entity}Repository::class, {Entity}RepositoryImpl::class);
     }
 }

@@ -1,0 +1,30 @@
+<?php declare(strict_types=1);
+
+use Illuminate\Cache\ArrayStore;
+use Illuminate\Cache\Repository as CacheRepository;
+use Modules\{Module}\Application\DTOs\{Name}DTO;
+use Modules\{Module}\Application\EventHandlers\{EventName}Handler;
+use Modules\{Module}\Application\UseCases\{Name}UseCase;
+use Modules\{SourceModule}\Domain\Events\{EventName};
+
+uses(Tests\TestCase::class); // ensures Mockery teardown after each test
+
+test('{event} handler processes event on first delivery', function (): void {
+    $event = new {EventName}(entityId: 'test-uuid');
+    $cache = new CacheRepository(new ArrayStore());
+    $useCase = Mockery::mock({Name}UseCase::class);
+    $useCase->shouldReceive('handle')->once()->with(Mockery::type({Name}DTO::class));
+
+    (new {EventName}Handler($useCase, $cache))->handle($event);
+});
+
+test('{event} handler skips duplicate delivery of same event', function (): void {
+    $event = new {EventName}(entityId: 'test-uuid');
+    $cache = new CacheRepository(new ArrayStore());
+    $useCase = Mockery::mock({Name}UseCase::class);
+    $useCase->shouldReceive('handle')->once(); // called once despite two deliveries
+
+    $handler = new {EventName}Handler($useCase, $cache);
+    $handler->handle($event);
+    $handler->handle($event); // same eventId → idempotency guard blocks second call
+});

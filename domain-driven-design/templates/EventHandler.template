@@ -2,6 +2,7 @@
 
 namespace Modules\{Module}\Application\EventHandlers;
 
+use Illuminate\Contracts\Cache\Repository as CacheRepository;
 use Modules\{Module}\Application\DTOs\{Name}DTO;
 use Modules\{Module}\Application\UseCases\{Name}UseCase;
 use Modules\{SourceModule}\Domain\Events\{EventName};
@@ -10,15 +11,25 @@ class {EventName}Handler
 {
     public function __construct(
         private readonly {Name}UseCase $useCase,
+        private readonly CacheRepository $cache,
     ) {}
 
     public function handle({EventName} $event): void
     {
-        // Guard against duplicate delivery before processing.
+        if (! $this->cache->add($this->idempotencyKey($event), true, now()->addDay())) {
+            return;
+        }
+
         $dto = new {Name}DTO(
             id: $event->entityId,
+            // Map all event fields needed by this module's UseCase as primitives.
         );
 
         $this->useCase->handle($dto);
+    }
+
+    private function idempotencyKey({EventName} $event): string
+    {
+        return sprintf('%s:%s', self::class, $event->eventId);
     }
 }

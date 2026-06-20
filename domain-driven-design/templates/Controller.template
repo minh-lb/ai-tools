@@ -2,13 +2,13 @@
 
 namespace Modules\{Module}\Interfaces\Controllers;
 
-use Modules\Shared\Support\Http\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
+use Modules\Shared\Support\Http\ApiResponse;
 use Modules\{Module}\Application\DTOs\{Name}DTO;
 use Modules\{Module}\Application\UseCases\{Name}UseCase;
-use Modules\{Module}\Domain\Entities\{Entity};
 use Modules\{Module}\Interfaces\Requests\{Name}Request;
+use Modules\{Module}\Interfaces\Resources\{Entity}Resource;
 
 class {Name}Controller
 {
@@ -23,16 +23,11 @@ class {Name}Controller
 
         return ApiResponse::success(
             request: $request,
-            data: $this->mapEntity($result),
-            code: '{RESOURCE}.{ACTION}_SUCCESS',
-            status: Response::HTTP_OK,
+            data: (new {Entity}Resource($result))->resolve($request),
+            code: '{MODULE}.{ACTION}_SUCCESS', // e.g. 'ORDER.CREATE_SUCCESS' — uppercase module + verb
+            message: null,
+            // HTTP_CREATED (201) create · HTTP_OK (200) read/update/delete · HTTP_ACCEPTED (202) async
+            status: Response::HTTP_CREATED,
         );
-    }
-
-    private function mapEntity({Entity} $entity): array
-    {
-        return [
-            'id' => $entity->id,
-        ];
     }
 }

@@ -1,0 +1,25 @@
+<?php declare(strict_types=1);
+
+use Modules\{Module}\Domain\Entities\{Entity};
+
+uses(Tests\TestCase::class);
+
+test('{entity} constructs with valid state', function (): void {
+    $entity = new {Entity}(id: 'test-uuid');
+
+    expect($entity->id)->toBe('test-uuid');
+});
+
+test('{entity} clears recorded events after release', function (): void {
+    $entity = new {Entity}(id: 'test-uuid');
+    // Trigger a domain behavior that records an event, e.g.: $entity->activate();
+
+    $entity->releaseEvents(); // first release
+    expect($entity->releaseEvents())->toBeEmpty(); // must be empty on second call
+});
+
+// Uncomment when the Entity enforces invariants:
+// test('{entity} throws on invariant violation', function (): void {
+//     expect(fn () => new {Entity}(id: ''))
+//         ->toThrow(\InvalidArgumentException::class);
+// });

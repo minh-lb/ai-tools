@@ -1,0 +1,48 @@
+<?php declare(strict_types=1);
+
+namespace Modules\Shared\Support\Http;
+
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+
+final class ApiResponse
+{
+    public static function success(
+        Request $request,
+        array|null $data = null,
+        string $code = 'SUCCESS',
+        string|null $message = null,
+        int $status = Response::HTTP_OK, // 200 read/update/delete · 201 create · 202 async
+    ): JsonResponse {
+        return response()
+            ->json([
+                'success' => true,
+                'code' => $code,
+                'message' => $message,
+                'data' => $data,
+            ], $status)
+            ->withHeaders(array_filter([
+                'X-Request-ID' => $request->header('X-Request-ID'),
+            ]));
+    }
+
+    public static function problem(
+        Request $request,
+        int $status = Response::HTTP_UNPROCESSABLE_ENTITY,
+        string $code = 'ERROR',
+        string|null $message = null,
+        array $errors = [],
+    ): JsonResponse {
+        return response()
+            ->json([
+                'success' => false,
+                'code' => $code,
+                'message' => $message,
+                'errors' => $errors,
+            ], $status)
+            ->withHeaders(array_filter([
+                'X-Request-ID' => $request->header('X-Request-ID'),
+            ]));
+    }
+}
