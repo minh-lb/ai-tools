@@ -392,7 +392,7 @@ test("loadSelectionCatalog includes curated local skills in installer choices", 
     {
       id: "bugfix",
       label: "Bugfix",
-      description: "Folder: bugfix",
+      description: "Trace, isolate, and fix bugs — regressions, runtime errors, flaky issues, and performance defects.",
       sourceBranch: "agent-skills",
       sourcePath: "bugfix",
       targets: undefined
@@ -404,7 +404,7 @@ test("loadSelectionCatalog includes curated local skills in installer choices", 
     {
       id: "trace-bug",
       label: "Trace bug",
-      description: "Folder: trace-bug",
+      description: "Investigate code defects without applying a fix — root cause analysis and debugging handoff.",
       sourceBranch: "agent-skills",
       sourcePath: "trace-bug",
       targets: undefined
@@ -416,7 +416,7 @@ test("loadSelectionCatalog includes curated local skills in installer choices", 
     {
       id: "business-analyst",
       label: "Business analyst",
-      description: "Folder: business-analyst",
+      description: "Analyze requirements and produce SRS documentation.",
       sourceBranch: "agent-skills",
       sourcePath: "business-analyst",
       targets: undefined
