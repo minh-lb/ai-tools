@@ -17,6 +17,28 @@ You are the orchestrator. You own the spec, the plan, and the final decision at 
 - Do not close the task without Codex review passing.
 - Do not modify tests to make implementation pass — fix the implementation instead.
 
+## Git Strategy
+
+Follow this at each phase:
+
+| Moment | Git action |
+|---|---|
+| Phase 1 — task received | `git checkout -b feature/<feature-name>` |
+| Phase 3 — each slice passes inspection | `git add <slice files> && git commit -m "feat(<layer>): <slice description>"` |
+| Phase 4 — all tests pass | Commit any uncommitted test files: `git add <test files> && git commit -m "test(<feature>): add unit and integration tests"` |
+| Phase 5 — review passes | `gh pr create` with spec location, test summary, and review verdict in body |
+
+**Commit message format** (conventional commits):
+- `feat(<scope>): <description>` — new implementation slice
+- `test(<scope>): <description>` — test files
+- `fix(<scope>): <description>` — repair slice from Phase 4 or Phase 5
+
+**Branch naming**: `feature/<feature-name>` — use the same `<feature-name>` as the spec directory.
+
+**Commit scope**: Each commit covers exactly one slice. Do not batch multiple slices into one commit.
+
+**No commit without passing gate**: Do not commit Phase 3 slices that failed inspection. Do not create a PR before review passes.
+
 ## Two-Mode Operation
 
 **Boot mode** (triggered by `/cc-team-full`):
@@ -29,8 +51,9 @@ Run the 5-phase workflow below.
 
 ## Phase 1 — Analysis & Spec
 
-1. Read the strongest source of truth: spec, ticket, Notion, or code (use Read, Grep, Bash if no doc exists).
-2. Analyze the feature:
+1. Create the feature branch: `git checkout -b feature/<feature-name>`. Use the same name that will be used for the spec directory.
+2. Read the strongest source of truth: spec, ticket, Notion, or code (use Read, Grep, Bash if no doc exists).
+3. Analyze the feature:
    - User stories and acceptance criteria
    - System architecture impact
    - Database schema changes (tables, columns, indexes, constraints)
@@ -82,7 +105,7 @@ Run the 5-phase workflow below.
 - Command to run integration tests
 ```
 
-4. Present the spec to the user and wait for explicit approval.
+5. Present the spec to the user and wait for explicit approval.
    - If user rejects: ask for specific feedback, revise the spec, and re-present. Max 2 revision rounds.
    - If still not approved after 2 rounds: escalate with a summary of unresolved disagreements. Do not proceed.
 
@@ -138,6 +161,12 @@ Run the 5-phase workflow below.
    - [ ] No new compilation or lint errors introduced
    - [ ] Codex summary includes validation result (tests run or equivalent check)
    - [ ] If validation failed: send one repair slice to `/codex:rescue` with the exact failing output. Max 1 repair per slice. If still failing, note it and continue — Phase 4 will catch it.
+6. After each slice passes inspection, commit it:
+   ```
+   git add <slice files>
+   git commit -m "feat(<layer>): <slice description>"
+   ```
+   Use the layer as scope: `migration`, `repository`, `service`, `controller`, `middleware`. Repair slices use `fix(<layer>): <description>`.
 
 ---
 
@@ -146,9 +175,15 @@ Run the 5-phase workflow below.
 1. Run the full test suite after all slices are implemented.
 2. If tests fail:
    - Send a targeted repair slice to `/codex:rescue` pointing at the failing test and relevant code.
+   - Commit the repair after it passes: `git commit -m "fix(<layer>): repair failing tests after full suite run"`.
    - Max 2 repair cycles per failing test group.
    - If still failing: escalate to the user with the failing tests and Codex output.
-3. Proceed to Phase 5 only when all tests pass.
+3. Commit any test files not yet committed (written by Tester but not committed in Phase 3):
+   ```
+   git add <test files>
+   git commit -m "test(<feature>): add unit and integration tests"
+   ```
+4. Proceed to Phase 5 only when all tests pass and all changes are committed.
 
 ---
 
@@ -169,7 +204,29 @@ Run the 5-phase workflow below.
    - Re-run affected tests after the fix.
    - Re-submit to the same review lane.
    - **Max 2 repair-and-resubmit cycles.** If review still returns `Revise` or `Block` after 2 cycles: escalate to the user with all findings, attempted fixes, and current state. Do not loop further.
-5. Close the task only when review returns `Approve` or `Approve with concerns` (document concerns in the final report).
+5. When review returns `Approve` or `Approve with concerns`, create the PR:
+   ```
+   gh pr create \
+     --title "feat: <feature name>" \
+     --body "$(cat <<'EOF'
+   ## Summary
+   - <what was implemented, bullet points>
+   - Out of scope: <what was explicitly excluded>
+
+   ## Spec
+   docs/features/<feature-name>/spec.md
+
+   ## Test results
+   - Unit tests: X/X passed
+   - Integration tests: Y/Y passed
+
+   ## Review
+   Verdict: <Approve | Approve with concerns>
+   Concerns: <list or "none">
+   EOF
+   )"
+   ```
+   If review returned `Approve with concerns`, list the concerns in the PR body and add a `needs-follow-up` label if the repo uses labels.
 
 ---
 

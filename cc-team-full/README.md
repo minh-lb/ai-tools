@@ -58,6 +58,9 @@ TeamCreate tạo 2 agent: Leader + Tester
 User gửi task
         │
         ▼
+git checkout -b feature/<feature-name>
+        │
+        ▼
 Leader đọc source of truth
 (spec, ticket, Notion, hoặc tự explore codebase bằng Read/Grep/Bash)
         │
@@ -183,6 +186,11 @@ Leader chia implementation thành bounded slices
         │
         ▼
 Không sửa test để pass — chỉ sửa code
+        │
+        ▼
+Sau mỗi slice pass inspection:
+git add <slice files>
+git commit -m "feat(<layer>): <description>"
 ```
 
 ---
@@ -201,11 +209,11 @@ Leader chạy toàn bộ test suite
    Yes  │  No
         │   └─────────────────────────────┐
         ▼                                 ▼
-  Tiếp Phase 5              Leader → /codex:rescue repair
-                            (chỉ failing tests, không đụng passing)
-                                          │
-                                     Max 2 cycles
-                                          │
+Commit test files nếu chưa  Leader → /codex:rescue repair
+git commit -m "test(…): …"  (chỉ failing tests, không đụng passing)
+        │                                 │
+        ▼                            Max 2 cycles
+  Tiếp Phase 5                            │
                                    Vẫn fail? → Escalate user
 ```
 
@@ -234,8 +242,8 @@ Codex review (có thể chạy linter, security scanner, git diff):
         │
         ▼
 Verdict:
-  ├─ Approve              → Leader final diff review → Close task
-  ├─ Approve with concerns → Document concerns → Close task
+  ├─ Approve              → gh pr create → Close task
+  ├─ Approve with concerns → gh pr create (ghi concerns vào body) → Close task
   ├─ Revise               → Leader tạo repair slice → Re-test → Re-review
   └─ Block                → Leader tạo repair slice → Re-test → Re-review
 ```
@@ -263,6 +271,25 @@ Leader báo cáo cho user:
 | `docs/features/<name>/testcase.md` | Tester | Test cases theo 6 categories với TC-ID |
 | Unit test files | Tester | Business logic tests, isolated |
 | Integration test files | Tester | Full flow tests với real test database |
+
+---
+
+## Git Strategy
+
+| Moment | Git action |
+|---|---|
+| Phase 1 — nhận task | `git checkout -b feature/<feature-name>` |
+| Phase 3 — mỗi slice pass inspection | `git add <slice files> && git commit -m "feat(<layer>): <desc>"` |
+| Phase 3 — repair slice | `git commit -m "fix(<layer>): <desc>"` |
+| Phase 4 — tất cả tests pass | `git add <test files> && git commit -m "test(<feature>): add unit and integration tests"` |
+| Phase 5 — review pass | `gh pr create` với spec, test results, và review verdict trong body |
+
+**Commit scope theo layer:** `migration` · `repository` · `service` · `controller` · `middleware`
+
+**Không commit khi:**
+- Slice chưa pass inspection
+- Tests chưa pass (Phase 4 chưa xong)
+- Review chưa pass (PR chưa tạo được)
 
 ---
 
