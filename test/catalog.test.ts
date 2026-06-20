@@ -422,4 +422,16 @@ test("loadSelectionCatalog includes curated local skills in installer choices", 
       targets: undefined
     }
   );
+
+  assert.deepEqual(
+    catalog.skills.find((skill) => skill.id === "domain-driven-design"),
+    {
+      id: "domain-driven-design",
+      label: "Domain Driven Design",
+      description: "Laravel backend module design using DDD layers, Actions, DTOs, repositories, and events.",
+      sourceBranch: "agent-skills",
+      sourcePath: "domain-driven-design",
+      targets: undefined
+    }
+  );
 });

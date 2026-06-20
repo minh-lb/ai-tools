@@ -30,6 +30,13 @@
       "sourcePath": "business-analyst"
     },
     {
+      "id": "domain-driven-design",
+      "label": "Domain Driven Design",
+      "description": "Laravel backend module design using DDD layers, Actions, DTOs, repositories, and events.",
+      "sourceBranch": "agent-skills",
+      "sourcePath": "domain-driven-design"
+    },
+    {
       "id": "git-engineering-workflow",
       "label": "Git engineering workflow",
       "description": "GitFlow-style git workflow — committing, branching, merging, PRs, releases, and conflict resolution.",
