@@ -42,6 +42,20 @@
       "description": "Folder: review-code",
       "sourceBranch": "agent-skills",
       "sourcePath": "review-code"
+    },
+    {
+      "id": "cc-team-mini",
+      "label": "CC Team Mini",
+      "description": "Folder: cc-team-mini",
+      "sourceBranch": "agent-skills",
+      "sourcePath": "cc-team-mini"
+    },
+    {
+      "id": "cc-team-full",
+      "label": "CC Team Full",
+      "description": "Folder: cc-team-full",
+      "sourceBranch": "agent-skills",
+      "sourcePath": "cc-team-full"
     }
   ]
 }
