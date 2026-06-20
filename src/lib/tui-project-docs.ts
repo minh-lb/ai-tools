@@ -7,6 +7,7 @@ import {
   renderBannerHeader,
   renderKeycaps,
   renderListRow,
+  renderListContent,
   renderStepSummary,
   renderTabBar,
   type TabbedLayout
@@ -49,7 +50,7 @@ function currentTabItems(state: ProjectDocsState, catalog: ProjectDocsCatalog): 
   if (state.activeTab === "skills") {
     return catalog.skills.map((skill) => ({
       id: skill.id,
-      label: skill.label,
+      label: `◈  ${skill.label}`,
       description: skill.description,
       kind: "skills" as const
     }));
@@ -58,19 +59,19 @@ function currentTabItems(state: ProjectDocsState, catalog: ProjectDocsCatalog): 
   return [
     {
       id: "confirm",
-      label: "Confirm install",
+      label: "✓  Confirm install",
       description: "Continue with the selected skills.",
       kind: "review"
     },
     {
       id: "back",
-      label: "Back to main menu",
+      label: "←  Back to main menu",
       description: "Leave this installer and return to the main menu.",
       kind: "review"
     },
     {
       id: "cancel",
-      label: "Cancel",
+      label: "✕  Cancel",
       description: "Exit without installing anything.",
       kind: "review"
     }
@@ -112,7 +113,7 @@ function formatListItem(item: TabItem, state: ProjectDocsState, isCursorRow: boo
       active: isCursorRow,
       selected: state.reviewAction === item.id,
       label: item.label,
-      meta: item.description
+      description: item.description
     });
   }
 
@@ -120,7 +121,7 @@ function formatListItem(item: TabItem, state: ProjectDocsState, isCursorRow: boo
     active: isCursorRow,
     selected: isItemSelected(item, state),
     label: item.label,
-    meta: item.description
+    description: item.description
   });
 }
 
@@ -129,9 +130,13 @@ function renderReviewSummary(state: ProjectDocsState, catalog: ProjectDocsCatalo
     .filter((skill) => state.selectedSkills.has(skill.id))
     .map((skill) => skill.label);
 
+  const sep = `{cyan-fg}${"─".repeat(50)}{/cyan-fg}`;
+  const none = "{gray-fg}none{/gray-fg}";
+
   const lines = [
-    "{bold}Selections{/bold}",
-    `Skills  ${selectedSkills.length ? selectedSkills.join(", ") : "none"}`
+    `{bold}{white-fg}◈ Summary{/white-fg}{/bold}`,
+    sep,
+    `{cyan-fg}◆ Skills{/cyan-fg}  ${selectedSkills.length ? selectedSkills.join(", ") : none}`
   ];
 
   if (state.notice) {
@@ -156,11 +161,10 @@ function renderDetailBody(state: ProjectDocsState, catalog: ProjectDocsCatalog):
 
   if (current) {
     lines.push(
-      "{bold}Selected in this step{/bold}",
-      `${state.selectedSkills.size} of ${items.length}`,
-      "",
-      "{bold}About current item{/bold}",
-      current.description
+      `{cyan-fg}◆ ${state.selectedSkills.size} of ${items.length} selected{/cyan-fg}`,
+      `{gray-fg}${"─".repeat(40)}{/gray-fg}`,
+      `{bold}{white-fg}${current.label}{/white-fg}{/bold}`,
+      `{gray-fg}${current.description}{/gray-fg}`
     );
   }
 
@@ -225,9 +229,8 @@ function syncListSelection(
   const maxIndex = Math.max(items.length - 1, 0);
   const cursor = Math.min(state.listCursor[state.activeTab], maxIndex);
   state.listCursor[state.activeTab] = cursor;
-  listBox.setItems(items.map((item, index) => formatListItem(item, state, index === cursor)));
-  listBox.select(cursor);
-  listBox.scrollTo(cursor);
+  const rendered = items.map((item, index) => formatListItem(item, state, index === cursor));
+  renderListContent(listBox, rendered, cursor);
 }
 
 export async function runProjectDocsWizard(

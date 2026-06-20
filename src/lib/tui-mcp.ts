@@ -7,6 +7,7 @@ import {
   renderBannerHeader,
   renderKeycaps,
   renderListRow,
+  renderListContent,
   renderStepSummary,
   renderTabBar,
   selectionArray,
@@ -61,31 +62,31 @@ function currentTabItems(state: WizardState): TabItem[] {
     return [
       {
         id: "antd",
-        label: "Ant Design",
+        label: "◎  Ant Design",
         description: "Official Ant Design MCP server exposed by `@ant-design/cli`.",
         kind: "server"
       },
       {
         id: "gitlab",
-        label: "GitLab",
+        label: "◎  GitLab",
         description: "GitLab.com MCP endpoint with OAuth-based authorization.",
         kind: "server"
       },
       {
         id: "github",
-        label: "GitHub",
+        label: "◎  GitHub",
         description: "GitHub's hosted MCP server using PAT-based access.",
         kind: "server"
       },
       {
         id: "figma",
-        label: "Figma",
+        label: "◎  Figma",
         description: "Figma's remote MCP server for design context and write-back workflows.",
         kind: "server"
       },
       {
         id: "shadcn",
-        label: "Shadcn",
+        label: "◎  Shadcn",
         description: "Shadcn/ui registry MCP server for browsing, searching, and installing components.",
         kind: "server"
       }
@@ -96,13 +97,13 @@ function currentTabItems(state: WizardState): TabItem[] {
     return [
       {
         id: "codex",
-        label: "Codex",
+        label: "◇  Codex",
         description: "Configure the selected MCP servers for OpenAI Codex.",
         kind: "agent"
       },
       {
         id: "claude",
-        label: "Claude",
+        label: "◇  Claude",
         description: "Configure the selected MCP servers for Claude Code.",
         kind: "agent"
       }
@@ -113,13 +114,13 @@ function currentTabItems(state: WizardState): TabItem[] {
     return [
       {
         id: "install",
-        label: "Install",
+        label: "▶  Install",
         description: "Add or register the selected MCP servers in the chosen agent.",
         kind: "mode"
       },
       {
         id: "uninstall",
-        label: "Uninstall",
+        label: "←  Uninstall",
         description: "Remove the selected MCP server entries from the chosen agent.",
         kind: "mode"
       }
@@ -130,13 +131,13 @@ function currentTabItems(state: WizardState): TabItem[] {
     return [
       {
         id: "mac",
-        label: "MacOS",
+        label: "⊙  MacOS",
         description: "Apple macOS (darwin). Homebrew-based paths and macOS shell profiles apply.",
         kind: "os"
       },
       {
         id: "linux",
-        label: "Linux",
+        label: "⊙  Linux",
         description: "Linux distributions. Standard XDG paths and bash/zsh shell profiles apply.",
         kind: "os"
       }
@@ -146,19 +147,19 @@ function currentTabItems(state: WizardState): TabItem[] {
   return [
     {
       id: "confirm",
-      label: state.selectedMode === "install" ? "Confirm install" : "Confirm uninstall",
+      label: state.selectedMode === "install" ? "✓  Confirm install" : "✓  Confirm uninstall",
       description: "Run the planned MCP commands.",
       kind: "review"
     },
     {
       id: "back",
-      label: "Back to main menu",
+      label: "←  Back to main menu",
       description: "Leave this workflow and return to the main menu.",
       kind: "review"
     },
     {
       id: "cancel",
-      label: "Cancel",
+      label: "✕  Cancel",
       description: "Exit without changing MCP configuration.",
       kind: "review"
     }
@@ -254,7 +255,7 @@ function formatListItem(
       active: isCursorRow,
       selected: state.reviewAction === item.id,
       label: item.label,
-      meta: item.description,
+      description: item.description,
       index
     });
   }
@@ -263,7 +264,7 @@ function formatListItem(
     active: isCursorRow,
     selected: isItemSelected(item, state),
     label: item.label,
-    meta: item.description,
+    description: item.description,
     index
   });
 }
@@ -271,12 +272,16 @@ function formatListItem(
 function renderReviewSummary(state: WizardState): string {
   const selectedServers = selectionArray(state.selectedServers);
   const selectedAgents = selectionArray(state.selectedAgents);
+  const sep = `{cyan-fg}${"─".repeat(50)}{/cyan-fg}`;
+  const none = "{gray-fg}none{/gray-fg}";
+
   const lines = [
-    "{bold}Selections{/bold}",
-    `MCPs    ${selectedServers.length ? selectedServers.join(", ") : "none"}`,
-    `Agents  ${selectedAgents.length ? selectedAgents.join(", ") : "none"}`,
-    `Mode    ${state.selectedMode}`,
-    `OS      ${state.selectedOs === "mac" ? "MacOS" : "Linux"}`
+    `{bold}{white-fg}◈ Summary{/white-fg}{/bold}`,
+    sep,
+    `{cyan-fg}◆ MCPs{/cyan-fg}    ${selectedServers.length ? selectedServers.join(", ") : none}`,
+    `{cyan-fg}◆ Agents{/cyan-fg}  ${selectedAgents.length ? selectedAgents.join(", ") : none}`,
+    `{cyan-fg}◆ Mode{/cyan-fg}    ${state.selectedMode}`,
+    `{cyan-fg}◆ OS{/cyan-fg}      ${state.selectedOs === "mac" ? "MacOS" : "Linux"}`
   ];
 
   if (selectedServers.length > 0 && selectedAgents.length > 0) {
@@ -287,29 +292,29 @@ function renderReviewSummary(state: WizardState): string {
       os: state.selectedOs
     });
 
-    lines.push("", "{bold}Planned steps{/bold}");
+    lines.push("", sep, `{bold}{white-fg}⊕ Planned steps{/white-fg}{/bold}`);
     for (const step of plan.steps) {
-      lines.push(`- ${step.title}: ${step.command}`);
+      lines.push(`  {gray-fg}▶{/gray-fg} ${step.title}  {gray-fg}${step.command}{/gray-fg}`);
     }
 
     if (plan.notes.length > 0) {
-      lines.push("", "{bold}Notes{/bold}");
+      lines.push("", `{bold}{white-fg}◎ Notes{/white-fg}{/bold}`);
       for (const note of plan.notes) {
-        lines.push(`- ${note}`);
+        lines.push(`  {gray-fg}·{/gray-fg} ${note}`);
       }
     }
 
     if (plan.postInstallConfig.length > 0) {
-      lines.push("", "{bold}After install{/bold}");
+      lines.push("", `{bold}{white-fg}◎ After install{/white-fg}{/bold}`);
       for (const item of plan.postInstallConfig) {
-        lines.push(`- ${item}`);
+        lines.push(`  {gray-fg}·{/gray-fg} ${item}`);
       }
     }
 
     if (plan.sources.length > 0) {
-      lines.push("", "{bold}Sources{/bold}");
+      lines.push("", `{bold}{white-fg}◎ Sources{/white-fg}{/bold}`);
       for (const source of plan.sources) {
-        lines.push(`- ${source.label}: ${source.url}`);
+        lines.push(`  {gray-fg}·{/gray-fg} ${source.label}  {gray-fg}${source.url}{/gray-fg}`);
       }
     }
   }
@@ -337,11 +342,10 @@ function renderDetailBody(state: WizardState): string {
   if (current) {
     const selectedCount = items.filter((item) => isItemSelected(item, state)).length;
     lines.push(
-      "{bold}Selected in this step{/bold}",
-      `${selectedCount} of ${items.length}`,
-      "",
-      "{bold}About current item{/bold}",
-      current.description
+      `{cyan-fg}◆ ${selectedCount} of ${items.length} selected{/cyan-fg}`,
+      `{gray-fg}${"─".repeat(40)}{/gray-fg}`,
+      `{bold}{white-fg}${current.label}{/white-fg}{/bold}`,
+      `{gray-fg}${current.description}{/gray-fg}`
     );
   }
 
@@ -427,9 +431,8 @@ function syncListSelection(
   const maxIndex = Math.max(items.length - 1, 0);
   const cursor = Math.min(state.listCursor[state.activeTab], maxIndex);
   state.listCursor[state.activeTab] = cursor;
-  listBox.setItems(items.map((item, index) => formatListItem(item, state, index === cursor, index)));
-  listBox.select(cursor);
-  listBox.scrollTo(cursor);
+  const rendered = items.map((item, index) => formatListItem(item, state, index === cursor, index));
+  renderListContent(listBox, rendered, cursor);
 }
 
 export async function runMcpWizard(): Promise<{

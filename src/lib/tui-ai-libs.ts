@@ -7,6 +7,7 @@ import {
   renderBannerHeader,
   renderKeycaps,
   renderListRow,
+  renderListContent,
   renderStepSummary,
   renderTabBar,
   selectionArray,
@@ -64,19 +65,19 @@ function currentTabItems(state: WizardState): TabItem[] {
     return [
       {
         id: "rtk",
-        label: "rtk-ai/rtk",
+        label: "◈  rtk-ai/rtk",
         description: "Token-saving CLI proxy with agent-specific init for Codex and Claude.",
         kind: "library"
       },
       {
         id: "icm",
-        label: "rtk-ai/icm",
+        label: "◈  rtk-ai/icm",
         description: "Persistent agent memory with MCP, CLI instructions, rules, and hooks.",
         kind: "library"
       },
       {
         id: "ecc",
-        label: "affaan-m/ECC",
+        label: "◈  affaan-m/ECC",
         description: "Run ECC's upstream full manual installer with notes about Codex sync and Claude plugin overlap.",
         kind: "library"
       }
@@ -87,13 +88,13 @@ function currentTabItems(state: WizardState): TabItem[] {
     return [
       {
         id: "codex",
-        label: "codex",
+        label: "◇  Codex",
         description: "Configure the OpenAI Codex integration paths when supported upstream.",
         kind: "agents"
       },
       {
         id: "claude",
-        label: "claude",
+        label: "◇  Claude",
         description: "Configure the Claude integration paths when supported upstream.",
         kind: "agents"
       }
@@ -104,13 +105,13 @@ function currentTabItems(state: WizardState): TabItem[] {
     return [
       {
         id: "mac",
-        label: "mac",
+        label: "⊙  Mac",
         description: "Run the install flow for a macOS host.",
         kind: "os"
       },
       {
         id: "linux",
-        label: "linux",
+        label: "⊙  Linux",
         description: "Run the install flow for a Linux host.",
         kind: "os"
       }
@@ -121,13 +122,13 @@ function currentTabItems(state: WizardState): TabItem[] {
     return [
       {
         id: "global",
-        label: "global",
+        label: "⊙  Global",
         description: "Use global agent configuration in home-directory tool config files.",
         kind: "scope"
       },
       {
         id: "local",
-        label: "local",
+        label: "⊕  Local",
         description: "Use project-scoped setup where the upstream library supports it.",
         kind: "scope"
       }
@@ -138,13 +139,13 @@ function currentTabItems(state: WizardState): TabItem[] {
     return [
       {
         id: "install",
-        label: "Install",
+        label: "▶  Install",
         description: "Install the selected libraries and configure the chosen integrations.",
         kind: "mode"
       },
       {
         id: "uninstall",
-        label: "Uninstall",
+        label: "←  Uninstall",
         description: "Remove library-managed integrations safely and clean up only library-specific artifacts.",
         kind: "mode"
       }
@@ -154,19 +155,19 @@ function currentTabItems(state: WizardState): TabItem[] {
   return [
     {
       id: "confirm",
-      label: "Confirm install",
+      label: "✓  Confirm install",
       description: "Run the planned install and configuration commands.",
       kind: "review"
     },
     {
       id: "back",
-      label: "Back to main menu",
+      label: "←  Back to main menu",
       description: "Leave this installer and return to the main menu.",
       kind: "review"
     },
     {
       id: "cancel",
-      label: "Cancel",
+      label: "✕  Cancel",
       description: "Exit without installing anything.",
       kind: "review"
     }
@@ -263,7 +264,7 @@ function formatListItem(
       active: isCursorRow,
       selected: state.reviewAction === item.id,
       label: item.label,
-      meta: item.description,
+      description: item.description,
       index
     });
   }
@@ -272,7 +273,7 @@ function formatListItem(
     active: isCursorRow,
     selected: isItemSelected(item, state),
     label: item.label,
-    meta: item.description,
+    description: item.description,
     index
   });
 }
@@ -280,13 +281,17 @@ function formatListItem(
 function renderReviewSummary(state: WizardState): string {
   const selectedLibraries = selectionArray(state.selectedLibraries);
   const selectedAgents = selectionArray(state.selectedAgents);
+  const sep = `{cyan-fg}${"─".repeat(50)}{/cyan-fg}`;
+  const none = "{gray-fg}none{/gray-fg}";
+
   const lines = [
-    "{bold}Selections{/bold}",
-    `Libraries  ${selectedLibraries.length ? selectedLibraries.join(", ") : "none"}`,
-    `Agents     ${selectedAgents.length ? selectedAgents.join(", ") : "none"}`,
-    `OS         ${state.selectedOs ?? "none"}`,
-    `Scope      ${state.selectedScope}`,
-    `Mode       ${state.selectedMode}`
+    `{bold}{white-fg}◈ Summary{/white-fg}{/bold}`,
+    sep,
+    `{cyan-fg}◆ Libraries{/cyan-fg}  ${selectedLibraries.length ? selectedLibraries.join(", ") : none}`,
+    `{cyan-fg}◆ Agents{/cyan-fg}     ${selectedAgents.length ? selectedAgents.join(", ") : none}`,
+    `{cyan-fg}◆ OS{/cyan-fg}         ${state.selectedOs ?? none}`,
+    `{cyan-fg}◆ Scope{/cyan-fg}      ${state.selectedScope}`,
+    `{cyan-fg}◆ Mode{/cyan-fg}       ${state.selectedMode}`
   ];
 
   if (selectedLibraries.length > 0 && selectedAgents.length > 0 && state.selectedOs) {
@@ -298,15 +303,15 @@ function renderReviewSummary(state: WizardState): string {
       libraries: selectedLibraries
     });
 
-    lines.push("", "{bold}Planned steps{/bold}");
+    lines.push("", sep, `{bold}{white-fg}⊕ Planned steps{/white-fg}{/bold}`);
     for (const step of plan.steps) {
-      lines.push(`- ${step.title}`);
+      lines.push(`  {gray-fg}▶{/gray-fg} ${step.title}`);
     }
 
     if (plan.notes.length > 0) {
-      lines.push("", "{bold}Notes{/bold}");
+      lines.push("", `{bold}{white-fg}◎ Notes{/white-fg}{/bold}`);
       for (const note of plan.notes) {
-        lines.push(`- ${note}`);
+        lines.push(`  {gray-fg}·{/gray-fg} ${note}`);
       }
     }
   }
@@ -334,11 +339,10 @@ function renderDetailBody(state: WizardState): string {
   if (current) {
     const selectedCount = items.filter((item) => isItemSelected(item, state)).length;
     lines.push(
-      "{bold}Selected in this step{/bold}",
-      `${selectedCount} of ${items.length}`,
-      "",
-      "{bold}About current item{/bold}",
-      current.description
+      `{cyan-fg}◆ ${selectedCount} of ${items.length} selected{/cyan-fg}`,
+      `{gray-fg}${"─".repeat(40)}{/gray-fg}`,
+      `{bold}{white-fg}${current.label}{/white-fg}{/bold}`,
+      `{gray-fg}${current.description}{/gray-fg}`
     );
   }
 
@@ -436,9 +440,8 @@ function syncListSelection(
   const maxIndex = Math.max(items.length - 1, 0);
   const cursor = Math.min(state.listCursor[state.activeTab], maxIndex);
   state.listCursor[state.activeTab] = cursor;
-  listBox.setItems(items.map((item, index) => formatListItem(item, state, index === cursor, index)));
-  listBox.select(cursor);
-  listBox.scrollTo(cursor);
+  const rendered = items.map((item, index) => formatListItem(item, state, index === cursor, index));
+  renderListContent(listBox, rendered, cursor);
 }
 
 export async function runAiLibsWizard(): Promise<{

@@ -20,31 +20,31 @@ interface EntryMenuItem {
 const MENU_ITEMS: EntryMenuItem[] = [
   {
     id: "install-skills",
-    label: "Install agent skills",
+    label: "◈  Install agent skills",
     description: "Open the guided installer for Codex skills and Claude custom agents.",
     meta: "Codex + Claude"
   },
   {
     id: "install-project-docs",
-    label: "Install project docs",
+    label: "▤  Install project docs",
     description: "Copy selected project docs and workflow templates into the current repository.",
     meta: "Current repo"
   },
   {
     id: "install-libs",
-    label: "Install libs for AI",
+    label: "⬡  Install libs for AI",
     description: "Install RTK, ICM, or ECC, then run the supported setup flow for Codex and Claude.",
     meta: "Mac + Linux"
   },
   {
     id: "install-mcp",
-    label: "Install mcp",
+    label: "◎  Install MCP",
     description: "Add or remove Ant Design, GitLab, GitHub, and Figma MCP servers for Codex or Claude.",
     meta: "Codex + Claude"
   },
   {
     id: "cancel",
-    label: "Cancel",
+    label: "✕  Cancel",
     description: "Exit without running any installer.",
     meta: "Safe exit"
   }
@@ -53,8 +53,7 @@ const MENU_ITEMS: EntryMenuItem[] = [
 function renderItem(item: EntryMenuItem, isActive: boolean): string {
   return renderListRow({
     active: isActive,
-    label: item.label,
-    meta: item.meta
+    label: item.label
   });
 }
 
@@ -73,7 +72,7 @@ export async function runEntryMenu(): Promise<EntryMenuAction> {
 
     const headerBox = blessed.box({
       parent: screen,
-      top: 1,
+      top: 0,
       left: 2,
       width: "100%-4",
       height: 6,
@@ -93,17 +92,17 @@ export async function runEntryMenu(): Promise<EntryMenuAction> {
 
     const listBox = blessed.list({
       parent: screen,
-      top: 8,
+      top: 6,
       left: 2,
-      width: "100%-4",
-      height: 8,
+      width: "40%-2",
+      height: "100%-7",
       tags: true,
       keys: false,
       vi: false,
       mouse: false,
       interactive: false,
       border: { type: "line" },
-      label: " workflows ",
+      label: " menu ",
       padding: {
         left: 1,
         right: 1
@@ -122,10 +121,10 @@ export async function runEntryMenu(): Promise<EntryMenuAction> {
 
     const detailBox = blessed.box({
       parent: screen,
-      top: 17,
-      left: 2,
-      width: "100%-4",
-      height: 7,
+      top: 6,
+      left: "40%",
+      width: "60%-2",
+      height: "100%-7",
       tags: true,
       wrap: true,
       border: { type: "line" },
@@ -158,6 +157,7 @@ export async function runEntryMenu(): Promise<EntryMenuAction> {
     }
 
     function render(): void {
+      const active = MENU_ITEMS[cursor];
       headerBox.setContent(renderBannerHeader(
         "Main menu",
         "Choose the workflow you want to run.",
@@ -170,9 +170,12 @@ export async function runEntryMenu(): Promise<EntryMenuAction> {
       listBox.setItems(MENU_ITEMS.map((item, index) => renderItem(item, index === cursor)));
       listBox.select(cursor);
       detailBox.setContent([
-        `{bold}${MENU_ITEMS[cursor].label}{/bold}  {gray-fg}${MENU_ITEMS[cursor].meta}{/gray-fg}`,
+        `{bold}{white-fg}${active.label}{/white-fg}{/bold}`,
+        `{cyan-fg}${active.meta}{/cyan-fg}`,
         "",
-        MENU_ITEMS[cursor].description,
+        `{gray-fg}${"─".repeat(36)}{/gray-fg}`,
+        "",
+        active.description,
         "",
         "{gray-fg}Tip: complete one workflow, then rerun the CLI for another task.{/gray-fg}"
       ].join("\n"));

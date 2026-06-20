@@ -8,6 +8,7 @@ import {
   renderBannerHeader,
   renderKeycaps,
   renderListRow,
+  renderListContent,
   renderStepSummary,
   renderTabBar,
   selectionArray,
@@ -62,7 +63,7 @@ function currentTabItems(
   if (state.activeTab === "skills") {
     return selectionCatalog.skills.map((skill) => ({
       id: skill.id,
-      label: `[Skill] ${skill.label}`,
+      label: `◈  ${skill.label}`,
       description: skill.description,
       kind: "skill" as const
     }));
@@ -72,14 +73,14 @@ function currentTabItems(
     return [
       {
         id: "global",
-        label: "global",
-        description: "Install into the current user's home directory.",
+        label: "⊙  Global",
+        description: "Install into the current user's home directory (~/.claude / ~/.codex).",
         kind: "locations"
       },
       {
         id: "local",
-        label: "local",
-        description: "Install into this project's dot directories.",
+        label: "⊕  Local",
+        description: "Install into this project's dot directories (.claude / .codex).",
         kind: "locations"
       }
     ];
@@ -89,13 +90,13 @@ function currentTabItems(
     return [
       {
         id: "codex",
-        label: "codex",
+        label: "◇  Codex",
         description: "Install as Codex skills.",
         kind: "agents"
       },
       {
         id: "claude",
-        label: "claude",
+        label: "◇  Claude",
         description: "Install as Claude custom agents.",
         kind: "agents"
       }
@@ -105,19 +106,19 @@ function currentTabItems(
   return [
     {
       id: "confirm",
-      label: "Confirm install",
+      label: "✓  Confirm install",
       description: "Resolve sources and start installation.",
       kind: "review"
     },
     {
       id: "back",
-      label: "Back to main menu",
+      label: "←  Back to main menu",
       description: "Leave this installer and return to the main menu.",
       kind: "review"
     },
     {
       id: "cancel",
-      label: "Cancel",
+      label: "✕  Cancel",
       description: "Exit without installing anything.",
       kind: "review"
     }
@@ -199,7 +200,7 @@ function formatListItem(
       active: isCursorRow,
       selected: state.reviewAction === item.id,
       label: item.label,
-      meta: item.description,
+      description: item.description,
       index
     });
   }
@@ -208,7 +209,7 @@ function formatListItem(
     active: isCursorRow,
     selected: isItemSelected(item, state),
     label: item.label,
-    meta: item.description,
+    description: item.description,
     index
   });
 }
@@ -223,22 +224,26 @@ function renderReviewSummary(state: WizardState, selectionCatalog: SelectionCata
   const selectedLocations = selectionArray(state.selectedLocations);
   const selectedAgents = selectionArray(state.selectedAgents);
 
+  const sep = `{cyan-fg}${"─".repeat(50)}{/cyan-fg}`;
+  const none = "{gray-fg}none{/gray-fg}";
+
   const lines = [
-    "{bold}Selections{/bold}",
-    `Skills     ${selectedSkillLabels.length ? selectedSkillLabels.join(", ") : "none"}`,
-    `Locations  ${selectedLocations.length ? selectedLocations.join(", ") : "none"}`,
-    `Agents     ${selectedAgents.length ? selectedAgents.join(", ") : "none"}`
+    `{bold}{white-fg}◈ Summary{/white-fg}{/bold}`,
+    sep,
+    `{cyan-fg}◆ Skills{/cyan-fg}    ${selectedSkillLabels.length ? selectedSkillLabels.join(", ") : none}`,
+    `{cyan-fg}◆ Locations{/cyan-fg} ${selectedLocations.length ? selectedLocations.join(", ") : none}`,
+    `{cyan-fg}◆ Agents{/cyan-fg}    ${selectedAgents.length ? selectedAgents.join(", ") : none}`
   ];
 
   if (selectedGroupLabels.length > 0) {
-    lines.splice(2, 0, `Groups     ${selectedGroupLabels.join(", ")}`);
+    lines.splice(3, 0, `{cyan-fg}◆ Groups{/cyan-fg}    ${selectedGroupLabels.join(", ")}`);
   }
 
   if (selectedLocations.length > 0 && selectedAgents.length > 0) {
-    lines.push("", "{bold}Resolved targets{/bold}");
+    lines.push("", sep, `{bold}{white-fg}⊕ Resolved targets{/white-fg}{/bold}`);
     for (const agent of selectedAgents) {
       for (const location of selectedLocations) {
-        lines.push(`- ${agent} + ${location}: ${resolveInstallRoot({ agent, location, cwd: process.cwd() })}`);
+        lines.push(`  {gray-fg}▶{/gray-fg} ${agent} + ${location}  {gray-fg}${resolveInstallRoot({ agent, location, cwd: process.cwd() })}{/gray-fg}`);
       }
     }
   }
@@ -266,11 +271,10 @@ function renderDetailBody(state: WizardState, selectionCatalog: SelectionCatalog
   if (current) {
     const selectedCount = items.filter((item) => isItemSelected(item, state)).length;
     lines.push(
-      "{bold}Selected in this step{/bold}",
-      `${selectedCount} of ${items.length}`,
-      "",
-      "{bold}About current item{/bold}",
-      current.description
+      `{cyan-fg}◆ ${selectedCount} of ${items.length} selected{/cyan-fg}`,
+      `{gray-fg}${"─".repeat(40)}{/gray-fg}`,
+      `{bold}{white-fg}${current.label}{/white-fg}{/bold}`,
+      `{gray-fg}${current.description}{/gray-fg}`
     );
   }
 
@@ -361,9 +365,8 @@ function syncListSelection(
   const maxIndex = Math.max(items.length - 1, 0);
   const cursor = Math.min(state.listCursor[state.activeTab], maxIndex);
   state.listCursor[state.activeTab] = cursor;
-  listBox.setItems(items.map((item, index) => formatListItem(item, state, index === cursor, index)));
-  listBox.select(cursor);
-  listBox.scrollTo(cursor);
+  const rendered = items.map((item, index) => formatListItem(item, state, index === cursor, index));
+  renderListContent(listBox, rendered, cursor);
 }
 
 export async function runTabbedWizard(

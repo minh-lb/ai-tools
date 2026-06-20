@@ -50,10 +50,10 @@ export function renderBannerHeader(
     : renderChip("Terminal installer", "muted");
 
   return [
-    `{bold}${renderChip("AI TOOLS")} ${title}{/bold}`,
+    `{bold}${renderChip("◈ AI TOOLS")} {white-fg}${title}{/white-fg}{/bold}`,
     `{gray-fg}${subtitle}{/gray-fg}`,
     chipLine,
-    "{cyan-fg}======================================================================{/cyan-fg}"
+    `{cyan-fg}${"─".repeat(70)}{/cyan-fg}`
   ].join("\n");
 }
 
@@ -62,11 +62,12 @@ export function renderTabBar(
 ): string {
   return tabs
     .map((tab) => {
+      const indicator = tab.active ? "●" : "○";
       const meta = tab.meta ? ` {gray-fg}${tab.meta}{/gray-fg}` : "";
-      const content = ` ${tab.label}${meta} `;
+      const content = ` ${indicator} ${tab.label}${meta} `;
       return tab.active
-        ? `{black-fg}{yellow-bg}${content}{/yellow-bg}{/black-fg}`
-        : `{cyan-fg}${content}{/cyan-fg}`;
+        ? `{bold}{black-fg}{cyan-bg}${content}{/cyan-bg}{/black-fg}{/bold}`
+        : `{gray-fg}${content}{/gray-fg}`;
     })
     .join("  ");
 }
@@ -77,16 +78,11 @@ export function renderStepSummary(input: {
   description: string;
   status?: string;
 }): string {
-  const lines = [
-    `{bold}${input.step}{/bold}  {white-fg}${input.title}{/white-fg}`,
+  const statusPart = input.status ? `  ${renderChip(input.status, "muted")}` : "";
+  return [
+    `{bold}${renderChip(input.step, "accent")} {white-fg}${input.title}{/white-fg}${statusPart}{/bold}`,
     `{gray-fg}${input.description}{/gray-fg}`
-  ];
-
-  if (input.status) {
-    lines.push(renderChip(input.status, "muted"));
-  }
-
-  return lines.join("\n");
+  ].join("\n");
 }
 
 export function renderListRow(input: {
@@ -94,16 +90,27 @@ export function renderListRow(input: {
   selected?: boolean;
   label: string;
   meta?: string;
+  description?: string;
   index?: number;
 }): string {
-  const marker = input.selected === undefined ? " " : input.selected ? "x" : " ";
+  const marker = input.selected === undefined ? " " : input.selected ? "◆" : "◇";
   const indexLabel = input.index === undefined ? "" : `${String(input.index + 1).padStart(2, "0")} `;
-  const row = `${input.active ? ">" : " "} [${marker}] ${indexLabel}${input.label}`;
-  const content = input.meta ? `${row} {gray-fg}${input.meta}{/gray-fg}` : row;
+  const cursor = input.active ? "▶" : " ";
+  const row = `${cursor} ${marker} ${indexLabel}${input.label}`;
+  const metaPart = input.meta ? `  {gray-fg}${input.meta}{/gray-fg}` : "";
 
-  return input.active
-    ? `{black-fg}{yellow-bg}${content}{/yellow-bg}{/black-fg}`
-    : content;
+  const labelLine = input.active
+    ? `{black-fg}{yellow-bg}${row}${metaPart}{/yellow-bg}{/black-fg}`
+    : input.selected
+    ? `{cyan-fg}${row}${metaPart}{/cyan-fg}`
+    : row + metaPart;
+
+  const indent = " ".repeat(4 + indexLabel.length);
+  const descLine = input.description
+    ? `\n${indent}{gray-fg}${input.description}{/gray-fg}`
+    : "";
+
+  return labelLine + descLine;
 }
 
 export interface TabbedLayout {
@@ -111,7 +118,7 @@ export interface TabbedLayout {
   headerBox: ReturnType<typeof blessed.box>;
   tabsBox: ReturnType<typeof blessed.box>;
   titleBox: ReturnType<typeof blessed.box>;
-  listBox: ReturnType<typeof blessed.list>;
+  listBox: ReturnType<typeof blessed.box>;
   detailBox: ReturnType<typeof blessed.box>;
   footerBox: ReturnType<typeof blessed.box>;
 }
@@ -192,7 +199,7 @@ export async function blessedSelect(input: {
         lines.push(renderListRow({
           active: i === cursor,
           label: choice.label,
-          meta: choice.description
+          description: choice.description
         }));
       }
 
@@ -325,7 +332,7 @@ export function createTabbedLayout(): TabbedLayout {
 
   const headerBox = blessed.box({
     parent: screen,
-    top: 1,
+    top: 0,
     left: 2,
     width: "100%-4",
     height: 6,
@@ -346,7 +353,7 @@ export function createTabbedLayout(): TabbedLayout {
 
   const tabsBox = blessed.box({
     parent: screen,
-    top: 8,
+    top: 6,
     left: 2,
     width: "100%-4",
     height: 3,
@@ -366,7 +373,7 @@ export function createTabbedLayout(): TabbedLayout {
 
   const titleBox = blessed.box({
     parent: screen,
-    top: 11,
+    top: 9,
     left: 2,
     width: "100%-4",
     height: 4,
@@ -384,17 +391,13 @@ export function createTabbedLayout(): TabbedLayout {
     }
   });
 
-  const listBox = blessed.list({
+  const listBox = blessed.box({
     parent: screen,
-    top: 15,
+    top: 13,
     left: 2,
     width: "100%-4",
-    height: "100%-23",
+    height: "100%-20",
     tags: true,
-    keys: false,
-    vi: false,
-    mouse: false,
-    interactive: false,
     scrollable: true,
     alwaysScroll: true,
     border: { type: "line" },
@@ -406,15 +409,10 @@ export function createTabbedLayout(): TabbedLayout {
     style: {
       border: {
         fg: "blue"
-      },
-      selected: {
-        bold: true,
-        fg: "black",
-        bg: "yellow"
       }
     },
     scrollbar: {
-      ch: " ",
+      ch: "│",
       track: {
         bg: "gray"
       },
@@ -429,7 +427,7 @@ export function createTabbedLayout(): TabbedLayout {
     left: 2,
     bottom: 2,
     width: "100%-4",
-    height: 5,
+    height: 4,
     tags: true,
     wrap: true,
     border: { type: "line" },
@@ -458,4 +456,17 @@ export function createTabbedLayout(): TabbedLayout {
   });
 
   return { screen, headerBox, tabsBox, titleBox, listBox, detailBox, footerBox };
+}
+
+export function renderListContent(
+  listBox: ReturnType<typeof blessed.box>,
+  renderedItems: string[],
+  cursorIndex: number
+): void {
+  listBox.setContent(renderedItems.join("\n"));
+  let visualRow = 0;
+  for (let i = 0; i < cursorIndex; i++) {
+    visualRow += renderedItems[i].split("\n").length;
+  }
+  listBox.scrollTo(visualRow);
 }
