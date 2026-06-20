@@ -1,0 +1,24 @@
+<?php declare(strict_types=1);
+
+namespace Modules\{Module}\Application\EventHandlers;
+
+use Modules\{Module}\Application\DTOs\{Name}DTO;
+use Modules\{Module}\Application\UseCases\{Name}UseCase;
+use Modules\{SourceModule}\Domain\Events\{EventName};
+
+class {EventName}Handler
+{
+    public function __construct(
+        private readonly {Name}UseCase $useCase,
+    ) {}
+
+    public function handle({EventName} $event): void
+    {
+        // Guard against duplicate delivery before processing.
+        $dto = new {Name}DTO(
+            id: $event->entityId,
+        );
+
+        $this->useCase->handle($dto);
+    }
+}

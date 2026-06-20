@@ -1,0 +1,20 @@
+<?php declare(strict_types=1);
+
+namespace Modules\{Module}\Interfaces\Requests;
+
+use Illuminate\Foundation\Http\FormRequest;
+use Modules\{Module}\Application\DTOs\{Name}DTO;
+
+class {Name}Request extends FormRequest
+{
+    public function authorize(): bool
+    {
+        // Replace with a policy check or return true only for intentionally public endpoints.
+        return $this->user() !== null;
+    }
+
+    public function rules(): array
+    {
+        return {Name}DTO::rules();
+    }
+}

@@ -1,0 +1,15 @@
+<?php declare(strict_types=1);
+
+namespace Modules\{Module}\Infrastructure\Providers;
+
+use Illuminate\Support\ServiceProvider;
+use Modules\{Module}\Domain\Repositories\{Entity}Repository;
+use Modules\{Module}\Infrastructure\Repositories\{Entity}RepositoryImpl;
+
+class {Module}ServiceProvider extends ServiceProvider
+{
+    public function register(): void
+    {
+        $this->app->bind({Entity}Repository::class, {Entity}RepositoryImpl::class);
+    }
+}

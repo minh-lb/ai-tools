@@ -1,0 +1,21 @@
+<?php declare(strict_types=1);
+
+namespace Modules\{Module}\Application\DTOs;
+
+use Modules\Shared\Attributes\Rules;
+use Modules\Shared\DTOs\BaseDTO;
+
+class {Name}DTO extends BaseDTO
+{
+    public function __construct(
+        #[Rules(['required', 'string', 'uuid'])]
+        public readonly string $id,
+    ) {}
+
+    public static function fromArray(array $data): self
+    {
+        return new self(
+            id: (string) $data['id'],
+        );
+    }
+}

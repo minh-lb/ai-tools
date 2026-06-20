@@ -1,0 +1,38 @@
+<?php declare(strict_types=1);
+
+namespace Modules\{Module}\Interfaces\Controllers;
+
+use Modules\Shared\Support\Http\ApiResponse;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Response;
+use Modules\{Module}\Application\DTOs\{Name}DTO;
+use Modules\{Module}\Application\UseCases\{Name}UseCase;
+use Modules\{Module}\Domain\Entities\{Entity};
+use Modules\{Module}\Interfaces\Requests\{Name}Request;
+
+class {Name}Controller
+{
+    public function __construct(
+        private readonly {Name}UseCase $useCase,
+    ) {}
+
+    public function __invoke({Name}Request $request): JsonResponse
+    {
+        $dto = {Name}DTO::fromArray($request->validated());
+        $result = $this->useCase->handle($dto);
+
+        return ApiResponse::success(
+            request: $request,
+            data: $this->mapEntity($result),
+            code: '{RESOURCE}.{ACTION}_SUCCESS',
+            status: Response::HTTP_OK,
+        );
+    }
+
+    private function mapEntity({Entity} $entity): array
+    {
+        return [
+            'id' => $entity->id,
+        ];
+    }
+}

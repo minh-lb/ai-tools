@@ -1,0 +1,16 @@
+<?php declare(strict_types=1);
+
+namespace Modules\{Module}\Domain\Events;
+
+use DateTimeImmutable;
+
+final class {EventName}
+{
+    public readonly DateTimeImmutable $occurredAt;
+
+    public function __construct(
+        public readonly string $entityId,
+    ) {
+        $this->occurredAt = new DateTimeImmutable();
+    }
+}
