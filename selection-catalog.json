@@ -4,56 +4,56 @@
     {
       "id": "agent-team",
       "label": "Agent team",
-      "description": "Folder: agent-team",
+      "description": "Opt-in multi-agent coordination skill for a leader/coder/reviewer workflow.",
       "sourceBranch": "agent-skills",
       "sourcePath": "agent-team"
     },
     {
       "id": "bugfix",
       "label": "Bugfix",
-      "description": "Folder: bugfix",
+      "description": "Trace, isolate, and fix bugs — regressions, runtime errors, flaky issues, and performance defects.",
       "sourceBranch": "agent-skills",
       "sourcePath": "bugfix"
     },
     {
       "id": "trace-bug",
       "label": "Trace bug",
-      "description": "Folder: trace-bug",
+      "description": "Investigate code defects without applying a fix — root cause analysis and debugging handoff.",
       "sourceBranch": "agent-skills",
       "sourcePath": "trace-bug"
     },
     {
       "id": "business-analyst",
       "label": "Business analyst",
-      "description": "Folder: business-analyst",
+      "description": "Analyze requirements and produce SRS documentation.",
       "sourceBranch": "agent-skills",
       "sourcePath": "business-analyst"
     },
     {
       "id": "git-engineering-workflow",
       "label": "Git engineering workflow",
-      "description": "Folder: git-engineering-workflow",
+      "description": "GitFlow-style git workflow — committing, branching, merging, PRs, releases, and conflict resolution.",
       "sourceBranch": "agent-skills",
       "sourcePath": "git-engineering-workflow"
     },
     {
       "id": "review-code",
       "label": "Review code",
-      "description": "Folder: review-code",
+      "description": "Structured code review for backend services, APIs, and server-side code.",
       "sourceBranch": "agent-skills",
       "sourcePath": "review-code"
     },
     {
       "id": "cc-team-mini",
       "label": "CC Team Mini",
-      "description": "Folder: cc-team-mini",
+      "description": "Boot a Claude Code + Codex agent team (Leader + on-demand Coder). Waits for user task before running.",
       "sourceBranch": "agent-skills",
       "sourcePath": "cc-team-mini"
     },
     {
       "id": "cc-team-full",
       "label": "CC Team Full",
-      "description": "Folder: cc-team-full",
+      "description": "Full TDD agent team — spec → testcases → tests → implement → verify → review. Leader and Tester agents included.",
       "sourceBranch": "agent-skills",
       "sourcePath": "cc-team-full"
     }
