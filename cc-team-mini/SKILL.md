@@ -43,6 +43,25 @@ When the user provides a task, the Leader agent runs autonomously:
    - Escalate to the user only at stop conditions or after 2 failed repair attempts.
 5. Report final result to the user.
 
+## Model Normalization
+
+The Agent tool accepts only shorthand aliases: `sonnet`, `opus`, `haiku`, `fable`.
+
+Before passing any model to Agent, normalize full model IDs to the correct alias:
+
+| Full model ID (and variants)                                         | Alias    |
+|----------------------------------------------------------------------|----------|
+| `claude-sonnet-4-6`, `claude-sonnet-4-5`, `claude-sonnet-*`         | `sonnet` |
+| `claude-opus-4-8`, `claude-opus-4-7`, `claude-opus-*`               | `opus`   |
+| `claude-haiku-4-5*`, `claude-haiku-*`                               | `haiku`  |
+| `claude-fable-5`, `claude-fable-*`                                   | `fable`  |
+
+Rules:
+- Strip the `claude-` prefix, then take the model family name (`sonnet`, `opus`, `haiku`, `fable`).
+- If the model string is already a valid alias, use it as-is.
+- If the model cannot be mapped (unknown family), omit the `model` parameter and let the Agent inherit the session model.
+- Never pass full model IDs (e.g., `claude-sonnet-4-6`) directly to the Agent tool — the call will fail with an enum validation error.
+
 ## Runtime Assumptions
 
 - `TeamCreate` and `SendMessage` are available.
