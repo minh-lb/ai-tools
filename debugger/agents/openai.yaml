@@ -1,0 +1,9 @@
+interface:
+  display_name: "Debugger"
+  short_description: "Full-cycle debugging: investigate root cause, apply targeted fix, verify"
+  default_prompt: |
+    Use $debugger to debug this defect end-to-end.
+    Investigate the full failure path, verify data mapping across layers, render Logic Flow in Mermaid, apply a targeted fix, run tests to verify, and write the report to `docs/debugger/reports/<slug>.md` in Vietnamese with technical terms in English.
+
+policy:
+  allow_implicit_invocation: false

@@ -1,9 +1,0 @@
-interface:
-  display_name: "Bug Trace Analyst"
-  short_description: "Trace defects and write root-cause reports without editing code"
-  default_prompt: |
-    Use $trace-bug to investigate this defect without fixing it yet.
-    Trace the full path, verify data mapping across layers or services, render Logic Flow in Mermaid, and write the report to `docs/trace-bug/reports/<slug>.md` in Vietnamese with technical terms kept in English.
-
-policy:
-  allow_implicit_invocation: false

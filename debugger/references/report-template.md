@@ -1,4 +1,4 @@
-# Báo Cáo Trace Bug
+# Báo Cáo Debugger
 
 Viết nội dung bằng tiếng Việt. Giữ nguyên technical terms bằng English, gồm code identifiers, API fields, protocol names, schema names, enum values, và các section keys.
 
@@ -133,9 +133,32 @@ Fact được coi là Confirmed khi có backing từ test, trace, log, hoặc di
 
 `High`, `Medium`, hoặc `Low`, kèm một lý do ngắn.
 
-## Recommended Next Step
+---
 
-- fix now
-- trace deeper
-- contain temporarily
-- gather missing evidence first
+## Fix Applied
+
+Mô tả ngắn gọn fix đã apply: file nào thay đổi, logic nào sửa, và lý do đây là minimal fix cho root cause.
+
+- **Files changed**: `path/to/file.ts`, `path/to/other.ts`
+- **Change summary**: 1–2 câu mô tả thay đổi
+- **Why minimal**: giải thích tại sao chỉ sửa phần này, không sửa thêm
+
+## Test Result
+
+Kết quả sau khi chạy test:
+
+- **Regression test**: `test name` — PASS / FAIL
+- **Adjacent tests**: tên suite — PASS / FAIL
+- **Manual verification**: mô tả nếu test tự động không đủ
+
+## Verification Outcome
+
+`Fixed` — bug không còn reproduce sau fix, tất cả test PASS.
+
+hoặc
+
+`Partial` — fix giải quyết symptom chính nhưng còn unknowns (ghi rõ).
+
+hoặc
+
+`Blocked` — cần thêm evidence / change không thể apply (ghi rõ lý do).
