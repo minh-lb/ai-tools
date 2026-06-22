@@ -16,11 +16,11 @@
       "sourcePath": "bugfix"
     },
     {
-      "id": "trace-bug",
-      "label": "Trace bug",
+      "id": "debugger",
+      "label": "Debugger",
       "description": "Investigate code defects without applying a fix — root cause analysis and debugging handoff.",
       "sourceBranch": "agent-skills",
-      "sourcePath": "trace-bug"
+      "sourcePath": "debugger"
     },
     {
       "id": "business-analyst",

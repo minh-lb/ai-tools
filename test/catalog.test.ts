@@ -400,13 +400,13 @@ test("loadSelectionCatalog includes curated local skills in installer choices", 
   );
 
   assert.deepEqual(
-    catalog.skills.find((skill) => skill.id === "trace-bug"),
+    catalog.skills.find((skill) => skill.id === "debugger"),
     {
-      id: "trace-bug",
-      label: "Trace bug",
+      id: "debugger",
+      label: "Debugger",
       description: "Investigate code defects without applying a fix — root cause analysis and debugging handoff.",
       sourceBranch: "agent-skills",
-      sourcePath: "trace-bug",
+      sourcePath: "debugger",
       targets: undefined
     }
   );
