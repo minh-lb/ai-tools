@@ -7,36 +7,16 @@ description: Optional Codex review-lane guide covering standard review and adver
 
 ## Role
 
-This reference defines the optional independent review passes that Claude may request after `/codex:rescue` completes.
+This reference defines the optional independent review passes that Leader may request after a rescue slice completes.
 
-There is no persistent reviewer teammate in this architecture. Review happens by invoking Codex with one of two commands:
+There is no persistent Reviewer agent in this architecture. Review happens when Leader sends a review-lane request to Coder, who invokes Codex via the `Agent` tool. Two lane types exist:
 
-- `/codex:review`
-- `/codex:adversarial-review`
-
-## Command Selection
-
-Use `/codex:review` for the default independent review:
-
-- correctness
-- regressions
-- missing tests or weak validation
-- maintainability issues that materially affect confidence
-
-Use `/codex:adversarial-review` when the leader wants Codex to assume the implementation may be unsafe and actively try to break it:
-
-- auth or permission boundaries
-- secrets or sensitive data handling
-- destructive actions
-- money, billing, quotas, or idempotency
-- migrations, rollback, or data consistency
-- external side effects or deployment behavior
-
-Run both when the risk is high and the change warrants a normal pass plus a hostile pass.
+- **standard review** (`codex:review`) — correctness, regressions, test gaps
+- **adversarial review** (`codex:adversarial-review`) — security, destructive actions, data integrity
 
 ## Review Input Contract
 
-Claude should provide:
+Leader should provide:
 
 - the task objective
 - the smallest useful diff or file list
@@ -70,13 +50,13 @@ Do not place a prose conclusion before the Findings list.
 
 If review returns `Revise` or `Block`:
 
-- Claude must translate the findings into a new bounded `/codex:rescue` slice.
-- Do not forward a raw dump of reviewer text if the scope can be restated more clearly.
+- Leader must translate the findings into a new bounded rescue slice and send it to Coder.
+- Do not forward a raw dump of review text if the scope can be restated more clearly.
 
 If review returns `Approve with concerns`:
 
-- Claude may close the task only after confirming the concerns are non-blocking and visible in the final user report.
+- Leader may close the task only after confirming the concerns are non-blocking and visible in the final user report.
 
 If review returns `Approve`:
 
-- Claude still performs the final diff review before closing.
+- Leader still performs the final diff review before closing.

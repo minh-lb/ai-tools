@@ -19,38 +19,42 @@ Do not auto-apply to ordinary coding, debugging, or single-agent tasks.
 
 When invoked:
 
-1. Use `TeamCreate` to create the **Leader agent** with model `sonnet` — loaded with `references/leader.md` as its system context.
-2. Report to the user that the team is ready and waiting for a task:
+1. Read `references/leader.md`, `references/coder.md`, and `references/reviewer.md` in full.
+2. Use `TeamCreate` to create the team (e.g. `team_name: "cc-team-mini"`).
+3. Spawn the **Leader agent** via `Agent` tool (`team_name`, `name: "Leader"`, `model: "sonnet"`, `run_in_background: true`). Prompt must include:
+   - Full content of `references/leader.md`
+   - Full content of `references/reviewer.md` (review input/output contracts)
+   - Appended delegation rule:
+     > **CRITICAL — Delegation Rule**: You MUST NOT implement code yourself using Edit, Write, or Bash. All code changes MUST be delegated to the **Coder** teammate via `SendMessage({ to: "Coder", message: "<assignment markdown>" })`. Wait for Coder to reply with results before inspecting the diff. If you are about to write code directly, stop and send to Coder instead.
+4. Spawn the **Coder agent** via `Agent` tool (`team_name`, `name: "Coder"`, `model: "sonnet"`, `run_in_background: true`). Prompt must include:
+   - Full content of `references/coder.md`
+   - Appended execution rule:
+     > **EXECUTION RULE**: You receive implementation assignments from the Leader via message. For each assignment: (1) attempt via `Agent({ subagent_type: "codex:codex-rescue", description: "Codex slice", prompt: "<assignment>" })` — NEVER call `Skill({ skill: "codex:rescue" })` which does not work in background subagents and will fail silently or hang; (2) if Codex fails, retry once with a revised prompt; (3) if Codex fails a second time, fall back to implementing directly using Edit/Write/Bash — you have permission to do this as a last resort only; (4) send the result summary back to Leader via `SendMessage({ to: "Leader", message: "<summary>" })`. Always report whether the result came from Codex or from fallback implementation.
+5. Report to the user:
    ```
    CC Team booted.
-   - Leader (sonnet): ready
-   - Coder (Codex): on-demand via /codex:rescue
-   - Review lanes: /codex:review and /codex:adversarial-review, triggered by risk level
+   - Leader (sonnet): ready — plans, delegates, never writes code
+   - Coder (sonnet): relays to Codex, retries on failure, falls back to native tools after 2 failed attempts
+   - Review lanes: triggered automatically by Leader via Codex when risk warrants it
    Provide your task to begin.
    ```
-3. Wait for the user to provide a task. Do not proceed until the user gives one.
+6. Wait for the user to provide a task. Do not proceed until the user gives one.
+7. When the user provides a task, forward it to Leader:
+   ```
+   SendMessage({ to: "Leader", message: "<user task verbatim>" })
+   ```
+   Then step back completely — do NOT implement anything. Leader runs the full workflow autonomously per `references/leader.md`.
 
-## Task Execution (after boot)
+## Agent Model Assignments
 
-When the user provides a task, the Leader agent runs autonomously:
+Each agent MUST be spawned with its designated model. Do not omit or override these:
 
-1. Classify risk: `Low` / `Medium` / `High`.
-2. Build the plan and present it to the user (kickoff gate). For `High` risk, wait for explicit approval. For `Low` / `Medium`, proceed automatically.
-3. For each slice — run automatically without stopping:
-   - Invoke `/codex:rescue` (no user prompt needed between slices).
-   - Automatically trigger review lanes when conditions are met.
-   - Escalate to the user only at stop conditions or after 2 failed repair attempts.
-4. Report final result to the user.
+| Agent  | Model    | Reason                                                                      |
+|--------|----------|-----------------------------------------------------------------------------|
+| Leader | `sonnet` | Orchestration, planning, multi-file reasoning                               |
+| Coder  | `sonnet` | Retry logic, error recovery, fallback implementation — needs reasoning capacity |
 
-## Role Model Assignments
-
-Each Claude agent role has an explicit model assignment. These are **fixed** — do not change them at runtime.
-
-| Role   | Model    | Notes                                      |
-|--------|----------|--------------------------------------------|
-| Leader | `sonnet` | Planning, coordination, diff review        |
-
-Codex (Coder and review lanes) is an external system — model selection is not applicable.
+Note: There is no persistent Reviewer agent. Review is handled via Codex review lanes (`codex:review`, `codex:adversarial-review`) triggered by Leader through Coder.
 
 ## Model Normalization
 
@@ -58,12 +62,12 @@ The Agent tool accepts only shorthand aliases: `sonnet`, `opus`, `haiku`, `fable
 
 Before passing any model to Agent, normalize full model IDs to the correct alias:
 
-| Full model ID (and variants)                                              | Alias    |
-|---------------------------------------------------------------------------|----------|
-| `claude-sonnet-4-6`, `claude-sonnet-4-5`, `claude-sonnet-*`              | `sonnet` |
-| `claude-opus-4-8`, `claude-opus-4-7`, `claude-opus-*`                    | `opus`   |
-| `claude-haiku-4-5-20251001`, `claude-haiku-4-5`, `claude-haiku-*`        | `haiku`  |
-| `claude-fable-5`, `claude-fable-*`                                        | `fable`  |
+| Full model ID (and variants)                                         | Alias    |
+|----------------------------------------------------------------------|----------|
+| `claude-sonnet-4-6`, `claude-sonnet-4-5`, `claude-sonnet-*`         | `sonnet` |
+| `claude-opus-4-8`, `claude-opus-4-7`, `claude-opus-*`               | `opus`   |
+| `claude-haiku-4-5*`, `claude-haiku-*`                               | `haiku`  |
+| `claude-fable-5`, `claude-fable-*`                                   | `fable`  |
 
 Rules:
 - Strip the `claude-` prefix, then take the model family name (`sonnet`, `opus`, `haiku`, `fable`).
@@ -71,31 +75,11 @@ Rules:
 - If the model cannot be mapped (unknown family), omit the `model` parameter and let the Agent inherit the session model.
 - Never pass full model IDs (e.g., `claude-sonnet-4-6`) directly to the Agent tool — the call will fail with an enum validation error.
 
-## Model Enforcement (STRICT)
-
-The model assigned to each role in the "Role Model Assignments" table above is **mandatory**. Do not deviate from it for any reason.
-
-**Prohibited:**
-- Upgrading a role's model (e.g., changing `sonnet` → `opus` to "improve quality")
-- Downgrading a role's model (e.g., changing `sonnet` → `haiku` to "save cost")
-- Substituting a different model family when the assigned model "seems slow"
-- Omitting the `model` parameter for a role that has an explicit assignment
-
-**Required behavior:**
-- Pass the exact alias from the table above when creating the Leader agent. No exceptions.
-- Never override a defined model based on perceived task complexity, cost, or performance — those decisions were made when the skill was authored, not at runtime.
-
 ## Runtime Assumptions
 
 - `TeamCreate` and `SendMessage` are available.
-- Codex surfaces are available: `/codex:rescue`, optional `/codex:review`, optional `/codex:adversarial-review`.
+- `codex:codex-rescue` subagent type is available (Coder invokes it via `Agent` tool, NOT via `Skill`).
 - If `TeamCreate` is unavailable, Claude acts as Leader directly without creating a team and states the limitation plainly.
-
-## Read Order
-
-1. Read `references/leader.md` — full autonomous workflow for the Leader agent.
-2. Read `references/coder.md` — Codex context; pass relevant sections in each `/codex:rescue` handoff.
-3. Read `references/reviewer.md` — criteria for triggering Codex review lanes.
 
 ## Stop Conditions
 
@@ -109,8 +93,8 @@ The team escalates to the user instead of continuing when:
 
 ## Completion Criteria
 
-- Leader was created with model `sonnet` as defined.
+- Team was created with the right agents for the risk level.
 - The plan matched the strongest available source of truth.
 - Each slice was implemented and validated by Codex automatically.
-- Review lanes were invoked when risk justified them.
+- Review lanes were used when risk justified them.
 - Leader performed the final diff review before reporting to the user.
