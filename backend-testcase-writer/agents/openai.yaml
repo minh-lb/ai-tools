@@ -1,0 +1,14 @@
+interface:
+  display_name: "Backend Testcase Writer"
+  short_description: "Write structured backend testcase documents for API, Service, Repository, and Worker layers"
+  default_prompt: |
+    Use backend-testcase-writer to create a backend testcase Markdown document.
+
+    Step 1 — Identify the layer: API, Service, Repository, or Worker.
+    Step 2 — Select the matching column set and template from templates/.
+    Step 3 — Apply the 8-category taxonomy (Happy Path, Input Validation, Authorization, Business Rule,
+             Not Found / Conflict, Concurrent Access, External Dependency, Side Effect Consistency).
+    Step 4 — Cover all Layer-Specific Mandatory Cases from the skill before finishing.
+    Step 5 — Write only behavior grounded in code, spec, or explicit user requirement.
+             Record unknowns in Open Questions — never invent expected results.
+    Step 6 — Verify the Quality Bar checklist before writing the output file.
