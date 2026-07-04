@@ -1,9 +1,9 @@
 ---
-name: git-engineering-workflow
+name: git-workflow
 description: GitFlow-style git workflow. Use this skill for any git task — committing, branching, merging, PRs, releases, conflict resolution, or worktree management — in a GitFlow-style repository.
 ---
 
-# Git Engineering Workflow
+# Git Workflow
 
 Use this skill to keep Git history clean, collaboration predictable, and AI-assisted changes safe to review.
 
