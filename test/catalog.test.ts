@@ -307,11 +307,11 @@ test("resolveSelectionItems supports direct branch folders without a manifest", 
     version: 1 as const,
     skills: [
       {
-        id: "git-engineering-workflow",
-        label: "Git engineering workflow",
-        description: "Folder: git-engineering-workflow",
+        id: "git-workflow",
+        label: "Git workflow",
+        description: "Folder: git-workflow",
         sourceBranch: "agent-skills",
-        sourcePath: "git-engineering-workflow"
+        sourcePath: "git-workflow"
       }
     ],
     groups: []
@@ -349,17 +349,17 @@ test("resolveSelectionItems supports direct branch folders without a manifest", 
       github: client.config
     },
     selectionCatalog,
-    selectedSkillIds: ["git-engineering-workflow"],
+    selectedSkillIds: ["git-workflow"],
     selectedGroupIds: []
   });
 
   assert.deepEqual(items, [
     {
-      id: "git-engineering-workflow",
-      label: "Git engineering workflow",
-      description: "Folder: git-engineering-workflow",
+      id: "git-workflow",
+      label: "Git workflow",
+      description: "Folder: git-workflow",
       sourceBranch: "agent-skills",
-      sourcePath: "git-engineering-workflow",
+      sourcePath: "git-workflow",
       targets: {
         codex: {
           type: "directory"
@@ -431,6 +431,54 @@ test("loadSelectionCatalog includes curated local skills in installer choices", 
       description: "Laravel backend module design using DDD layers, Actions, DTOs, repositories, and events.",
       sourceBranch: "agent-skills",
       sourcePath: "domain-driven-design",
+      targets: undefined
+    }
+  );
+
+  assert.deepEqual(
+    catalog.skills.find((skill) => skill.id === "backend-testcase-writer"),
+    {
+      id: "backend-testcase-writer",
+      label: "Backend testcase writer",
+      description: "Write detailed backend testcase documents for API endpoints, services, repositories, and workers/consumers.",
+      sourceBranch: "agent-skills",
+      sourcePath: "backend-testcase-writer",
+      targets: undefined
+    }
+  );
+
+  assert.deepEqual(
+    catalog.skills.find((skill) => skill.id === "git-workflow"),
+    {
+      id: "git-workflow",
+      label: "Git workflow",
+      description: "GitFlow-style git workflow — committing, branching, merging, PRs, releases, and conflict resolution.",
+      sourceBranch: "agent-skills",
+      sourcePath: "git-workflow",
+      targets: undefined
+    }
+  );
+
+  assert.deepEqual(
+    catalog.skills.find((skill) => skill.id === "team-mini"),
+    {
+      id: "team-mini",
+      label: "Team Mini",
+      description: "Boot a Claude Code + Codex agent team (Leader + on-demand Coder). Waits for user task before running.",
+      sourceBranch: "agent-skills",
+      sourcePath: "team-mini",
+      targets: undefined
+    }
+  );
+
+  assert.deepEqual(
+    catalog.skills.find((skill) => skill.id === "team-full"),
+    {
+      id: "team-full",
+      label: "Team Full",
+      description: "Full TDD agent team — spec → testcases → tests → implement → verify → review. Leader and Tester agents included.",
+      sourceBranch: "agent-skills",
+      sourcePath: "team-full",
       targets: undefined
     }
   );
