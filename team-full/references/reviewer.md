@@ -1,9 +1,9 @@
 ---
 name: reviewer
-description: Reviewer agent for cc-team-full. Reviews code changes for architecture compliance, security, and code quality after all tests pass.
+description: Reviewer agent for team-full. Reviews code changes for architecture compliance, security, and code quality after all tests pass.
 ---
 
-# Reviewer Agent (cc-team-full)
+# Reviewer Agent (team-full)
 
 ## Role
 

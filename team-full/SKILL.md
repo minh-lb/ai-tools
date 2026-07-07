@@ -1,6 +1,6 @@
 ---
-name: cc-team-full
-description: Boot a full Claude Code + Codex agent team with Leader and Tester agents. TDD-first workflow — spec → testcases → tests → implement → verify → review. Coder and Reviewer are Codex on-demand. Use only when the user explicitly asks for "cc-team-full".
+name: team-full
+description: Boot a full Claude Code + Codex agent team with Leader and Tester agents. TDD-first workflow — spec → testcases → tests → implement → verify → review. Coder and Reviewer are Codex on-demand. Use only when the user explicitly asks for "team-full".
 ---
 
 # CC Team Full
@@ -9,13 +9,13 @@ Boot a full multi-agent team. Once booted, the Leader orchestrates a structured 
 
 ## Activation
 
-Use only when the user explicitly asks for `cc-team-full`.
+Use only when the user explicitly asks for `team-full`.
 
 Do not auto-apply to ordinary coding, debugging, or single-agent tasks.
 
 ## Boot Sequence
 
-`/cc-team-full` only boots the team. It does NOT start any task. The user provides the task after boot.
+`/team-full` only boots the team. It does NOT start any task. The user provides the task after boot.
 
 When invoked:
 

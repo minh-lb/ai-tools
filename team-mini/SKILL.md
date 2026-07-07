@@ -1,6 +1,6 @@
 ---
-name: cc-team-mini
-description: Boot a Claude Code + Codex agent team using TeamCreate. Creates the Leader agent and waits for the user to provide a task before running anything. Use only when the user explicitly asks for "cc-team-mini".
+name: team-mini
+description: Boot a Claude Code + Codex agent team using TeamCreate. Creates the Leader agent and waits for the user to provide a task before running anything. Use only when the user explicitly asks for "team-mini".
 ---
 
 # CC Team
@@ -9,18 +9,18 @@ Boot a coordinated Claude Code + Codex agent team. Once booted, the Leader agent
 
 ## Activation
 
-Use only when the user explicitly asks for `cc-team-mini` or describes wanting a Claude Code + Codex team workflow.
+Use only when the user explicitly asks for `team-mini` or describes wanting a Claude Code + Codex team workflow.
 
 Do not auto-apply to ordinary coding, debugging, or single-agent tasks.
 
 ## Boot Sequence
 
-`/cc-team-mini` only boots the team. It does NOT start any task. The user provides the task after boot.
+`/team-mini` only boots the team. It does NOT start any task. The user provides the task after boot.
 
 When invoked:
 
 1. Read `references/leader.md`, `references/coder.md`, and `references/reviewer.md` in full.
-2. Use `TeamCreate` to create the team (e.g. `team_name: "cc-team-mini"`).
+2. Use `TeamCreate` to create the team (e.g. `team_name: "team-mini"`).
 3. Spawn the **Leader agent** via `Agent` tool (`team_name`, `name: "Leader"`, `model: "sonnet"`, `run_in_background: true`). Prompt must include:
    - Full content of `references/leader.md`
    - Full content of `references/reviewer.md` (review input/output contracts)

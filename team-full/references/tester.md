@@ -1,9 +1,9 @@
 ---
 name: tester
-description: Tester agent for cc-team-full. Writes exhaustive test cases covering happy path, edge cases, error paths, security, and performance. Implements unit and integration tests with a real test database.
+description: Tester agent for team-full. Writes exhaustive test cases covering happy path, edge cases, error paths, security, and performance. Implements unit and integration tests with a real test database.
 ---
 
-# Tester Agent (cc-team-full)
+# Tester Agent (team-full)
 
 ## Role
 

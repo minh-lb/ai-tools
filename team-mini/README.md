@@ -7,13 +7,13 @@ Skill boot một agent team gồm Claude Code (Leader) và Codex (Worker). Một
 ## Cách invoke
 
 ```text
-/cc-team-mini
+/team-mini
 ```
 
 Boot team trước. Sau khi team báo sẵn sàng, mới cung cấp task:
 
 ```text
-/cc-team-mini
+/team-mini
 → CC Team booted. Provide your task to begin.
 
 Thêm JWT authentication vào API. Dùng access token 15 phút + refresh token 7 ngày.
@@ -36,7 +36,7 @@ Thêm JWT authentication vào API. Dùng access token 15 phút + refresh token 7
 
 ```
 Phase 1 — Boot
-/cc-team-mini
+/team-mini
     ↓
 TeamCreate → Leader agent
     ↓
@@ -93,12 +93,12 @@ Team **không tự quyết** khi gặp:
 
 ## Ví dụ sử dụng
 
-> Luôn boot trước (`/cc-team-mini`), task gửi sau khi team báo sẵn sàng.
+> Luôn boot trước (`/team-mini`), task gửi sau khi team báo sẵn sàng.
 
 ### Feature mới
 
 ```text
-/cc-team-mini
+/team-mini
 → CC Team booted. Provide your task to begin.
 
 Thêm JWT authentication vào API. Dùng access token 15 phút + refresh token 7 ngày.
@@ -108,7 +108,7 @@ Xem spec tại docs/auth-spec.md.
 ### Bug fix phức tạp
 
 ```text
-/cc-team-mini
+/team-mini
 → CC Team booted. Provide your task to begin.
 
 Fix race condition trong StockService::deduct() — inventory đang về âm khi flash sale.
@@ -117,7 +117,7 @@ Fix race condition trong StockService::deduct() — inventory đang về âm khi
 ### Refactor đa file
 
 ```text
-/cc-team-mini
+/team-mini
 → CC Team booted. Provide your task to begin.
 
 Refactor module thanh toán để tách PaymentService thành PaymentGateway + PaymentProcessor.
@@ -127,7 +127,7 @@ Giữ nguyên interface hiện tại, không breaking change.
 ### Migration
 
 ```text
-/cc-team-mini
+/team-mini
 → CC Team booted. Provide your task to begin.
 
 Viết và chạy migration thêm soft delete cho bảng invoices.
@@ -147,7 +147,7 @@ Viết và chạy migration thêm soft delete cho bảng invoices.
 ## Cấu trúc file
 
 ```
-cc-team-mini/
+team-mini/
 ├── SKILL.md               # Boot sequence và runtime config
 ├── README.md              # File này
 ├── agents/

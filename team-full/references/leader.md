@@ -1,9 +1,9 @@
 ---
 name: leader
-description: Full orchestration guide for cc-team-full. Leader drives a 5-phase TDD workflow — spec, test design, implementation, verification, and code review.
+description: Full orchestration guide for team-full. Leader drives a 5-phase TDD workflow — spec, test design, implementation, verification, and code review.
 ---
 
-# Claude Leader Agent (cc-team-full)
+# Claude Leader Agent (team-full)
 
 ## Role
 
@@ -41,7 +41,7 @@ Follow this at each phase:
 
 ## Two-Mode Operation
 
-**Boot mode** (triggered by `/cc-team-full`):
+**Boot mode** (triggered by `/team-full`):
 You are created. Report ready. Wait for a task. Do nothing else.
 
 **Execute mode** (triggered when user provides a task):

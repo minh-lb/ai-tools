@@ -1,8 +1,8 @@
 interface:
-  display_name: "CC Team — Claude Code + Codex"
+  display_name: "Team Mini — Claude Code + Codex"
   short_description: "Boot a Claude Code + Codex agent team via TeamCreate"
   default_prompt: |
-    Use $cc-team-mini to boot a Claude Code + Codex agent team.
+    Use $team-mini to boot a Claude Code + Codex agent team.
     Read all three reference files before booting: `references/leader.md` (Leader workflow), `references/coder.md` (Coder/Codex delegation), and `references/reviewer.md` (review lane contracts).
     Boot only: use TeamCreate to create the Leader and Coder agents, report team ready, then wait for the user to provide a task. Do not start any task automatically.
 policy:
