@@ -5,6 +5,7 @@ SCRIPT_DIR=$(CDPATH= cd -- "$(dirname "$0")" && pwd)
 PLUGIN_ROOT=$(CDPATH= cd -- "$SCRIPT_DIR/.." && pwd)
 SKILLS_DIR=${1:-"$PLUGIN_ROOT/skills"}
 COMMANDS_DIR=${2:-"$PLUGIN_ROOT/commands"}
+SKILL_REF_BASE=${3:-"../../.agents/skills/lumin-"}
 
 mkdir -p "$COMMANDS_DIR"
 
@@ -16,6 +17,7 @@ for skill_dir in "$SKILLS_DIR"/*; do
   fi
 
   skill_name=$(basename "$skill_dir")
+  skill_ref="${SKILL_REF_BASE}${skill_name}"
   command_path="$COMMANDS_DIR/lumin:$skill_name.md"
   description=$(awk '
     /^description:/ {
@@ -45,8 +47,8 @@ $description
 
 ## What It Does
 
-1. Read \`../../.lumin/skills/$skill_name/SKILL.md\`.
-2. If that skill references sibling files under \`../../.lumin/skills/$skill_name/\`, read them before acting.
+1. Read \`$skill_ref/SKILL.md\`.
+2. If that skill references sibling files under \`$skill_ref/\`, read them before acting.
 3. Execute the skill against \`\$ARGUMENTS\`.
 4. Treat this slash command as the Claude Code entrypoint equivalent of the Codex skill \`\$lumin:$skill_name\`.
 

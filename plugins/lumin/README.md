@@ -4,6 +4,12 @@ Lumin dong goi cac skill tu nhanh `agent-skills` de dung tren ca Codex va Claude
 
 Lumin khong commit ban sao skill vao nhanh nay. Nhanh nay chi giu plugin wrapper va script installer. Luc cai dat, script se hydrate skill tu nhanh `agent-skills` vao local workspace tam thoi.
 
+Ngoai explicit surface, Lumin con cai them mot lop **auto-apply**:
+
+- Claude Code: cai skill namespaced vao `.agents/skills/lumin-*`
+- Codex: cai skill namespaced vao `.codex/skills/lumin-*`
+- dong thoi them `@./.lumin/AGENTS.lumin.md` vao `AGENTS.md` de host uu tien chon skill Lumin theo ngu canh, giong cach ECC hoat dong
+
 ## Surface
 
 - Codex: `$lumin:<skill-name>`
@@ -56,7 +62,9 @@ Mac dinh script cai theo project:
 
 - hydrate skill tu nhanh `agent-skills` vao thu muc tam
 - copy skills vao `./.lumin/skills`
+- materialize skill auto-apply vao `./.agents/skills/lumin-*`
 - generate va copy slash commands vao `./.claude/commands`
+- them instruction layer vao `AGENTS.md`
 
 Moi command `/lumin:<skill-name>` se doc file skill tu `../../.lumin/skills/<skill-name>/SKILL.md`.
 
@@ -96,3 +104,4 @@ Script nay:
 
 - Claude Code khong doc `plugin.json` cua Codex. Lumin giai quyet bang cach hydrate skill tu `agent-skills` roi tao slash-command shim rieng cho Claude.
 - Codex tu dong prefix skill theo ten plugin, nen skill `bugfix` thanh `$lumin:bugfix`.
+- De auto-apply giong ECC, Lumin cai them instruction layer va skill surface namespaced theo host.

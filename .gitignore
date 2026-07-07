@@ -1,4 +1,6 @@
 .claude/commands/lumin:*.md
+.agents/skills/lumin-*/
+.codex/skills/lumin-*/
 .lumin/
 plugins/lumin/commands/
 plugins/lumin/skills/
