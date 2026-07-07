@@ -1,11 +1,13 @@
 export type Agent = "codex" | "claude";
 export type InstallLocation = "global" | "local";
 export type AiLibrary = "rtk" | "icm" | "ecc";
+export type AiPlugin = "lumin";
 export type McpServer = "antd" | "gitlab" | "github" | "figma" | "shadcn";
 export type McpMode = "install" | "uninstall";
 export type SupportedOs = "mac" | "linux";
 export type InstallScope = "global" | "local";
 export type LibraryMode = "install" | "uninstall";
+export type PluginMode = "install" | "uninstall";
 
 export interface PromptChoice<T extends string = string> {
   value: T;
@@ -113,6 +115,7 @@ export interface PackageGithubConfig {
   repo: string;
   defaultBranch: string;
   skillsBranch: string;
+  pluginsBranch: string;
   manifestPath: string;
   excludeBranches: string[];
 }
@@ -171,6 +174,30 @@ export interface LibInstallPlan {
   agents: Agent[];
   libraries: AiLibrary[];
   steps: LibInstallStep[];
+  notes: string[];
+}
+
+export interface PluginInstallStep {
+  id: string;
+  plugin: AiPlugin;
+  agent: Agent;
+  phase: "install" | "uninstall";
+  title: string;
+  description: string;
+  command: string;
+  runner:
+    | "setup-lumin-claude"
+    | "setup-lumin-codex"
+    | "remove-lumin-claude"
+    | "remove-lumin-codex";
+}
+
+export interface PluginInstallPlan {
+  mode: PluginMode;
+  agents: Agent[];
+  plugins: AiPlugin[];
+  sourceBranch: string;
+  steps: PluginInstallStep[];
   notes: string[];
 }
 

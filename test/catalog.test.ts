@@ -130,6 +130,7 @@ test("loadCatalogIndex falls back to default branch when configured skills branc
       repo: "ai-tools",
       defaultBranch: "main",
       skillsBranch: "skill-general",
+      pluginsBranch: "plugins",
       manifestPath: "ai-tools.catalog.json",
       excludeBranches: ["main", "master"]
     },
@@ -180,6 +181,7 @@ test("loadCatalogIndex reports available branches when no manifest can be loaded
       repo: "ai-tools",
       defaultBranch: "main",
       skillsBranch: "skill-general",
+      pluginsBranch: "plugins",
       manifestPath: "ai-tools.catalog.json",
       excludeBranches: ["main", "master"]
     },
@@ -228,6 +230,7 @@ test("resolveSelectionItems loads manifests only after the user has made selecti
       repo: "ai-tools",
       defaultBranch: "main",
       skillsBranch: "skill-general",
+      pluginsBranch: "plugins",
       manifestPath: "ai-tools.catalog.json",
       excludeBranches: ["main", "master"]
     },
@@ -323,6 +326,7 @@ test("resolveSelectionItems supports direct branch folders without a manifest", 
       repo: "ai-tools",
       defaultBranch: "main",
       skillsBranch: "skill-general",
+      pluginsBranch: "plugins",
       manifestPath: "ai-tools.catalog.json",
       excludeBranches: ["main", "master"]
     },
@@ -382,6 +386,7 @@ test("loadSelectionCatalog includes curated local skills in installer choices", 
       repo: "ai-tools",
       defaultBranch: "main",
       skillsBranch: "skill-general",
+      pluginsBranch: "plugins",
       manifestPath: "ai-tools.catalog.json",
       excludeBranches: ["main", "master"]
     }

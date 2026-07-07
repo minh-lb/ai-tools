@@ -45,6 +45,7 @@
       "repo": "ai-tools",
       "defaultBranch": "main",
       "skillsBranch": "skill-general",
+      "pluginsBranch": "plugins",
       "manifestPath": "ai-tools.catalog.json",
       "excludeBranches": [
         "main",

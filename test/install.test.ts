@@ -98,6 +98,7 @@ test("installPlannedItems extracts and copies a skill directory", async () => {
       repo: "ai-tools",
       defaultBranch: "main",
       skillsBranch: "skill-general",
+      pluginsBranch: "plugins",
       manifestPath: "ai-tools.catalog.json",
       excludeBranches: ["main", "master"]
     },
@@ -178,6 +179,7 @@ test("installProjectDocsItems copies only the folder contents into cwd", async (
       repo: "ai-tools",
       defaultBranch: "main",
       skillsBranch: "skill-general",
+      pluginsBranch: "plugins",
       manifestPath: "ai-tools.catalog.json",
       excludeBranches: ["main", "master"]
     },

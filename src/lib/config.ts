@@ -32,6 +32,7 @@ export async function loadPackageConfig(): Promise<PackageConfig> {
       repo: aiTools.github.repo,
       defaultBranch: aiTools.github.defaultBranch || "main",
       skillsBranch: aiTools.github.skillsBranch || "skill-general",
+      pluginsBranch: aiTools.github.pluginsBranch || "plugins",
       manifestPath: aiTools.github.manifestPath || "ai-tools.catalog.json",
       excludeBranches: aiTools.github.excludeBranches || ["main", "master"]
     }

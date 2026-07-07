@@ -20,13 +20,15 @@ import {
   inspectMcpUninstallSafety,
   verifyMcpUninstallExecutionSafety
 } from "./lib/mcp.js";
+import { buildPluginInstallPlan, executePluginInstallPlan } from "./lib/plugins.js";
 import { blessedConfirm } from "./lib/tui-utils.js";
 import { runAiLibsWizard } from "./lib/tui-ai-libs.js";
 import { runEntryMenu } from "./lib/tui-entry-menu.js";
 import { runMcpWizard } from "./lib/tui-mcp.js";
+import { runPluginWizard } from "./lib/tui-plugins.js";
 import { runProjectDocsWizard } from "./lib/tui-project-docs.js";
 import { runTabbedWizard } from "./lib/tui-wizard.js";
-import type { Agent, InstallLocation, LibInstallPlan, McpInstallPlan, McpServer, SelectionCatalog } from "./lib/types.js";
+import type { Agent, InstallLocation, LibInstallPlan, McpInstallPlan, McpServer, PluginInstallPlan, SelectionCatalog } from "./lib/types.js";
 
 const ANSI = {
   reset: "\u001B[0m",
@@ -226,6 +228,15 @@ function printMcpInstallSelectionSummary(plan: McpInstallPlan): void {
   ]);
 }
 
+function printPluginInstallSelectionSummary(plan: PluginInstallPlan): void {
+  printLabeledRows("Selected items", [
+    ["Mode", plan.mode],
+    ["Plugins", plan.plugins.length ? plan.plugins.join(", ") : "none"],
+    ["Agents", plan.agents.length ? plan.agents.join(", ") : "none"],
+    ["Source branch", plan.sourceBranch]
+  ]);
+}
+
 export async function runCli(): Promise<void> {
   while (true) {
     const entryAction = await runEntryMenu();
@@ -283,6 +294,64 @@ export async function runCli(): Promise<void> {
 
       printBulletPanel(
         `Install complete (${plan.steps.length})`,
+        plan.steps.map((step) => step.title),
+        "success"
+      );
+      return;
+    }
+
+    if (entryAction === "install-plugin") {
+      const config = await loadPackageConfig();
+      const pluginResult = await runPluginWizard();
+
+      if ("backToMenu" in pluginResult) {
+        continue;
+      }
+
+      const plan = buildPluginInstallPlan({
+        mode: pluginResult.mode,
+        agents: pluginResult.agents,
+        plugins: pluginResult.plugins,
+        sourceBranch: config.github.pluginsBranch
+      });
+
+      printSectionHeader(
+        "Install plugin",
+        pluginResult.mode === "install"
+          ? "Preparing plugin bundle from the dedicated plugins branch."
+          : "Preparing plugin removal using the dedicated plugins branch."
+      );
+      printPluginInstallSelectionSummary(plan);
+
+      if (plan.notes.length > 0) {
+        printBulletPanel("Notes", plan.notes, "warning");
+      }
+
+      printBulletPanel(
+        `Execution plan (${plan.steps.length})`,
+        plan.steps.map((step) => `${step.title}: ${step.command}`),
+        "muted"
+      );
+
+      const client = createGitHubClient(config.github);
+      printStatusLine(
+        plan.mode === "install" ? "install" : "uninstall",
+        plan.mode === "install"
+          ? "Running selected plugin installers..."
+          : "Running selected plugin uninstallers..."
+      );
+
+      await executePluginInstallPlan({
+        cwd: process.cwd(),
+        client,
+        plan,
+        onProgress(step) {
+          printStatusLine("run", `${step.title} -> ${step.command}`, "muted");
+        }
+      });
+
+      printBulletPanel(
+        `${plan.mode === "install" ? "Install" : "Uninstall"} complete (${plan.steps.length})`,
         plan.steps.map((step) => step.title),
         "success"
       );

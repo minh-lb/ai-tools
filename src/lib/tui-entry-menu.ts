@@ -8,7 +8,13 @@ import {
   renderListRow
 } from "./tui-utils.js";
 
-export type EntryMenuAction = "install-skills" | "install-project-docs" | "install-libs" | "install-mcp" | "cancel";
+export type EntryMenuAction =
+  | "install-skills"
+  | "install-project-docs"
+  | "install-libs"
+  | "install-plugin"
+  | "install-mcp"
+  | "cancel";
 
 interface EntryMenuItem {
   id: EntryMenuAction;
@@ -35,6 +41,12 @@ const MENU_ITEMS: EntryMenuItem[] = [
     label: "⬡  Install libs for AI",
     description: "Install RTK, ICM, or ECC, then run the supported setup flow for Codex and Claude.",
     meta: "Mac + Linux"
+  },
+  {
+    id: "install-plugin",
+    label: "◉  Install plugin",
+    description: "Install or remove shared plugins such as Lumin for Codex and Claude.",
+    meta: "Codex + Claude"
   },
   {
     id: "install-mcp",

@@ -19,8 +19,9 @@ Main menu:
 1. `Install agent skills`
 2. `Install project docs`
 3. `Install libs for AI`
-4. `Install mcp`
-5. `Cancel`
+4. `Install plugin`
+5. `Install mcp`
+6. `Cancel`
 
 Controls:
 
@@ -40,6 +41,13 @@ Controls:
 - supports `rtk-ai/rtk`, `rtk-ai/icm`, and `affaan-m/ECC`
 - runs the current upstream install flow for each selected library and prints safety notes when an upstream flow is broader than the selected agent or scope
 - for `ECC`, clones the upstream repo into a temporary directory and runs the documented repo-based setup flow for the selected agent, with warnings about the documented Claude plugin overlap
+
+`Install plugin`
+- opens a guided workflow with tabs for `Plugins`, `Agents`, `Mode`, and `Review`
+- currently supports `Lumin`
+- loads the plugin bundle from the repository `plugins` branch at runtime, so the main branch CLI can install it without vendoring the plugin files into `main`
+- supports `Install` and `Uninstall`
+- installs plugins in global mode only
 
 `Install mcp`
 - opens a guided workflow with tabs for `Select MCP`, `Agent`, `Mode`, and `Review`
