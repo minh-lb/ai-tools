@@ -36,7 +36,7 @@ rm -rf "$DEST_DIR"
 mkdir -p "$DEST_DIR"
 
 set --
-while IFS= read -r skill_name; do
+while IFS= read -r skill_name || [ -n "$skill_name" ]; do
   if [ -n "$skill_name" ]; then
     set -- "$@" "$skill_name"
   fi
@@ -46,6 +46,11 @@ extract_from_git_ref() {
   ref=$1
   shift
   git -C "$REPO_ROOT" archive "$ref" "$@" | tar -x -C "$DEST_DIR"
+  found=$(find "$DEST_DIR" -mindepth 1 -maxdepth 1 | wc -l | tr -d ' ')
+  if [ "$found" -eq 0 ]; then
+    echo "ERROR: git archive produced no files for ref=$ref paths=$*" >&2
+    exit 1
+  fi
 }
 
 extract_from_remote_tarball() {
@@ -54,7 +59,7 @@ extract_from_remote_tarball() {
   unpack_dir="$tmp_root/unpacked"
   trap 'rm -rf "$tmp_root"' EXIT INT HUP TERM
 
-  curl -fsSL \
+  curl -fsSL --max-time 60 \
     "https://codeload.github.com/$REMOTE_REPO_OWNER/$REMOTE_REPO_NAME/tar.gz/refs/heads/$REMOTE_BRANCH" \
     -o "$tarball"
 
@@ -71,7 +76,7 @@ extract_from_remote_tarball() {
 }
 
 if REF=$(resolve_ref); then
-  extract_from_git_ref "$REF"
+  extract_from_git_ref "$REF" "$@"
 else
   extract_from_remote_tarball "$@"
 fi

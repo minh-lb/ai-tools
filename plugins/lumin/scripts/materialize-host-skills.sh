@@ -20,6 +20,7 @@ for skill_dir in "$SOURCE_DIR"/*; do
 
   if [ -f "$target_dir/SKILL.md" ]; then
     tmp_file=$(mktemp "${TMPDIR:-/tmp}/lumin-skill.XXXXXX")
+    trap 'rm -f "$tmp_file"' EXIT
     awk -v new_name="$PREFIX$skill_name" '
       BEGIN { replaced = 0 }
       /^name:[[:space:]]/ && replaced == 0 {
@@ -30,5 +31,6 @@ for skill_dir in "$SOURCE_DIR"/*; do
       { print }
     ' "$target_dir/SKILL.md" > "$tmp_file"
     mv "$tmp_file" "$target_dir/SKILL.md"
+    trap - EXIT
   fi
 done

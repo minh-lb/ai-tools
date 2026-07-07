@@ -9,8 +9,10 @@ INCLUDE_LINE="@./.lumin/AGENTS.lumin.md"
 
 if [ -f "$ROOT_AGENTS" ]; then
   tmp_file=$(mktemp "${TMPDIR:-/tmp}/lumin-agents.XXXXXX")
+  trap 'rm -f "$tmp_file"' EXIT
   grep -Fvx "$INCLUDE_LINE" "$ROOT_AGENTS" > "$tmp_file" || true
   mv "$tmp_file" "$ROOT_AGENTS"
+  trap - EXIT
 fi
 
 rm -f "$LUMIN_AGENTS"

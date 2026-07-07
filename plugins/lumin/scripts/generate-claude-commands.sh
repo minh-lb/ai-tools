@@ -19,6 +19,12 @@ for skill_dir in "$SKILLS_DIR"/*; do
   skill_name=$(basename "$skill_dir")
   skill_ref="${SKILL_REF_BASE}${skill_name}"
   command_path="$COMMANDS_DIR/lumin:$skill_name.md"
+
+  if [ ! -f "$skill_dir/SKILL.md" ]; then
+    echo "WARNING: $skill_dir/SKILL.md not found, skipping $skill_name" >&2
+    continue
+  fi
+
   description=$(awk '
     /^description:/ {
       sub(/^description:[[:space:]]*/, "", $0)
