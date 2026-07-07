@@ -1,0 +1,20 @@
+{
+  "name": "lumin-local",
+  "interface": {
+    "displayName": "Lumin Local"
+  },
+  "plugins": [
+    {
+      "name": "lumin",
+      "source": {
+        "source": "local",
+        "path": "./plugins/lumin"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

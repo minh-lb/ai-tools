@@ -1,0 +1,4 @@
+.claude/commands/lumin:*.md
+.lumin/
+plugins/lumin/commands/
+plugins/lumin/skills/

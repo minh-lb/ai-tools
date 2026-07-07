@@ -1,0 +1,9 @@
+backend-testcase-writer
+bugfix
+business-analyst
+debugger
+domain-driven-design
+git-workflow
+review-code
+team-full
+team-mini
