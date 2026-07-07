@@ -40,6 +40,12 @@ Sau khi cai, mo thread moi va go:
 Use $lumin:bugfix to ...
 ```
 
+## Go khoi Codex
+
+```bash
+plugins/lumin/scripts/uninstall-codex.sh
+```
+
 ## Cai vao Claude Code
 
 ```bash
@@ -58,6 +64,20 @@ Neu can cai global:
 
 ```bash
 plugins/lumin/scripts/install-claude.sh --global
+```
+
+## Go khoi Claude Code
+
+Theo project:
+
+```bash
+plugins/lumin/scripts/uninstall-claude.sh
+```
+
+Global:
+
+```bash
+plugins/lumin/scripts/uninstall-claude.sh --global
 ```
 
 ## Dong bo lai tu nhanh agent-skills
