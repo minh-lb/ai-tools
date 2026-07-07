@@ -6,8 +6,19 @@ PLUGIN_ROOT=$(CDPATH= cd -- "$SCRIPT_DIR/.." && pwd)
 REPO_ROOT=$(CDPATH= cd -- "$PLUGIN_ROOT/../.." && pwd)
 SKILL_LIST="$SCRIPT_DIR/skill-list.txt"
 DEST_DIR=${1:?destination directory is required}
+REMOTE_REPO_OWNER=minhluudev
+REMOTE_REPO_NAME=ai-tools
+REMOTE_BRANCH=agent-skills
 
 resolve_ref() {
+  if ! command -v git >/dev/null 2>&1; then
+    return 1
+  fi
+
+  if [ ! -d "$REPO_ROOT/.git" ]; then
+    return 1
+  fi
+
   if git -C "$REPO_ROOT" rev-parse --verify agent-skills >/dev/null 2>&1; then
     printf '%s\n' "agent-skills"
     return
@@ -18,11 +29,8 @@ resolve_ref() {
     return
   fi
 
-  echo "Could not resolve branch ref 'agent-skills'. Fetch that branch first." >&2
-  exit 1
+  return 1
 }
-
-REF=$(resolve_ref)
 
 rm -rf "$DEST_DIR"
 mkdir -p "$DEST_DIR"
@@ -34,4 +42,36 @@ while IFS= read -r skill_name; do
   fi
 done < "$SKILL_LIST"
 
-git -C "$REPO_ROOT" archive "$REF" "$@" | tar -x -C "$DEST_DIR"
+extract_from_git_ref() {
+  ref=$1
+  shift
+  git -C "$REPO_ROOT" archive "$ref" "$@" | tar -x -C "$DEST_DIR"
+}
+
+extract_from_remote_tarball() {
+  tmp_root=$(mktemp -d "${TMPDIR:-/tmp}/lumin-agent-skills.XXXXXX")
+  tarball="$tmp_root/agent-skills.tar.gz"
+  unpack_dir="$tmp_root/unpacked"
+  trap 'rm -rf "$tmp_root"' EXIT INT HUP TERM
+
+  curl -fsSL \
+    "https://codeload.github.com/$REMOTE_REPO_OWNER/$REMOTE_REPO_NAME/tar.gz/refs/heads/$REMOTE_BRANCH" \
+    -o "$tarball"
+
+  mkdir -p "$unpack_dir"
+  tar -xzf "$tarball" -C "$unpack_dir"
+
+  extracted_root="$unpack_dir/$REMOTE_REPO_NAME-$REMOTE_BRANCH"
+  for skill_name in "$@"; do
+    cp -R "$extracted_root/$skill_name" "$DEST_DIR/"
+  done
+
+  rm -rf "$tmp_root"
+  trap - EXIT INT HUP TERM
+}
+
+if REF=$(resolve_ref); then
+  extract_from_git_ref "$REF"
+else
+  extract_from_remote_tarball "$@"
+fi
