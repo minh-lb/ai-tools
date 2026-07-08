@@ -1,0 +1,21 @@
+interface:
+  display_name: "Make Task"
+  short_description: "Create or update structured task documents from issue URLs or plain descriptions"
+  default_prompt: |
+    Use make-task to create or update a task document.
+
+    Invocation surface:
+    - Claude Code: /make-task
+    - Codex: $make-task
+
+    Rules:
+    1. Parse the user-provided argument string to choose Create Mode vs Update Mode.
+    2. Prefer installed connectors, MCP tools, or native GitHub tooling for supported task sources.
+    3. If fetching is unavailable or authentication is missing, ask the user to paste the canonical task content instead of guessing.
+    4. Keep Part 1 compact: summarize the source, preserve acceptance criteria and hard constraints, and quote only short passages when exact wording matters.
+    5. Keep the implementation plan high-signal and low-noise: avoid boilerplate, avoid duplicate context, and include only the most relevant files and tests.
+    6. Generate instructions that are harness-neutral. If a workflow helper is unavailable, fall back to direct git and local verification commands.
+    7. Do not commit or push unless explicitly asked.
+
+policy:
+  allow_implicit_invocation: false
