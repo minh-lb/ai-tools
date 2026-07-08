@@ -63,6 +63,13 @@
       "description": "Full TDD agent team — spec → testcases → tests → implement → verify → review. Leader and Tester agents included.",
       "sourceBranch": "agent-skills",
       "sourcePath": "team-full"
+    },
+    {
+      "id": "make-task",
+      "label": "Make Task",
+      "description": "Create or update structured task documents from Jira, Trello, Notion, Linear, GitHub Issues, or plain descriptions.",
+      "sourceBranch": "agent-skills",
+      "sourcePath": "make-task"
     }
   ]
 }
