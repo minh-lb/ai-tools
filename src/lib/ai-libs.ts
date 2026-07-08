@@ -15,6 +15,7 @@ import type {
 const ICM_INSTALL_COMMAND = "curl -fsSL https://raw.githubusercontent.com/rtk-ai/icm/main/install.sh | sh";
 const RTK_INSTALL_COMMAND = "curl -fsSL https://raw.githubusercontent.com/rtk-ai/rtk/refs/heads/master/install.sh | sh";
 const ECC_REPO_URL = "https://github.com/affaan-m/ECC.git";
+const CODEGRAPH_REPO_URL = "https://github.com/colbymchenry/codegraph";
 const ECC_TEMP_DIR_PREFIX = "ai-tools-ecc-";
 const ICM_MARKER_START = "<!-- icm:start -->";
 const ICM_MARKER_END = "<!-- icm:end -->";
@@ -231,6 +232,34 @@ function buildEccInstallSteps(agents: Agent[]): LibInstallStep[] {
   return steps;
 }
 
+function buildCodegraphInstallSteps(): LibInstallStep[] {
+  return [
+    {
+      id: "codegraph-install",
+      library: "codegraph",
+      phase: "install",
+      title: "Install CodeGraph binary",
+      description: `Install the CodeGraph CLI globally from the upstream GitHub repo (${CODEGRAPH_REPO_URL}).`,
+      command: `npm install -g ${CODEGRAPH_REPO_URL}`,
+      runner: "shell"
+    }
+  ];
+}
+
+function buildCodegraphUninstallSteps(): LibInstallStep[] {
+  return [
+    {
+      id: "codegraph-uninstall",
+      library: "codegraph",
+      phase: "uninstall",
+      title: "Uninstall CodeGraph binary",
+      description: "Remove the globally installed CodeGraph CLI.",
+      command: "npm uninstall -g codegraph",
+      runner: "shell"
+    }
+  ];
+}
+
 export function buildLibInstallPlan(input: {
   mode: LibraryMode;
   os: SupportedOs;
@@ -291,6 +320,18 @@ export function buildLibInstallPlan(input: {
       } else {
         notes.push("Automatic ECC uninstall is not supported in this CLI. Upstream documents repo-root lifecycle commands such as `node scripts/uninstall.js --dry-run` followed by `node scripts/uninstall.js` for manual cleanup.");
         notes.push("If ECC was installed through the Claude plugin path, remove the plugin first and then delete only the specific ECC rule folders you copied manually.");
+      }
+      continue;
+    }
+
+    if (library === "codegraph") {
+      if (input.mode === "install") {
+        steps.push(...buildCodegraphInstallSteps());
+        notes.push("CodeGraph is a project-level indexer. After installing the CLI, run `codegraph init` in each project you want to index — indexing is intentionally per-project and not run automatically here.");
+        notes.push("The MCP tools (codegraph_explore, codegraph_node) become available only after a project has been indexed with `codegraph init`.");
+      } else {
+        steps.push(...buildCodegraphUninstallSteps());
+        notes.push("CodeGraph uninstall removes only the global CLI binary. Existing `.codegraph/` index directories in your projects are not removed and can be deleted manually with `rm -rf .codegraph`.");
       }
     }
   }

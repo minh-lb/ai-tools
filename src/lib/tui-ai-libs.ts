@@ -80,6 +80,12 @@ function currentTabItems(state: WizardState): TabItem[] {
         label: "◈  affaan-m/ECC",
         description: "Coding rules, agent instructions, hooks, and skills library for Claude Code and Codex.",
         kind: "library"
+      },
+      {
+        id: "codegraph",
+        label: "◈  colbymchenry/codegraph",
+        description: "Codebase indexer that maps symbols and call paths — enables fast semantic code exploration via MCP or CLI.",
+        kind: "library"
       }
     ];
   }
@@ -520,7 +526,7 @@ export async function runAiLibsWizard(): Promise<{
       headerBox.setContent(
         renderBannerHeader(
           "Install libs for AI",
-          "Run upstream installers and init commands for RTK, ICM, and ECC.",
+          "Run upstream installers and init commands for RTK, ICM, ECC, and CodeGraph.",
           [
             { label: `${state.selectedLibraries.size} libraries`, tone: "accent" },
             { label: `${state.selectedAgents.size} agents`, tone: "success" },

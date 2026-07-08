@@ -1,6 +1,6 @@
 export type Agent = "codex" | "claude";
 export type InstallLocation = "global" | "local";
-export type AiLibrary = "rtk" | "icm" | "ecc";
+export type AiLibrary = "rtk" | "icm" | "ecc" | "codegraph";
 export type AiPlugin = "lumin";
 export type McpServer = "antd" | "gitlab" | "github" | "figma" | "shadcn";
 export type McpMode = "install" | "uninstall";
