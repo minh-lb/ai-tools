@@ -1,10 +1,9 @@
 # {{ID}}: {{Task Title}}
 
-**Source:** {{URL or "Plain description"}}
-**Tag:** {{feature | bug | hotfix}}
-**Status:** Todo
-**Created:** {{YYYY-MM-DD}}
-**Updated:** {{YYYY-MM-DD}}
+- **Source:** {{URL or "Plain description"}}
+- **Tag:** {{feature | bug | hotfix}}
+- **Created:** {{YYYY-MM-DD}}
+- **Updated:** {{YYYY-MM-DD}}
 
 ---
 
