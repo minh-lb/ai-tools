@@ -6,11 +6,11 @@
   "type": "module",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/minhluudev/ai-tools.git"
+    "url": "git+https://github.com/minh-lb/ai-tools.git"
   },
-  "homepage": "https://github.com/minhluudev/ai-tools#readme",
+  "homepage": "https://github.com/minh-lb/ai-tools#readme",
   "bugs": {
-    "url": "https://github.com/minhluudev/ai-tools/issues"
+    "url": "https://github.com/minh-lb/ai-tools/issues"
   },
   "bin": {
     "ai-tools": "dist/src/bin/ai-tools.js"
