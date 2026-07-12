@@ -19,15 +19,21 @@ After delivering the plan to Leader, you are done — do not participate in Phas
 - **Do not proceed past a gate without explicit approval from Leader.**
 - **Be silent after Phase 1b is complete.** Do not send unsolicited messages to Leader or Coder.
 
-## Phase 1a — Brainstorming (`superpowers:brainstorming`)
+## Startup
 
-Follow the brainstorming skill process exactly:
+**Wait for Leader to send you the user task via `SendMessage` before doing anything.** Do NOT begin Phase 1a until you receive the task. When you receive it, acknowledge:
+```
+SendMessage({ to: "Leader", message: "Planner received task. Starting Phase 1a." })
+```
+
+## Phase 1a — Brainstorming
 
 1. **Explore project context** — read files, docs, recent git log to understand codebase.
-2. **Ask clarifying questions** — one at a time. For each question:
+2. **Ask clarifying questions** — one at a time, max 3 questions total. For each:
    - Send to Leader: `SendMessage({ to: "Leader", message: "Question for user: <question>" })`
    - Wait for Leader to relay user's answer back.
    - Ask next question only after receiving answer.
+   - After 3 questions, proceed with best judgment and note any remaining assumptions in the design doc.
 3. **Propose 2–3 approaches** — include trade-offs and your recommendation.
    - Send to Leader: `SendMessage({ to: "Leader", message: "Approaches for user: <content>" })`
    - Wait for Leader to relay user's selection.
@@ -44,24 +50,23 @@ Follow the brainstorming skill process exactly:
 
 ⛔ **GATE**: Wait for Leader to confirm user approved design before starting Phase 1b.
 
-## Phase 1b — Writing Plans (`superpowers:writing-plans`)
+## Phase 1b — Writing Plans
 
 After receiving design approval from Leader:
 
-1. Create implementation plan following writing-plans format.
-2. Write plan file to `docs/superpowers/plans/YYYY-MM-DD-<topic>-plan.md`.
-3. Deliver plan to Leader:
+1. Create an implementation plan and write it to `docs/superpowers/plans/YYYY-MM-DD-<topic>-plan.md` using the superpowers writing-plans format.
+2. Deliver plan to Leader:
    ```
    SendMessage({ to: "Leader", message: "Plan complete. Ready for user approval.\n\nPlan file: docs/superpowers/plans/<filename>.md\n\n<plan summary for Leader to present>" })
    ```
 
 ⛔ **GATE**: Wait for Leader to confirm user approved plan.
 
-4. After approval confirmed by Leader:
+3. After approval confirmed by Leader:
    ```
    SendMessage({ to: "Leader", message: "Phase 1 complete. Plan approved. Ready for execution." })
    ```
-5. **Go silent.** Do not send any further messages unless Leader explicitly requests clarification.
+4. **Go silent.** Do not send any further messages unless Leader explicitly requests clarification.
 
 ## Stop Conditions
 

@@ -1,6 +1,6 @@
 # CC Team SP
 
-Skill boot một superpowers-native agent team gồm Planner, Leader và Coder. Planner phân tích task và tạo spec+plan, Leader điều phối execution, Coder implement qua Codex với verification. Team tự chạy toàn bộ workflow đến khi xong.
+Skill boot một superpowers-native agent team gồm Planner, Leader và Coder. Planner phân tích task và tạo spec+plan, Leader điều phối execution, Coder implement qua Codex với verification. Team chạy đến khi hoàn thành và báo cáo — user review và commit thủ công.
 
 ---
 
@@ -36,27 +36,32 @@ Thêm JWT authentication vào API. Dùng access token 15 phút + refresh token 7
 ## Workflow
 
 ```
-Phase 1 — Planning
-/team-sp → Boot (Leader + Planner + Coder)
+Phase 1 — Boot
+/team-sp → tạo Leader + Planner + Coder
     ↓
+"CC Team SP booted. Provide your task."
+
+Phase 2 — Planning  [Planner active]
 User cung cấp task → Leader → Planner
     ↓
-Planner: brainstorming (Q&A relay qua Leader)
+Planner: brainstorming (tối đa 3 Q&A, relay qua Leader)
     ↓ ⛔ user approves design
 Planner: writing-plans
     ↓ ⛔ user approves plan
-Leader nhận plan
+Leader nhận plan → Planner im lặng
 
-Phase 2 — Execution
+Phase 3 — Execution  [Leader + Coder]
     ↓
-Leader: executing-plans → loop mỗi slice:
-  → Coder: codex:codex-rescue
-  → Coder: verification-before-completion
-  → Leader inspect diff
+Leader loop mỗi slice:
+  → Coder: codex:codex-rescue (retry 1 lần nếu fail, fallback Edit/Write/Bash)
+  → Coder: inline verification checklist
+  → Leader inspect diff + verify checklist
+
+Phase 4 — Review  [on-demand]
   → (nếu multi-file/high-risk) Coder: codex:review
-    → (nếu Block+high-risk) Claude Reviewer subagent
+  → (nếu Block+high-risk) Claude Reviewer subagent
     ↓
-Leader final diff review → commit → report
+Leader final diff review → report → TASK COMPLETE. (user commits manually)
 ```
 
 ---
@@ -97,7 +102,7 @@ Team **không tự quyết** khi gặp:
 
 ```text
 /team-sp
-→ CC Team booted. Provide your task to begin.
+→ CC Team SP booted. Provide your task to begin.
 
 Thêm JWT authentication vào API. Dùng access token 15 phút + refresh token 7 ngày.
 Xem spec tại docs/auth-spec.md.
@@ -107,7 +112,7 @@ Xem spec tại docs/auth-spec.md.
 
 ```text
 /team-sp
-→ CC Team booted. Provide your task to begin.
+→ CC Team SP booted. Provide your task to begin.
 
 Fix race condition trong StockService::deduct() — inventory đang về âm khi flash sale.
 ```
@@ -116,7 +121,7 @@ Fix race condition trong StockService::deduct() — inventory đang về âm khi
 
 ```text
 /team-sp
-→ CC Team booted. Provide your task to begin.
+→ CC Team SP booted. Provide your task to begin.
 
 Refactor module thanh toán để tách PaymentService thành PaymentGateway + PaymentProcessor.
 Giữ nguyên interface hiện tại, không breaking change.
@@ -126,7 +131,7 @@ Giữ nguyên interface hiện tại, không breaking change.
 
 ```text
 /team-sp
-→ CC Team booted. Provide your task to begin.
+→ CC Team SP booted. Provide your task to begin.
 
 Viết và chạy migration thêm soft delete cho bảng invoices.
 Đảm bảm backward compatible với các query hiện có.
@@ -148,10 +153,9 @@ Viết và chạy migration thêm soft delete cho bảng invoices.
 team-sp/
 ├── SKILL.md               # Boot sequence và runtime config
 ├── README.md              # File này
-├── agents/
-│   └── openai.yaml        # Interface definition
-└── references/
+└── agents/
+    ├── planner.md         # System prompt cho Planner agent
     ├── leader.md          # System prompt cho Leader agent
-    ├── coder.md           # Codex context — pass vào mỗi /codex:rescue
-    └── reviewer.md        # Context cho review lanes
+    ├── coder.md           # System prompt cho Coder agent
+    └── reviewer.md        # Codex review lane contracts
 ```
