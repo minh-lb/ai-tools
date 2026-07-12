@@ -155,7 +155,7 @@ Table column headers — use these exact headers in the output:
 ## Token Discipline
 
 Keep the skill practical and cheap to run:
-- Read the example file (`generate-flow/references/example-checkout-flow.md`) only once — on first use if you are uncertain about the output format. Once the format is clear, do not re-read it.
+- Read an example file only once and only when uncertain about the output format — `example-checkout-flow.md` for monolith/HTTP flows, `example-order-fulfillment-flow.md` for event-driven/microservice flows. Once the format is clear, do not re-read.
 - Do not paste large schemas or entire DTOs when a compact shape is enough. Prefer compact shapes like `Order { id, total, status }` over full type definitions unless a field-level distinction matters.
 - Do not trace tests, mocks, generated files, or migrations unless they are the only reliable source of behavior.
 - Avoid repeating the same behavior across `## Flow Summary` and `## Full Flow`. Each section must add value the others don't: Summary = big picture logic path without data detail, Full Flow = interaction and data evolution with exact shapes.

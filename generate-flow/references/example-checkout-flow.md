@@ -68,6 +68,7 @@ sequenceDiagram
     Note over Service: assert status = open, applyDiscount → finalTotal + discountAmount
     Service->>Payment: [A4] amount: finalTotal, currency, method: paymentMethod
     activate Payment
+    Note over Payment: (TERMINAL - external) charge via Stripe
     Payment-->>Service: transactionId: string, status: success
     deactivate Payment
 

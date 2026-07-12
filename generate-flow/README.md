@@ -42,7 +42,7 @@ Một file Markdown tại `docs/flow/<feature-name>.md` gồm các section theo 
 
 - Debug lỗi mà không cần tạo tài liệu → dùng `debugger`
 - Đang implement hoặc thay đổi hành vi code
-- Thiết kế kiến trúc spanning nhiều service không có trong repo này
+- Thiết kế kiến trúc spanning các service không có source trong directory tree này
 
 ## Cấu trúc file
 

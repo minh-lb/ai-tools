@@ -120,4 +120,6 @@ flowchart TD
 
 ## Câu hỏi còn mở
 
+<!-- OPTIONAL: include only when there are unresolved boundaries, inferred shapes, or cut-off points. Omit entirely if none. -->
+
 - [ ] {{hành vi chưa xác định}}
