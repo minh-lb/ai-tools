@@ -1,6 +1,6 @@
-# CC Team
+# CC Team SP
 
-Skill boot một agent team gồm Claude Code (Leader) và Codex (Worker). Một lần gọi — team tự chạy toàn bộ workflow đến khi xong, không cần can thiệp thủ công từng bước.
+Skill boot một superpowers-native agent team gồm Planner, Leader và Coder. Planner phân tích task và tạo spec+plan, Leader điều phối execution, Coder implement qua Codex với verification. Team tự chạy toàn bộ workflow đến khi xong.
 
 ---
 
@@ -14,7 +14,7 @@ Boot team trước. Sau khi team báo sẵn sàng, mới cung cấp task:
 
 ```text
 /team-sp
-→ CC Team booted. Provide your task to begin.
+→ CC Team SP booted. Provide your task to begin.
 
 Thêm JWT authentication vào API. Dùng access token 15 phút + refresh token 7 ngày.
 ```
@@ -23,42 +23,40 @@ Thêm JWT authentication vào API. Dùng access token 15 phút + refresh token 7
 
 ## Team được tạo ra gồm gì
 
-| Agent | Tạo bằng | Vai trò | Khi nào |
-|---|---|---|---|
-| **Leader** | `TeamCreate` (Claude agent) | Đọc spec, plan, chia slice, review diff | Luôn luôn — tạo khi boot |
-| **Reviewer** | `TeamCreate` (Claude agent) | Review độc lập, đánh giá kết quả Codex | Chỉ khi risk Medium/High — tạo khi nhận task |
-| **Coder** | Codex (`/codex:rescue`) | Implement, fix bug, chạy validation | On-demand — Leader invoke mỗi slice |
-| **Review lanes** | Codex (`/codex:review`, `/codex:adversarial-review`) | Review code tự động | On-demand — Leader invoke khi điều kiện thỏa |
+| Agent | Loại | Skill | Vai trò | Khi nào |
+|---|---|---|---|---|
+| **Planner** | Claude agent | `brainstorming` → `writing-plans` | Explore intent, spec, plan | Phase 1 only |
+| **Leader** | Claude agent | `executing-plans` | Relay, điều phối, không code | Suốt workflow |
+| **Coder** | Claude agent | `codex:codex-rescue` + `verification` | Implement + verify | Mỗi slice |
+| **Reviewer** | Codex on-demand | `codex:review` / `codex:adversarial-review` | Review code | Khi multi-file/high-risk |
+| **Claude Reviewer** | Claude subagent | `requesting-code-review` | Deep review | Chỉ khi Block+high-risk |
 
 ---
 
 ## Workflow
 
 ```
-Phase 1 — Boot
-/team-sp
+Phase 1 — Planning
+/team-sp → Boot (Leader + Planner + Coder)
     ↓
-TeamCreate → Leader agent
+User cung cấp task → Leader → Planner
     ↓
-"CC Team booted. Provide your task."
-    ↓
-[chờ user cung cấp task]
+Planner: brainstorming (Q&A relay qua Leader)
+    ↓ ⛔ user approves design
+Planner: writing-plans
+    ↓ ⛔ user approves plan
+Leader nhận plan
 
-Phase 2 — Execute (sau khi user gửi task)
+Phase 2 — Execution
     ↓
-Leader classify risk → tạo Reviewer nếu Medium/High
+Leader: executing-plans → loop mỗi slice:
+  → Coder: codex:codex-rescue
+  → Coder: verification-before-completion
+  → Leader inspect diff
+  → (nếu multi-file/high-risk) Coder: codex:review
+    → (nếu Block+high-risk) Claude Reviewer subagent
     ↓
-Kickoff gate: trình plan cho user
-  (High risk → chờ approval; Low/Medium → tự chạy)
-    ↓
-Loop mỗi slice — tự động, không dừng hỏi:
-  → /codex:rescue → inspect diff → verify checklist
-  → nếu fail: retry 1 lần → nếu fail tiếp: escalate user
-  → nếu cần review: /codex:review hoặc /codex:adversarial-review
-    ↓
-Final diff review bởi Leader
-    ↓
-Report kết quả cho user
+Leader final diff review → commit → report
 ```
 
 ---

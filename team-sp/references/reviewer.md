@@ -60,3 +60,29 @@ If review returns `Approve with concerns`:
 If review returns `Approve`:
 
 - Leader still performs the final diff review before closing.
+
+## Hybrid Escalation
+
+Codex review lanes handle 80% of cases. Claude Reviewer subagent is only warranted when:
+
+- Codex returns `Block` on a high-risk slice (auth, security, billing, data integrity)
+- AND repair cycles have been exhausted (2 cycles attempted)
+
+When Leader spawns a Claude Reviewer subagent, the subagent uses `superpowers:requesting-code-review`.
+The subagent receives: full diff, Codex findings, spec invariants, validation already run.
+
+Output contract is the same:
+
+```md
+Verdict
+- Approve | Approve with concerns | Revise | Block
+
+Findings
+1. Severity, issue, file/behavior, trigger, why it matters, suggested direction
+
+Validation gaps
+- Missing or weak checks
+
+Residual risk
+- What still looks uncertain after review
+```

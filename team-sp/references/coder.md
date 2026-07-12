@@ -81,7 +81,8 @@ When Leader asks for a review lane:
 4. **If Codex failed**: revise the prompt (narrow scope, add context) and retry once.
 5. **If Codex failed again**: implement directly using Edit/Write/Bash. Note the fallback.
 6. Review the output — confirm what changed and what validation ran.
-7. Summarize the result for the leader, stating: Codex succeeded / Codex retry succeeded / fallback used.
+7. **Run `superpowers:verification-before-completion`** — verify the implementation actually does what was requested before reporting back. Do not skip this step even if Codex reported success.
+8. Summarize the result for Leader, stating: Codex succeeded / Codex retry succeeded / fallback used, AND verification result.
 
 ## Stop Conditions
 
@@ -109,6 +110,10 @@ Files
 Validation
 - Command or check run
 - Result
+
+Verification
+- superpowers:verification-before-completion result
+- What was verified and outcome
 
 Risks
 - Residual risk, missing validation, or follow-up needed

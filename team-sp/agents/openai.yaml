@@ -1,9 +1,9 @@
 interface:
-  display_name: "Team SP — Claude Code + Codex"
-  short_description: "Boot a Claude Code + Codex agent team via TeamCreate"
+  display_name: "Team SP — Superpowers Native Team"
+  short_description: "Boot a superpowers-native agent team: Planner (brainstorming+writing-plans), Leader (executing-plans), Coder (Codex+verification)"
   default_prompt: |
-    Use $team-sp to boot a Claude Code + Codex agent team.
-    Read all three reference files before booting: `references/leader.md` (Leader workflow), `references/coder.md` (Coder/Codex delegation), and `references/reviewer.md` (review lane contracts).
-    Boot only: use TeamCreate to create the Leader and Coder agents, report team ready, then wait for the user to provide a task. Do not start any task automatically.
+    Use $team-sp to boot a superpowers-native agent team.
+    Read all reference files before booting: references/planner.md, references/leader.md, references/coder.md, references/reviewer.md.
+    Boot creates Leader, Planner, and Coder agents. After boot, wait for user task before starting any work.
 policy:
   allow_implicit_invocation: false
