@@ -133,61 +133,36 @@ Mark inferred details explicitly with `(inferred)`.
 
 Read `generate-flow/templates/flow.template.md` as the output skeleton if the file is accessible (it may not be when the skill is installed outside the `ai-tools` repo). If it cannot be found, rely on the rendering rules and table headers below instead. Read `generate-flow/references/example-checkout-flow.md` only when you need a full finished example; do not read it by default.
 
+**Output root rule:** Always write to `docs/flow/` relative to the **project working directory root** (the top-level directory of the repo, not the directory of the source file being traced). If the source file is inside a subdirectory (e.g. `laravel-app/Modules/...`), the output is still `./docs/flow/<feature-name>.md`, never `laravel-app/docs/flow/<feature-name>.md`.
+
 Preflight:
 - If `docs/flow/<feature-name>.md` exists, preserve every existing row from `Edit History` and append one new row: `Regenerated from code`.
 - If it does not exist, create it with one row: `Initial generation`.
 - Create `docs/flow/` if needed.
 
 The generated file must contain these sections in order:
-1. `Header` — `# Flow: <name>`, `Feature`, `Entry point`, `Generated`, `Author`
+1. `Header` — `# Flow: <name>`, `Feature`, `Entry point`
 2. `## Lịch sử chỉnh sửa`
-3. `## Tóm tắt`
-4. `## Flow đầy đủ`
-5. `## Phân tích từng layer`
-6. `## Điểm kết thúc`
-7. `## Câu hỏi còn mở` — chỉ thêm khi cần
+3. `## Flow Summary`
+4. `## Full Flow`
+5. `## Điểm kết thúc`
+6. `## Câu hỏi còn mở` — include only when there are unresolved questions
 
-**Language rule:** Viết toàn bộ nội dung mô tả bằng tiếng Việt — mô tả feature, các bước logic, side effects, open questions. Giữ nguyên tiếng Anh cho: field names, file paths, function names, layer type labels (API, Service, Repository, Cache, External, Queue, UI, Store, Worker, Domain), HTTP methods, status codes, event names, change types (CREATE / UPDATE / DELETE / DERIVE / RENAME), code blocks, và tất cả Mermaid diagram labels.
+**Language rule:** Write all descriptive content in Vietnamese — feature descriptions, logic steps, side effects, open questions. Keep English for: field names, file paths, function names, layer type labels (API, Service, Repository, Cache, External, Queue, UI, Store, Worker, Domain), HTTP methods, status codes, event names, change types (CREATE / UPDATE / DELETE / DERIVE / RENAME), code blocks, and all Mermaid diagram labels.
 
 Rendering rules:
-- `## Tóm tắt` phải ngắn gọn: mô tả <= 5 câu, `flowchart LR` <= 20 nodes, bảng các bước chính <= 10 dòng.
-- `### Các thay đổi dữ liệu chính`: liệt kê mọi field được tạo hoặc thay đổi có ý nghĩa trong toàn bộ flow. Bỏ section này chỉ khi thực sự không có field nào thay đổi.
-- Nếu có nhiều entry point, liệt kê từng cái trên một dòng riêng trong field `Entry point`.
-- `## Flow đầy đủ` chứa một section `### Path:` cho mỗi trigger riêng biệt. Mỗi path phải có đủ 3 subsection dưới đây.
-- `#### Sơ đồ tuần tự`: dùng `autonumber`, một participant cho mỗi layer thực tế. **Arrow labels phải thể hiện data shape tại mỗi handoff** — field names và types, không chỉ tên function. Với non-HTTP trigger, thay `Client` bằng tên trigger thực tế (`Scheduler`, `EventConsumer`, tên CLI command, v.v.).
-- `#### Quá trình biến đổi dữ liệu`: đặt ngay sau Sơ đồ tuần tự. Mỗi dòng là một điểm trong flow nơi hình dạng của object thay đổi — bao gồm mọi field được thêm, xóa, tính lại, đổi tên. Bắt buộc cho flow đi qua 3+ layer hoặc có transformation có ý nghĩa.
-- `#### Sơ đồ quyết định` (`flowchart TD`): chỉ các nhánh dẫn đến kết quả thực sự khác nhau. Bỏ hoàn toàn nếu flow tuyến tính.
-- `## Phân tích từng layer`: một section `###` cho mỗi layer thực tế trong code. Không giới hạn ở 3. Mỗi section gồm: `**File:**`, `**Function:**`, code block `**Đầu vào:**` (dùng data notation standard — mỗi field một dòng với type + required/optional + constraints), bước logic có số thứ tự `**Logic:**`, code block `**Đầu ra:**` (cùng format), `**Side effects:**`.
-- `#### Bảng thay đổi dữ liệu`: xuất hiện cho mọi layer có tạo, cập nhật, xóa, tính toán, hoặc đổi tên field. Bắt buộc khi có — không được bỏ để cho output ngắn hơn. Mỗi dòng phải có **change type** và source location chính xác.
-- `## Điểm kết thúc` phải bao gồm mọi DB write, event publish, external boundary, response, và error terminal được reach trong flow. Thêm dòng khi cần — một dòng cho mỗi terminal dù cùng loại.
+- `## Flow Summary` must be concise: describe the logic flow in <= 3 sentences with no data detail. Use `flowchart LR` with <= 15 nodes to show only the path through layers. Steps table <= 8 rows, one short step per row.
+- If multiple entry points exist, list each on its own line in the `Entry point` field.
+- `## Full Flow` contains one `### Path:` section per distinct trigger.
+- `sequenceDiagram` represents **both logic flow** (who calls whom, in what order) **and data flow** (what shape data has at each handoff, how it changes between steps) — do not separate these into different sections. Use `autonumber`, one participant per real layer. Arrow labels write data shape as `field: Type, field: Type`; when too long, shorten to `[An]` notation and explain in the Data Annotations section. Use `activate`/`deactivate` to clarify call lifetimes. Use `Note over` to record important actions inside a layer (validate, transform, persist). For non-HTTP triggers, replace `Client` with the actual trigger name (`Scheduler`, `EventConsumer`, CLI command name, etc.).
+- `#### Chú thích dữ liệu`: required whenever any arrow label is shortened with `[An]`. Each annotation records the full data shape at that point and explicitly states for every field: **unchanged** from previous step / **derived** from which field / **removed** at this step / **newly created**. Omit this section only when all data shapes are already fully expressed in arrow labels.
+- `#### Sơ đồ quyết định` (`flowchart TD`): add only when flow is non-linear. Omit entirely for straight-line flows.
+- `## Điểm kết thúc` must include every DB write, event publish, external boundary, response, and error terminal reached in the flow. Add one row per terminal even when multiple share the same type.
 
-Table column headers — dùng đúng các header này:
-- **Các bước chính**: `| # | Layer | Điều gì xảy ra | Data shape |`
-- **Các thay đổi dữ liệu chính**: `| Field | Set by | Layer |`
-- **Quá trình biến đổi dữ liệu**: `| Layer | Snapshot dữ liệu |`
-- **Bảng thay đổi dữ liệu** (mỗi layer): `| Field | Type | Change | Trước | Sau | Source |` — Change values: `CREATE` / `UPDATE` / `DELETE` / `DERIVE` / `RENAME`; Type là kiểu dữ liệu của field, thêm `?` nếu optional, `| null` nếu nullable
+Table column headers — use these exact headers in the output:
+- **Flow Summary steps table**: `| # | Bước | Mô tả |`
 - **Điểm kết thúc**: `| Loại | Mô tả | File | Function |`
 - **Lịch sử chỉnh sửa**: `| Ngày | Thay đổi | Bởi |`
-
-### 6. Register in `docs/flow/README.md`
-
-If `docs/flow/README.md` does not exist, create:
-
-```markdown
-# Flow Documentation
-
-This directory is maintained by the `generate-flow` skill. Do not edit rows manually.
-
-| Feature | File | Last Updated |
-| --- | --- | --- |
-```
-
-Then add or update exactly one row for the feature:
-- `Feature`: plain text feature name
-- `File`: `[view](<feature-name>.md)`
-- `Last Updated`: today's date in `YYYY-MM-DD`
-
-Do not create duplicate rows.
 
 ## Token Discipline
 
@@ -195,7 +170,7 @@ Keep the skill practical and cheap to run:
 - Read the example file (`generate-flow/references/example-checkout-flow.md`) only once — on first use if you are uncertain about the output format. Once the format is clear, do not re-read it.
 - Do not paste large schemas or entire DTOs when a compact shape is enough. Prefer compact shapes like `Order { id, total, status }` over full type definitions unless a field-level distinction matters.
 - Do not trace tests, mocks, generated files, or migrations unless they are the only reliable source of behavior.
-- Avoid repeating the same behavior across `## Tóm tắt`, `## Flow đầy đủ`, and `## Phân tích từng layer`. Each section must add value the others don't: Summary = big picture, Full Flow = interaction and data evolution, Layer Breakdown = per-layer detail.
+- Avoid repeating the same behavior across `## Flow Summary` and `## Full Flow`. Each section must add value the others don't: Summary = big picture logic path without data detail, Full Flow = interaction and data evolution with exact shapes.
 - If one path is the canonical production path and other paths are thin wrappers, document the canonical path fully and mention wrappers in one sentence instead of duplicating the sequence.
 
 ## Mermaid Safety
@@ -223,12 +198,11 @@ The output is only acceptable when all of these are true:
 
 ## Output
 
-After writing the files, print:
+After writing the file, print:
 
 ```text
 Flow generated for: <feature-name>
-  File  : docs/flow/<feature-name>.md
-  Index : docs/flow/README.md
+  File: docs/flow/<feature-name>.md
 ```
 
 Do not commit files unless the user explicitly asks.

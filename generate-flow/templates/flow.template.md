@@ -2,8 +2,6 @@
 
 - **Feature:** {{feature-name}}
 - **Entry point:** {{entry-points}}
-- **Generated:** {{date}}
-- **Author:** generate-flow skill
 
 ---
 
@@ -15,122 +13,102 @@
 
 ---
 
-## Tóm tắt
+## Flow Summary
 
-{{mô tả feature bằng tiếng Việt — tối đa 5 câu}}
+{{mô tả ngắn gọn logic flow — tối đa 3 câu, không cần nêu chi tiết data}}
 
 ```mermaid
 flowchart LR
-    A([Trigger]) --> B[<LayerA>]
-    B --> C[<LayerB>]
-    C --> D[<LayerC>]
+    A([Trigger]) --> B[LayerA]
+    B --> C[LayerB]
+    C --> D[LayerC]
     D --> E([Terminal])
 ```
 
-### Các bước chính
-
-| # | Layer | Điều gì xảy ra | Data shape |
-| --- | --- | --- | --- |
-| 1 | {{layer-1}} | {{mô tả ngắn}} | `{{data-shape}}` |
-| 2 | {{layer-2}} | {{mô tả ngắn}} | `{{data-shape}}` |
-| 3 | {{layer-3}} | {{mô tả ngắn}} | `{{data-shape}}` |
-
-### Các thay đổi dữ liệu chính
-
-| Field | Set by | Layer |
+| # | Bước | Mô tả |
 | --- | --- | --- |
-| `{{field-name}}` | `{{file:line}}` | {{layer}} |
+| 1 | {{bước-1}} | {{mô tả ngắn}} |
+| 2 | {{bước-2}} | {{mô tả ngắn}} |
+| 3 | {{bước-3}} | {{mô tả ngắn}} |
 
 ---
 
-## Flow đầy đủ
+## Full Flow
+
+> Diagram dưới đây thể hiện đồng thời **logic flow** (ai gọi ai, theo thứ tự nào) và **data flow** (data có hình dạng gì tại mỗi bước, thay đổi ra sao khi đi qua từng layer). Khi data quá phức tạp để ghi vào arrow label, dùng ký hiệu `[An]` và giải thích chi tiết trong phần **Chú thích dữ liệu** bên dưới.
 
 ### Path: {{path-name}}
-
-#### Sơ đồ tuần tự
 
 ```mermaid
 sequenceDiagram
     autonumber
     participant Trigger
-    participant <LayerA>
-    participant <LayerB>
-    participant <LayerC>
+    participant LayerA
+    participant LayerB
+    participant LayerC
 
-    Trigger->><LayerA>: <field: type, field: type>
-    <LayerA>->><LayerB>: <field: type, field: type>
-    <LayerB>->><LayerC>: <field: type>
-    <LayerC>-->><LayerB>: <field: type>
-    <LayerB>-->><LayerA>: <field: type>
-    <LayerA>-->>Trigger: <field: type>
+    Trigger->>LayerA: [A1] fieldA: TypeA, fieldB: TypeB
+    activate LayerA
+    Note over LayerA: validate + transform
+    LayerA->>LayerB: [A2] fieldA: TypeA, newField: TypeC
+    activate LayerB
+    Note over LayerB: persist / call external
+    LayerB-->>LayerA: [A3] result: TypeD
+    deactivate LayerB
+    LayerA-->>Trigger: [A4] status: 200, data: TypeD
+    deactivate LayerA
 ```
 
-#### Quá trình biến đổi dữ liệu
+#### Chú thích dữ liệu
 
-| Layer | Snapshot dữ liệu |
-| --- | --- |
-| {{layer-1}} đầu vào | `{ {{field}}: {{type}}, {{field}}: {{type}} }` |
-| {{layer-2}} (sau {{transformation}}) | `{ ...prev, {{new-field}}: {{type}} }` |
-| {{layer-3}} (đã lưu) | `{{Entity}} { {{field}}: {{type}}, {{field}}: {{type}} }` |
-| Response | `{ {{field}}: {{type}}, {{field}}: {{type}} }` |
+> Mỗi annotation giải thích đầy đủ data shape tại một điểm trong flow, bao gồm rõ field nào được thêm, giữ nguyên, tính lại, hay loại bỏ so với bước trước.
+
+**[A1]** `Trigger` → `LayerA` — raw input:
+```
+fieldA: TypeA               // required
+fieldB?: TypeB              // optional
+fieldC: "x" | "y" | "z"    // enum
+```
+
+**[A2]** `LayerA` → `LayerB` — sau validate & transform:
+```
+fieldA: TypeA               // giữ nguyên
+newField: TypeC             // derive từ fieldA + fieldB
+fieldB: —                   // bị loại bỏ sau validate
+```
+
+**[A3]** `LayerB` → `LayerA` — kết quả trả về:
+```
+result: TypeD               // tạo mới tại LayerB
+```
+
+**[A4]** `LayerA` → `Trigger` — response cuối:
+```
+status: number              // 200 | 400 | 500
+data: TypeD                 // từ [A3]
+```
 
 #### Sơ đồ quyết định
 
+> Chỉ thêm khi flow không tuyến tính. Bỏ section này nếu flow thẳng.
+
 ```mermaid
 flowchart TD
-    Start([<entry-trigger>])
-    D1{<decision-1>}
-    D2{<decision-2>}
-    E1[<error-or-exit-1>]
-    E2[<error-or-exit-2>]
-    OK[<success-action>]
-    Done([<terminal>])
+    Start([entry-trigger])
+    D1{decision-1}
+    D2{decision-2}
+    E1[error-1]
+    E2[error-2]
+    OK[success-action]
+    Done([terminal])
 
     Start --> D1
-    D1 --branch-a--> E1
-    D1 --branch-b--> D2
-    D2 --branch-c--> E2
-    D2 --branch-d--> OK
+    D1 --condition-a--> E1
+    D1 --condition-b--> D2
+    D2 --condition-c--> E2
+    D2 --condition-d--> OK
     OK --> Done
 ```
-
----
-
-## Phân tích từng layer
-
-### {{LayerA}} - {{layer-type}}
-
-**File:** `{{file-path}}`
-**Function:** `{{function-name}}`
-
-**Đầu vào:**
-```
-fieldName: Type               // required
-fieldName?: Type              // optional
-fieldName: Type | null        // nullable
-status: "a" | "b" | "c"      // enum
-amount: number                // required; > 0
-```
-
-**Logic:**
-1. {{bước 1}}
-2. {{bước 2}}
-3. {{bước 3}}
-
-**Đầu ra:**
-```
-fieldName: Type               // required
-fieldName?: Type              // optional
-```
-
-**Side effects:** {{mô tả hoặc "không có"}}
-
-#### Bảng thay đổi dữ liệu
-
-| Field | Type | Change | Trước | Sau | Source |
-| --- | --- | --- | --- | --- | --- |
-| `{{field-name}}` | `Type` | CREATE | — | `{{value}}` | `{{file:line}}` |
-| `{{field-name}}` | `Type?` | UPDATE | `{{before}}` | `{{after}}` | `{{file:line}}` |
 
 ---
 
