@@ -66,14 +66,14 @@ sequenceDiagram
     FulfillService->>InvClient: [A3] items[] - productId + quantity per item
     activate InvClient
     InvClient->>InvService: POST /inventory/reserve - [A3]
-    Note over InvService: reserve stock, deduct available qty (TERMINAL)
+    Note over InvService: (TERMINAL - external) reserve stock, deduct available qty
     InvService-->>InvClient: [A4] reservationId, reservedItems[]
     deactivate InvClient
 
     FulfillService->>ShipClient: [A5] orderId, reservationId, items[], shippingAddress
     activate ShipClient
     ShipClient->>ShipService: POST /shipments - [A5]
-    Note over ShipService: create shipment record, assign carrier (TERMINAL)
+    Note over ShipService: (TERMINAL - external) create shipment record, assign carrier
     ShipService-->>ShipClient: [A6] shipmentId, trackingNumber, carrier, estimatedDelivery
     deactivate ShipClient
 
@@ -94,41 +94,6 @@ sequenceDiagram
     deactivate FulfillService
     Consumer-->>Queue: ack (message committed)
     deactivate Consumer
-```
-
-### Path: fulfillment.started (consumed by NotificationService)
-
-```mermaid
-sequenceDiagram
-    autonumber
-    participant Queue as MessageQueue
-    participant NotiConsumer as FulfillmentStartedConsumer
-    participant NotiService as NotificationService
-    participant UserClient as UserClient
-    participant UserService as UserService
-    participant EmailProvider as EmailProvider
-
-    Queue->>NotiConsumer: [B1] fulfillment.started message
-    activate NotiConsumer
-    Note over NotiConsumer: deserialize + validate message schema
-    NotiConsumer->>NotiService: [B2] fulfillmentId, orderId, userId, trackingNumber, estimatedDelivery
-    activate NotiService
-
-    NotiService->>UserClient: userId: string
-    activate UserClient
-    UserClient->>UserService: GET /users/:userId (TERMINAL)
-    UserService-->>UserClient: [B3] email, firstName
-    deactivate UserClient
-
-    Note over NotiService: render email template with order + tracking data
-    NotiService->>EmailProvider: [B4] to, subject, html
-    Note over EmailProvider: deliver via SMTP / SendGrid (TERMINAL)
-    EmailProvider-->>NotiService: messageId: string
-
-    NotiService-->>NotiConsumer: ok
-    deactivate NotiService
-    NotiConsumer-->>Queue: ack
-    deactivate NotiConsumer
 ```
 
 #### Chú thích dữ liệu
@@ -158,7 +123,7 @@ createdAt: —                // bị loại bỏ; không cần trong business l
 items: ReserveItem[]        // derive từ [A2] items; map sang [{ productId, quantity }]; unitPrice bị loại bỏ
 ```
 
-**[A4]** `InventoryService` → `FulfillmentService` — reserve response (service boundary — không trace tiếp):
+**[A4]** `InventoryService` → `FulfillmentService` — reserve response (TERMINAL - external, không trace tiếp):
 ```
 reservationId: string       // tạo mới; format: uuid; do InventoryService generate
 reservedItems: ReservedItem[]  // tạo mới; [{ productId, quantity, warehouseId }]
@@ -172,7 +137,7 @@ items: ReservedItem[]       // giữ nguyên từ [A4] reservedItems
 shippingAddress: Address    // giữ nguyên từ [A2]
 ```
 
-**[A6]** `ShippingService` → `FulfillmentService` — shipment response (service boundary — không trace tiếp):
+**[A6]** `ShippingService` → `FulfillmentService` — shipment response (TERMINAL - external, không trace tiếp):
 ```
 shipmentId: string          // tạo mới; format: uuid; do ShippingService generate
 trackingNumber: string      // tạo mới; do carrier assign
@@ -211,6 +176,68 @@ trackingNumber: string      // giữ nguyên từ [A6]
 estimatedDelivery: string   // giữ nguyên từ [A6]
 ```
 
+#### Sơ đồ quyết định
+
+```mermaid
+flowchart TD
+    Start([order.created consumed])
+    R1{Inventory reserve OK?}
+    R2{Shipment created OK?}
+    E1[Throw InventoryUnavailableException]
+    E2[Throw ShipmentCreationException]
+    Retry1[Queue NACK - retry / DLQ]
+    Retry2[Queue NACK - retry / DLQ]
+    Persist[Insert fulfillment record]
+    Publish[Publish fulfillment.started]
+    Done([Queue ACK])
+
+    Start --> R1
+    R1 --failed--> E1 --> Retry1
+    R1 --ok--> R2
+    R2 --failed--> E2 --> Retry2
+    R2 --ok--> Persist --> Publish --> Done
+```
+
+---
+
+### Path: fulfillment.started (consumed by NotificationService)
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant Queue as MessageQueue
+    participant NotiConsumer as FulfillmentStartedConsumer
+    participant NotiService as NotificationService
+    participant UserClient as UserClient
+    participant UserService as UserService
+    participant EmailProvider as EmailProvider
+
+    Queue->>NotiConsumer: [B1] fulfillment.started message
+    activate NotiConsumer
+    Note over NotiConsumer: deserialize + validate message schema
+    NotiConsumer->>NotiService: [B2] fulfillmentId, orderId, userId, trackingNumber, estimatedDelivery
+    activate NotiService
+
+    NotiService->>UserClient: userId: string
+    activate UserClient
+    UserClient->>UserService: GET /users/:id
+    Note over UserService: (TERMINAL - external) fetch user profile
+    UserService-->>UserClient: [B3] email, firstName
+    deactivate UserClient
+
+    Note over NotiService: render email template with order + tracking data
+    NotiService->>EmailProvider: [B4] to, subject, html
+    Note over EmailProvider: (TERMINAL - external) deliver via SMTP / SendGrid
+    EmailProvider-->>NotiService: messageId: string
+
+    NotiService-->>NotiConsumer: ok
+    deactivate NotiService
+    NotiConsumer-->>Queue: ack
+    deactivate NotiConsumer
+```
+
+#### Chú thích dữ liệu
+
 **[B1]** `MessageQueue` → `FulfillmentStartedConsumer` — raw message payload:
 ```
 eventType: "fulfillment.started"  // required
@@ -221,7 +248,7 @@ trackingNumber: string      // required
 estimatedDelivery: string   // required; ISO 8601 date
 ```
 
-**[B2]** `FulfillmentStartedConsumer` → `NotificationService`:
+**[B2]** `FulfillmentStartedConsumer` → `NotificationService` — sau khi deserialize:
 ```
 fulfillmentId: string       // giữ nguyên từ [B1]
 orderId: string             // giữ nguyên từ [B1]
@@ -231,7 +258,7 @@ estimatedDelivery: string   // giữ nguyên từ [B1]
 eventType: —                // bị loại bỏ
 ```
 
-**[B3]** `UserService` → `NotificationService` — user info (service boundary — không trace tiếp):
+**[B3]** `UserService` → `NotificationService` — user info (TERMINAL - external, không trace tiếp):
 ```
 email: string               // tạo mới; từ UserService
 firstName: string           // tạo mới; từ UserService
@@ -244,28 +271,6 @@ subject: string             // tạo mới; rendered từ template
 html: string                // tạo mới; render template với orderId, trackingNumber, estimatedDelivery, firstName
 ```
 
-#### Sơ đồ quyết định
-
-```mermaid
-flowchart TD
-    Start([order.created consumed])
-    R1{Inventory reserve OK?}
-    R2{Shipment created OK?}
-    E1[Throw InventoryUnavailableException]
-    E2[Throw ShipmentCreationException]
-    Retry1[Queue NACK → retry / DLQ]
-    Retry2[Queue NACK → retry / DLQ]
-    Persist[Insert fulfillment record]
-    Publish[Publish fulfillment.started]
-    Done([Queue ACK])
-
-    Start --> R1
-    R1 --failed / stock unavailable--> E1 --> Retry1
-    R1 --ok--> R2
-    R2 --failed--> E2 --> Retry2
-    R2 --ok--> Persist --> Publish --> Done
-```
-
 ---
 
 ## Điểm kết thúc
@@ -276,7 +281,7 @@ flowchart TD
 | External HTTP | POST `/shipments` — tạo vận đơn tại ShippingService | `fulfillment-service/src/clients/shipping.client.ts` | `ShippingClient.createShipment` |
 | DB Write | INSERT vào bảng `fulfillments` | `fulfillment-service/src/fulfillment/fulfillment.repository.ts` | `FulfillmentRepository.create` |
 | Event | `fulfillment.started` publish lên exchange `fulfillments` | `fulfillment-service/src/fulfillment/fulfillment.service.ts` | `FulfillmentService.fulfill` |
-| External HTTP | GET `/users/:userId` — lấy thông tin user tại UserService | `notification-service/src/clients/user.client.ts` | `UserClient.findById` |
+| External HTTP | GET `/users/:id` — lấy thông tin user tại UserService | `notification-service/src/clients/user.client.ts` | `UserClient.findById` |
 | External API | Gửi email qua Email Provider (SendGrid / SMTP) | `notification-service/src/notification/notification.service.ts` | `NotificationService.sendFulfillmentEmail` |
 
 ---

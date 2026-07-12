@@ -34,7 +34,7 @@ Use this skill for:
 Skip this skill for:
 - defect investigation without documentation output -> use `debugger`
 - implementing or fixing behavior
-- architecture design across multiple services not present in this repo
+- architecture design across services whose source is not in this directory tree
 
 ## Execution Strategy
 
@@ -78,6 +78,7 @@ Starting from each entry point, follow the call chain depth-first until a termin
 fieldName: Type               // required
 fieldName?: Type              // optional (may be absent)
 fieldName: Type | null        // required but nullable
+fieldName?: Type | null       // optional and nullable
 status: "a" | "b" | "c"      // enum — list all values
 amount: number                // required; constraint as inline comment: > 0, maxLength: 20, format: uuid|email|date, etc.
 ```
@@ -114,11 +115,11 @@ Stop tracing when any of these is true:
 - next step enters third-party or standard-library code
 - next step is an external service call (not resolvable within this directory tree)
 
-If the real flow goes deeper, note the cutoff in `Open Questions`.
+If the real flow goes deeper, note the cutoff in `## Câu hỏi còn mở`.
 
 ### 4. Generate `docs/flow/<feature-name>.md`
 
-Read `generate-flow/templates/flow.template.md` as the output skeleton if the file is accessible (it may not be when the skill is installed outside the `ai-tools` repo). If it cannot be found, rely on the rendering rules and table headers below instead. Read `generate-flow/references/example-checkout-flow.md` only when you need a full finished example; do not read it by default.
+Read `generate-flow/templates/flow.template.md` as the output skeleton if the file is accessible (it may not be when the skill is installed outside the `ai-tools` repo). If it cannot be found, rely on the rendering rules and table headers below instead. When you need a full finished example, read `generate-flow/references/example-checkout-flow.md` (monolith / HTTP) or `generate-flow/references/example-order-fulfillment-flow.md` (microservice / event-driven) — pick the one that best matches the project under trace. Do not read either by default.
 
 **Output root rule:** Always write to `docs/flow/` relative to the **project working directory root** (the top-level directory of the repo, not the directory of the source file being traced). If the source file is inside a subdirectory (e.g. `laravel-app/Modules/...`), the output is still `./docs/flow/<feature-name>.md`, never `laravel-app/docs/flow/<feature-name>.md`.
 
