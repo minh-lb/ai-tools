@@ -14,6 +14,7 @@ export type EntryMenuAction =
   | "install-libs"
   | "install-plugin"
   | "install-mcp"
+  | "manage-skills"
   | "cancel";
 
 interface EntryMenuItem {
@@ -55,12 +56,20 @@ const MENU_ITEMS: EntryMenuItem[] = [
     meta: "Codex + Claude"
   },
   {
+    id: "manage-skills",
+    label: "⊘  Manage skills",
+    description: "List and delete installed skills for Claude or Codex.",
+    meta: "Claude + Codex"
+  },
+  {
     id: "cancel",
     label: "✕  Cancel",
     description: "Exit without running any installer.",
     meta: "Safe exit"
   }
 ];
+
+export const MENU_ITEMS_FOR_TEST = MENU_ITEMS;
 
 function renderItem(item: EntryMenuItem, isActive: boolean): string {
   return renderListRow({
