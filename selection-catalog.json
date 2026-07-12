@@ -70,6 +70,13 @@
       "description": "Create or update structured task documents from Jira, Trello, Notion, Linear, GitHub Issues, or plain descriptions.",
       "sourceBranch": "agent-skills",
       "sourcePath": "make-task"
+    },
+    {
+      "id": "generate-flow",
+      "label": "Generate Flow",
+      "description": "Trace a feature's data and logic end-to-end through source code layers — from trigger to persistence, event emission, response, or failure.",
+      "sourceBranch": "agent-skills",
+      "sourcePath": "generate-flow"
     }
   ]
 }
