@@ -123,7 +123,7 @@ Read `generate-flow/templates/flow.template.md` as the output skeleton if the fi
 **Output root rule:** Always write to `docs/flow/` relative to the **project working directory root** (the top-level directory of the repo, not the directory of the source file being traced). If the source file is inside a subdirectory (e.g. `laravel-app/Modules/...`), the output is still `./docs/flow/<feature-name>.md`, never `laravel-app/docs/flow/<feature-name>.md`.
 
 Preflight:
-- If `docs/flow/<feature-name>.md` exists, preserve every existing row from `Edit History` and append one new row: `Regenerated from code`.
+- If `docs/flow/<feature-name>.md` exists, preserve every existing row from `## Lịch sử chỉnh sửa` and append one new row: `Regenerated from code`.
 - If it does not exist, create it with one row: `Initial generation`.
 - Create `docs/flow/` if needed.
 
@@ -178,7 +178,7 @@ The output is only acceptable when all of these are true:
 - every step is grounded in repo code
 - every documented file path exists
 - every meaningful branch maps to a real conditional
-- every mutation row names the layer and source location
+- every [An] annotation traces each field change to its source layer
 - every path reaches a real terminal or explicitly states why it stops
 - prior edit history rows are preserved on regeneration
 - no template notes, placeholders, or agent instructions remain in the generated file

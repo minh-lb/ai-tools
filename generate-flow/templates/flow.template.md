@@ -86,6 +86,8 @@ data: TypeD                 // từ [A3]
 
 #### Sơ đồ quyết định
 
+<!-- OPTIONAL: include only when flow is non-linear. Omit entirely for straight-line flows. -->
+
 ```mermaid
 flowchart TD
     Start([entry-trigger])
