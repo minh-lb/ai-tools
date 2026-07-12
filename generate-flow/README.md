@@ -1,6 +1,6 @@
 # generate-flow
 
-Trace một feature từ đầu đến cuối qua codebase và tạo ra một tài liệu flow chi tiết, có căn cứ từ code thực tế.
+Trace một feature từ đầu đến cuối qua codebase và tạo ra một tài liệu flow có căn cứ từ code thực tế, đủ để engineer khác maintain hoặc viết test mà không phải trace lại từ đầu.
 
 ## Ngôn ngữ output
 
@@ -12,9 +12,12 @@ Một file Markdown tại `docs/flow/<feature-name>.md` gồm các section theo 
 
 - **Lịch sử chỉnh sửa** — bảng ghi lại mỗi lần tạo hoặc tái tạo tài liệu; các dòng cũ không bao giờ bị xóa
 - **Flow Summary** — mô tả logic flow <= 3 câu, sơ đồ `flowchart LR` tổng quan (không có data detail), bảng các bước chính
-- **Full Flow** — `sequenceDiagram` thể hiện đồng thời logic flow (ai gọi ai, theo thứ tự nào) và data flow (data shape tại mỗi handoff, thay đổi ra sao qua từng bước); kèm **Chú thích dữ liệu** giải thích đầy đủ data shape khi label quá dài; **Sơ đồ quyết định** nếu flow không tuyến tính
-- **Điểm kết thúc** — toàn bộ DB write, event publish, external API call, và response mà flow đi qua
+- **Full Flow** — `sequenceDiagram` thể hiện đồng thời logic flow (ai gọi ai, theo thứ tự nào) và data flow (data shape tại mỗi handoff, thay đổi ra sao qua từng bước); kèm **Chú thích dữ liệu** khi label cần rút gọn hoặc field evolution không còn rõ; **Sơ đồ quyết định** nếu flow không tuyến tính
+- **Điểm kết thúc** — toàn bộ DB write, cache write, event publish, external boundary, response, và error terminal mà flow đi qua
 - **Câu hỏi còn mở** — các boundary chưa rõ hoặc hành vi được suy luận (chỉ thêm khi cần)
+
+Mermaid labels được giữ ở dạng ngắn, an toàn để render, ví dụ `cartId=string, userId=string`; phần đầy đủ với enum, nullable, hoặc field-level changes nằm trong `Chú thích dữ liệu`.
+External service chỉ là điểm dừng của việc trace xuyên biên giới; nếu code local còn tiếp tục sau khi call trả về thì flow vẫn tiếp tục được ghi nhận ở service hiện tại.
 
 ## Cách dùng
 
@@ -48,7 +51,8 @@ Một file Markdown tại `docs/flow/<feature-name>.md` gồm các section theo 
 
 | File | Mục đích |
 | --- | --- |
-| `SKILL.md` | Định nghĩa skill — được Claude Code load khi gọi `/generate-flow` |
+| `SKILL.md` | Hướng dẫn thực thi chính của skill |
+| `agents/openai.yaml` | Metadata để Codex/ECC discover và hiển thị skill ổn định hơn |
 | `templates/flow.template.md` | Skeleton output — cấu trúc tham khảo cho file được tạo |
 | `references/example-checkout-flow.md` | Ví dụ monolith — feature checkout NestJS |
 | `references/example-order-fulfillment-flow.md` | Ví dụ microservice — event-driven flow qua nhiều service |
@@ -72,7 +76,7 @@ Chạy lại skill trên cùng feature sau khi:
 - Có thêm side effect mới (event, cache write)
 - Một nhánh logic thay đổi
 
-Mỗi lần chạy sẽ append thêm một dòng vào bảng `Lịch sử chỉnh sửa` — các dòng cũ không bao giờ bị xóa.
+Mỗi lần chạy sẽ append thêm một dòng vào bảng `Lịch sử chỉnh sửa` với nội dung `Tái tạo từ code` — các dòng cũ không bao giờ bị xóa.
 
 ## Kết hợp với skill khác
 

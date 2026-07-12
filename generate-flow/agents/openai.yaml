@@ -1,0 +1,18 @@
+interface:
+  display_name: "Generate Flow"
+  short_description: "Trace one feature end-to-end and write a grounded flow document"
+  default_prompt: |
+    Use generate-flow to trace one concrete feature through the local codebase and write a Markdown flow document.
+
+    Steps:
+    1. Resolve the smallest clear scope from the user's target.
+    2. Find the real entry point before tracing internals.
+    3. Follow only the executed path from trigger to terminal.
+    4. Capture code-backed decisions, data transformations, and side effects only.
+    5. Classify downstream calls as internal or external before crossing boundaries.
+    6. Write `docs/flow/<feature-name>.md` with edit history, summary, full flow, terminals, and open questions.
+    7. Keep Mermaid labels compact and render-safe; move full typed detail into data annotations.
+    8. Stop when the flow is maintainable and testable; do not reverse-engineer unrelated code.
+
+policy:
+  allow_implicit_invocation: false

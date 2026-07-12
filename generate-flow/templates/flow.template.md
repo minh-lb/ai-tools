@@ -45,21 +45,21 @@ sequenceDiagram
     participant LayerB
     participant LayerC
 
-    Trigger->>LayerA: [A1] fieldA: TypeA, fieldB: TypeB
+    Trigger->>LayerA: [A1] fieldA=TypeA, fieldB=TypeB
     activate LayerA
     Note over LayerA: validate + transform
-    LayerA->>LayerB: [A2] fieldA: TypeA, newField: TypeC
+    LayerA->>LayerB: [A2] fieldA=TypeA, newField=TypeC
     activate LayerB
     Note over LayerB: persist / call external
-    LayerB-->>LayerA: [A3] result: TypeD
+    LayerB-->>LayerA: [A3] result=TypeD
     deactivate LayerB
-    LayerA-->>Trigger: [A4] status: 200, data: TypeD
+    LayerA-->>Trigger: [A4] status=200, data=TypeD
     deactivate LayerA
 ```
 
 #### Chú thích dữ liệu
 
-<!-- required whenever any arrow label uses [An] notation. Omit entirely if all data shapes are expressed inline on arrows. -->
+<!-- required whenever any arrow label uses [An] shorthand or field evolution would otherwise be unclear -->
 
 **[A1]** `Trigger` → `LayerA` — raw input:
 ```
@@ -88,7 +88,7 @@ data: TypeD                 // từ [A3]
 
 #### Sơ đồ quyết định
 
-<!-- OPTIONAL: include only when flow is non-linear. Omit entirely for straight-line flows. -->
+<!-- OPTIONAL: include only when flow is non-linear -->
 
 ```mermaid
 flowchart TD
@@ -115,13 +115,15 @@ flowchart TD
 | Loại | Mô tả | File | Function |
 | --- | --- | --- | --- |
 | DB Write | {{mô tả dữ liệu được lưu}} | `{{file-path}}` | `{{function-name}}` |
+| External | `{{method-or-event}}` tới `{{service-or-provider}}` | `{{file-path}}` | `{{function-name}}` |
 | Event | {{tên event}} publish đến `{{topic-or-queue}}` | `{{file-path}}` | `{{function-name}}` |
+| Error | `{{error-code-or-name}}` tại `{{boundary}}` | `{{file-path}}` | `{{function-name}}` |
 | Response | `{{status-code}}` với `{{response-shape}}` | `{{file-path}}` | `{{function-name}}` |
 
 ---
 
 ## Câu hỏi còn mở
 
-<!-- OPTIONAL: include only when there are unresolved boundaries, inferred shapes, or cut-off points. Omit entirely if none. -->
+<!-- OPTIONAL: include only when there are unresolved boundaries, inferred shapes, or cut-off points -->
 
 - [ ] {{hành vi chưa xác định}}

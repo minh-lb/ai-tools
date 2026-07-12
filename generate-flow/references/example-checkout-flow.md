@@ -54,37 +54,37 @@ sequenceDiagram
     participant OrderRepo as OrderRepository
     participant Events as EventBus
 
-    Client->>Controller: [A1] cartId, paymentMethod, discountCode?
+    Client->>Controller: [A1] cartId=string, paymentMethod=PaymentMethodDto, discountCode?
     activate Controller
     Note over Controller: validate body via CheckoutRequestDto, extract userId from JWT
-    Controller->>Service: [A2] cartId, paymentMethod, discountCode?, userId
+    Controller->>Service: [A2] cartId=string, paymentMethod=PaymentMethodDto, discountCode?, userId=string
     activate Service
 
-    Service->>CartRepo: cartId: string
+    Service->>CartRepo: cartId=string
     activate CartRepo
-    CartRepo-->>Service: [A3] Cart - id, userId, items[], status, currency
+    CartRepo-->>Service: [A3] cartPayload
     deactivate CartRepo
 
     Note over Service: assert status = open, applyDiscount → finalTotal + discountAmount
-    Service->>Payment: [A4] amount: finalTotal, currency, method: paymentMethod
+    Service->>Payment: [A4] amount=number, currency=string, method=PaymentMethodDto
     activate Payment
-    Note over Payment: (TERMINAL - external) charge via Stripe
-    Payment-->>Service: transactionId: string, status: success
+    Note over Payment: (external boundary - stop tracing here) charge via Stripe
+    Payment-->>Service: transactionId=string, status=success
     deactivate Payment
 
     Note over Service: build CreateOrderDto
-    Service->>OrderRepo: [A5] userId, cartId, total, currency, transactionId, items[]
+    Service->>OrderRepo: [A5] createOrderPayload
     activate OrderRepo
     Note over OrderRepo: DB transaction - insert orders, bulk-insert order_items, update carts.status
-    OrderRepo-->>Service: [A6] Order - id, userId, total, status: pending, transactionId, createdAt
+    OrderRepo-->>Service: [A6] orderRecord
     deactivate OrderRepo
 
-    Service->>Events: [A7] orderId, userId, total
+    Service->>Events: [A7] orderCreatedEvent
     Events-->>Service: ack
 
-    Service-->>Controller: [A6] Order
+    Service-->>Controller: [A6] orderRecord
     deactivate Service
-    Controller-->>Client: 201 - orderId, total, currency, status: pending
+    Controller-->>Client: status=201, orderId=string, total=number, currency=string
     deactivate Controller
 ```
 
@@ -186,6 +186,7 @@ flowchart TD
 
 | Loại | Mô tả | File | Function |
 | --- | --- | --- | --- |
+| External API | Charge via Stripe qua PaymentGateway | `src/payments/payment.gateway.ts` | `PaymentGateway.charge` |
 | DB Write | Insert dòng vào bảng `orders` | `src/orders/order.repository.ts` | `OrderRepository.create` |
 | DB Write | Bulk-insert vào bảng `order_items` | `src/orders/order.repository.ts` | `OrderRepository.create` |
 | DB Write | Cập nhật `carts.status = "checked_out"` | `src/orders/order.repository.ts` | `OrderRepository.create` |

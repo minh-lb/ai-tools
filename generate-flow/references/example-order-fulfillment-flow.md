@@ -57,35 +57,35 @@ sequenceDiagram
     participant DB as FulfillmentDB
     participant Events as EventBus
 
-    Queue->>Consumer: [A1] order.created message
+    Queue->>Consumer: [A1] orderCreatedMessage
     activate Consumer
     Note over Consumer: deserialize + validate message schema
-    Consumer->>FulfillService: [A2] orderId, userId, items[], shippingAddress
+    Consumer->>FulfillService: [A2] orderId=string, userId=string, items[], shippingAddress
     activate FulfillService
 
-    FulfillService->>InvClient: [A3] items[] - productId + quantity per item
+    FulfillService->>InvClient: [A3] reserveItems
     activate InvClient
-    InvClient->>InvService: POST /inventory/reserve - [A3]
-    Note over InvService: (TERMINAL - external) reserve stock, deduct available qty
-    InvService-->>InvClient: [A4] reservationId, reservedItems[]
+    InvClient->>InvService: POST /inventory/reserve [A3]
+    Note over InvService: (external boundary - stop tracing here) reserve stock, deduct available qty
+    InvService-->>InvClient: [A4] reservationId=string, reservedItems[]
     deactivate InvClient
 
-    FulfillService->>ShipClient: [A5] orderId, reservationId, items[], shippingAddress
+    FulfillService->>ShipClient: [A5] shipmentRequest
     activate ShipClient
-    ShipClient->>ShipService: POST /shipments - [A5]
-    Note over ShipService: (TERMINAL - external) create shipment record, assign carrier
-    ShipService-->>ShipClient: [A6] shipmentId, trackingNumber, carrier, estimatedDelivery
+    ShipClient->>ShipService: POST /shipments [A5]
+    Note over ShipService: (external boundary - stop tracing here) create shipment record, assign carrier
+    ShipService-->>ShipClient: [A6] shipmentId=string, trackingNumber=string, carrier=string, estimatedDelivery=string
     deactivate ShipClient
 
     Note over FulfillService: build FulfillmentRecord
-    FulfillService->>FulfillRepo: [A7] orderId, userId, reservationId, shipmentId, trackingNumber, status: pending
+    FulfillService->>FulfillRepo: [A7] fulfillmentRecord
     activate FulfillRepo
     FulfillRepo->>DB: INSERT fulfillments
-    DB-->>FulfillRepo: fulfillmentId, createdAt
-    FulfillRepo-->>FulfillService: [A8] Fulfillment - id, orderId, status, trackingNumber, createdAt
+    DB-->>FulfillRepo: fulfillmentId=string, createdAt=Date
+    FulfillRepo-->>FulfillService: [A8] fulfillmentSaved
     deactivate FulfillRepo
 
-    FulfillService->>Events: [A9] fulfillment.started - fulfillmentId, orderId, userId, trackingNumber, estimatedDelivery
+    FulfillService->>Events: [A9] fulfillmentStartedEvent
     activate Events
     Events-->>FulfillService: ack
     deactivate Events
@@ -123,7 +123,7 @@ createdAt: —                // bị loại bỏ; không cần trong business l
 items: ReserveItem[]        // derive từ [A2] items; map sang [{ productId, quantity }]; unitPrice bị loại bỏ
 ```
 
-**[A4]** `InventoryService` → `FulfillmentService` — reserve response (TERMINAL - external, không trace tiếp):
+**[A4]** `InventoryService` → `FulfillmentService` — reserve response (external boundary, không trace tiếp):
 ```
 reservationId: string       // tạo mới; format: uuid; do InventoryService generate
 reservedItems: ReservedItem[]  // tạo mới; [{ productId, quantity, warehouseId }]
@@ -137,7 +137,7 @@ items: ReservedItem[]       // giữ nguyên từ [A4] reservedItems
 shippingAddress: Address    // giữ nguyên từ [A2]
 ```
 
-**[A6]** `ShippingService` → `FulfillmentService` — shipment response (TERMINAL - external, không trace tiếp):
+**[A6]** `ShippingService` → `FulfillmentService` — shipment response (external boundary, không trace tiếp):
 ```
 shipmentId: string          // tạo mới; format: uuid; do ShippingService generate
 trackingNumber: string      // tạo mới; do carrier assign
@@ -212,23 +212,23 @@ sequenceDiagram
     participant UserService as UserService
     participant EmailProvider as EmailProvider
 
-    Queue->>NotiConsumer: [B1] fulfillment.started message
+    Queue->>NotiConsumer: [B1] fulfillmentStartedMessage
     activate NotiConsumer
     Note over NotiConsumer: deserialize + validate message schema
-    NotiConsumer->>NotiService: [B2] fulfillmentId, orderId, userId, trackingNumber, estimatedDelivery
+    NotiConsumer->>NotiService: [B2] fulfillmentId=string, orderId=string, userId=string, trackingNumber=string, estimatedDelivery=string
     activate NotiService
 
-    NotiService->>UserClient: userId: string
+    NotiService->>UserClient: userId=string
     activate UserClient
     UserClient->>UserService: GET /users/:id
-    Note over UserService: (TERMINAL - external) fetch user profile
-    UserService-->>UserClient: [B3] email, firstName
+    Note over UserService: (external boundary - stop tracing here) fetch user profile
+    UserService-->>UserClient: [B3] email=string, firstName=string
     deactivate UserClient
 
     Note over NotiService: render email template with order + tracking data
-    NotiService->>EmailProvider: [B4] to, subject, html
-    Note over EmailProvider: (TERMINAL - external) deliver via SMTP / SendGrid
-    EmailProvider-->>NotiService: messageId: string
+    NotiService->>EmailProvider: [B4] to=string, subject=string, html=string
+    Note over EmailProvider: (external boundary - stop tracing here) deliver via SMTP / SendGrid
+    EmailProvider-->>NotiService: messageId=string
 
     NotiService-->>NotiConsumer: ok
     deactivate NotiService
@@ -258,7 +258,7 @@ estimatedDelivery: string   // giữ nguyên từ [B1]
 eventType: —                // bị loại bỏ
 ```
 
-**[B3]** `UserService` → `NotificationService` — user info (TERMINAL - external, không trace tiếp):
+**[B3]** `UserService` → `NotificationService` — user info (external boundary, không trace tiếp):
 ```
 email: string               // tạo mới; từ UserService
 firstName: string           // tạo mới; từ UserService

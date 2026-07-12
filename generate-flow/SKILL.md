@@ -6,12 +6,12 @@ argument-hint: <feature-name | file-path | component-name>
 
 # Generate Flow
 
-Trace `$ARGUMENTS` end-to-end and write one grounded document at `docs/flow/<feature-name>.md`.
+Trace `$ARGUMENTS` end-to-end and write one grounded document to `docs/flow/<feature-name>.md`.
 
 The goal is practical documentation, not exhaustive reverse-engineering:
 - show the executed path from trigger to terminal
-- record only code-backed decisions and mutations
-- stop when the behavior is sufficiently documented for another engineer to maintain or test it
+- capture only code-backed decisions, transformations, and side effects
+- stop when another engineer can maintain or test the feature without re-tracing the code
 
 If `$ARGUMENTS` is empty, print this and stop:
 
@@ -38,7 +38,7 @@ Skip this skill for:
 
 ## Execution Strategy
 
-### 1. Scope the feature first
+### 1. Scope the feature
 
 Resolve the smallest clear unit to document:
 - If given a file path, start there and derive the feature name from the filename stem after stripping common suffixes like `.service`, `.controller`, `.handler`, `.repository`, `.gateway`, `.worker`.
@@ -47,7 +47,7 @@ Resolve the smallest clear unit to document:
 
 Derive `feature-name` as kebab-case.
 
-### 2. Resolve entry points
+### 2. Resolve real entry points
 
 Find the actual trigger before tracing internals.
 
@@ -66,71 +66,102 @@ Supported trigger classes:
 - store action
 - internal service entry
 
-If multiple valid triggers exist, document each as a separate `Path`, but only when they execute meaningfully different logic.
+If multiple valid triggers exist, document each as a separate `Path` only when they execute materially different logic.
 
 ### 3. Trace only the executed path
 
 Starting from each entry point, follow the call chain depth-first until a terminal is reached.
 
-**Data notation standard** — use this format in all annotation blocks and arrow labels:
+Evidence priority:
+1. exact code path
+2. type/schema/DTO definitions
+3. tests or fixtures
+4. inference from usage
 
-```
+Read the minimum sources needed, in this order:
+1. exact target file or registration
+2. direct callees on the active path
+3. DTO/schema/type definitions for touched payloads
+4. tests only if they are the only reliable source of the entry or payload shape
+
+#### Data notation standard
+
+Use typed field notation only inside code blocks under `Chú thích dữ liệu`:
+
+```text
 fieldName: Type               // required
-fieldName?: Type              // optional (may be absent)
+fieldName?: Type              // optional
 fieldName: Type | null        // required but nullable
 fieldName?: Type | null       // optional and nullable
-status: "a" | "b" | "c"      // enum — list all values
-amount: number                // required; constraint as inline comment: > 0, maxLength: 20, format: uuid|email|date, etc.
+status: "a" | "b" | "c"      // enum
+amount: number                // constraints inline when relevant
 ```
 
-Look for type information in: DTO classes, TypeScript interfaces, Zod/Joi/Pydantic schemas, Go structs, proto definitions, DB column definitions. Mark anything not found in code as `(inferred)`.
+For Mermaid arrow labels, use compact render-safe syntax such as:
 
-For each traversed layer, extract what feeds the output:
-- **sequenceDiagram arrows**: the data shape at each handoff (abbreviated to `[An]` when complex)
+```text
+[A1] cartId=string, discountCode?, userId=string
+[A2] amount=number, currency=string, status=success
+```
+
+Do not put quotes, enum unions, nullable unions, or `field: type` pairs inside Mermaid labels — move type detail to `Chú thích dữ liệu`. Colons in URL paths like `/users/:id` are fine.
+
+Record only fields that satisfy at least one condition:
+- they drive a branch or guard
+- they are created, removed, renamed, or derived
+- they are persisted, emitted, returned, or sent externally
+- they are required to understand a terminal
+
+For large payloads, collapse unchanged pass-through data into one compact item such as `otherFields: unchanged` in the annotation instead of listing every field.
+
+If a type or behavior is not found in code, mark it as `(inferred)`.
+
+For each traversed layer, capture:
+- **sequenceDiagram arrows**: the handoff payload in compact Mermaid-safe form; shorten to `[An]` when complex
 - **`Note over`**: the key action inside the layer — validate, transform, persist, emit
-- **`Chú thích dữ liệu [An]`**: full data shape + per-field change status (unchanged / derived from / removed / newly created)
-- **`## Điểm kết thúc`**: every DB write, event publish, external call, response, or error reached
+- **`#### Chú thích dữ liệu`**: full typed shape only for fields that changed, affect decisions, or matter to a terminal
+- **`## Điểm kết thúc`**: every DB write, cache write, event publish, external boundary, response, and real error terminal reached
 - **`## Câu hỏi còn mở`**: unresolved boundaries, inferred shapes, or cut-off points
 
-Evidence priority: (1) exact code path → (2) type/schema/DTO definitions → (3) tests or fixtures → (4) inference from usage. Record `file:line` for key decisions and mutations wherever possible.
+#### Internal vs external boundary
 
-**Internal vs external service boundary** — classify every downstream call before tracing it:
+Classify every downstream call before tracing it:
+- **Internal**: the target handler/source exists inside the current working directory tree. Continue tracing into it as a new participant and add `Note over <Service>: (internal service)`.
+- **External**: third-party API, managed platform, or any service whose source cannot be found locally. Stop tracing past that boundary, add `Note over <Service>: (external boundary - stop tracing here)`, and record the boundary in `## Điểm kết thúc`.
 
-- **Internal**: the call target resolves to a handler file inside the current working directory tree. Continue tracing into that handler as a new participant. Mark it with `Note over <Service>: (internal service)`.
-- **External**: third-party API, managed platform (Stripe, SendGrid, AWS SQS), or any service whose source is not in this directory. Stop here — record the boundary, add `Note over <Service>: (TERMINAL - external)`, do not trace further.
-
-To classify: find the base URL or topic config of the HTTP client / message publisher.
-1. **Env var set**: resolve the value (e.g. `INVENTORY_SERVICE_URL=http://inventory-service:3001`) → extract the hostname stem → search for a matching service directory (`inventory-service/`, `inventory/`, etc.) in this directory tree → found → **internal**; not found → **external**.
-2. **Env var name known but value not set**: check `.env.example` or config files for the hostname or URL pattern → extract the stem → search for the matching directory as above.
-3. **No env var or config hint**: derive the likely directory name from the client class or package name (e.g. `InventoryClient` → `inventory-service/`) → search → found → **internal**; not found → **external**.
-
-For message consumers: if the consuming service source exists locally, document its handler as a separate `### Path:` with its own trigger.
+To classify a call, resolve the base URL, topic, or client target from config/env if possible, then search for a matching handler or service directory in the repo. If the target still cannot be resolved, treat it as external and note the uncertainty in `## Câu hỏi còn mở`.
 
 Trace rules:
 - Follow callees, not unrelated callers.
 - Follow fan-out branches only when they change the outcome, mutate data, or create a side effect.
 - Treat helper functions as part of the same layer unless they introduce a new boundary or meaningful decision.
-- For internal service calls: cross the boundary and continue tracing into the target handler as a new participant.
-- For external service calls: treat as a terminal. Record the boundary; do not trace beyond it.
-- Stop at the first stable terminal for the path: DB write, cache write, external API call, event publish, returned response, or thrown error.
+- For external calls, do not trace into the remote service internals. Resume tracing in the current service only if local code continues after the call returns.
+- Stop a branch when it reaches a stable terminal: DB write, cache write, event publish with no further in-scope logic, returned response, thrown error, or a trace cut-off boundary that cannot be crossed.
+- Reset the depth counter when crossing into a confirmed internal service boundary.
 
 Stop tracing when any of these is true:
 - terminal reached
-- depth exceeds 6 layers from the current service's entry point (reset the counter when crossing into a new internal service)
+- depth exceeds 6 layers from the current service entry point
 - next step enters third-party or standard-library code
-- next step is an external service call (not resolvable within this directory tree)
+- next step crosses an external boundary whose internals are outside the repo
 
 If the real flow goes deeper, note the cutoff in `## Câu hỏi còn mở`.
 
 ### 4. Generate `docs/flow/<feature-name>.md`
 
-Read `generate-flow/templates/flow.template.md` as the output skeleton if the file is accessible (it may not be when the skill is installed outside the `ai-tools` repo). If it cannot be found, rely on the rendering rules and table headers below instead. When you need a full finished example, read `generate-flow/references/example-checkout-flow.md` (monolith / HTTP) or `generate-flow/references/example-order-fulfillment-flow.md` (microservice / event-driven) — pick the one that best matches the project under trace. Do not read either by default.
+Read `generate-flow/templates/flow.template.md` as the output skeleton if it is accessible. If it cannot be found, rely on the structure and rendering rules below.
 
-**Output root rule:** Always write to `docs/flow/` relative to the **project working directory root** (the top-level directory of the repo, not the directory of the source file being traced). If the source file is inside a subdirectory (e.g. `laravel-app/Modules/...`), the output is still `./docs/flow/<feature-name>.md`, never `laravel-app/docs/flow/<feature-name>.md`.
+Read a reference example only when the output format is still unclear after reading the template:
+- `generate-flow/references/example-checkout-flow.md` for monolith / HTTP flows
+- `generate-flow/references/example-order-fulfillment-flow.md` for event-driven / multi-service flows
+
+Never read both examples by default.
+
+**Output root rule:** Always write to `docs/flow/` relative to the project working directory root, never relative to the source subdirectory being traced.
 
 Preflight:
-- If `docs/flow/<feature-name>.md` exists, preserve every existing row from `## Lịch sử chỉnh sửa` and append one new row: `Regenerated from code`.
-- If it does not exist, create it with one row: `Initial generation`.
+- If `docs/flow/<feature-name>.md` exists, preserve every existing row from `## Lịch sử chỉnh sửa` and append one new row: `Tái tạo từ code`.
+- If it does not exist, create it with one row: `Tạo mới`.
 - Create `docs/flow/` if needed.
 
 The generated file must contain these sections in order:
@@ -141,30 +172,33 @@ The generated file must contain these sections in order:
 5. `## Điểm kết thúc`
 6. `## Câu hỏi còn mở` — include only when there are unresolved questions
 
-**Language rule:** Write all descriptive content in Vietnamese — feature descriptions, logic steps, side effects, open questions. Keep English for: field names, file paths, function names, layer type labels (API, Service, Repository, Cache, External, Queue, UI, Store, Worker, Domain), HTTP methods, status codes, event names, change types (CREATE / UPDATE / DELETE / DERIVE / RENAME), code blocks, and all Mermaid diagram labels.
+**Language rule:** Write all descriptive content in Vietnamese. Keep English for field names, file paths, function names, layer labels (`API`, `Service`, `Repository`, `Cache`, `External`, `Queue`, `UI`, `Store`, `Worker`, `Domain`), HTTP methods, status codes, event names, change types (`CREATE`, `UPDATE`, `DELETE`, `DERIVE`, `RENAME`), code blocks, and Mermaid labels.
 
 Rendering rules:
-- `## Flow Summary` must be concise: describe the logic flow in <= 3 sentences with no data detail. Use `flowchart LR` with <= 15 nodes to show only the path through layers. Steps table <= 8 rows, one short step per row.
+- `## Flow Summary` must stay concise: <= 3 sentences, `flowchart LR` with <= 15 nodes, steps table <= 8 rows.
 - If multiple entry points exist, list each on its own line in the `Entry point` field.
 - `## Full Flow` contains one `### Path:` section per distinct trigger.
-- `sequenceDiagram` represents **both logic flow** (who calls whom, in what order) **and data flow** (what shape data has at each handoff, how it changes between steps) — do not separate these into different sections. Use `autonumber`, one participant per real layer. Arrow labels write data shape as `field: Type, field: Type`; when too long, shorten to `[An]` notation and explain in the Data Annotations section. Use `activate`/`deactivate` to clarify call lifetimes. Use `Note over` to record important actions inside a layer (validate, transform, persist). For non-HTTP triggers, replace `Client` with the actual trigger name (`Scheduler`, `EventConsumer`, CLI command name, etc.).
-- `#### Chú thích dữ liệu`: required whenever any arrow label is shortened with `[An]`. Each annotation records the full data shape at that point and explicitly states for every field: **unchanged** from previous step / **derived** from which field / **removed** at this step / **newly created**. Omit this section only when all data shapes are already fully expressed in arrow labels.
-- `#### Sơ đồ quyết định` (`flowchart TD`): add only when flow is non-linear. Omit entirely for straight-line flows.
-- `## Điểm kết thúc` must include every DB write, event publish, external boundary, response, and error terminal reached in the flow. Add one row per terminal even when multiple share the same type.
+- `sequenceDiagram` represents both logic flow and data flow. Use `autonumber`, one participant per real layer, and `activate` / `deactivate` where lifetimes are not obvious.
+- Mermaid arrow labels must be render-safe and compact. Use `field=Type`, `status=200`, `ack`, `error`, or a short alias like `[A3] paymentPayload`. Put full typed detail in the annotation section instead of the label.
+- `#### Chú thích dữ liệu` is required whenever an arrow label uses `[An]` shorthand or when field evolution would otherwise be unclear. For each listed field, state one of: unchanged / derived from / removed / newly created. For large payloads, describe only changed or decision-relevant fields and add one compact line for untouched pass-through data.
+- `#### Sơ đồ quyết định` (`flowchart TD`) is optional. Add it only when the path is non-linear.
+- `## Điểm kết thúc` must include one row per terminal or trace cut-off boundary, even when several rows share the same type.
 
-Table column headers — use these exact headers in the output:
-- **Flow Summary steps table**: `| # | Bước | Mô tả |`
-- **Điểm kết thúc**: `| Loại | Mô tả | File | Function |`
-- **Lịch sử chỉnh sửa**: `| Ngày | Thay đổi | Bởi |`
+Use these exact table headers:
+- `| Ngày | Thay đổi | Bởi |`
+- `| # | Bước | Mô tả |`
+- `| Loại | Mô tả | File | Function |`
 
 ## Token Discipline
 
 Keep the skill practical and cheap to run:
-- Read an example file only once and only when uncertain about the output format — `example-checkout-flow.md` for monolith/HTTP flows, `example-order-fulfillment-flow.md` for event-driven/microservice flows. Once the format is clear, do not re-read.
-- Do not paste large schemas or entire DTOs when a compact shape is enough. Prefer compact shapes like `Order { id, total, status }` over full type definitions unless a field-level distinction matters.
+- Read at most one example file, once, and only when the template plus rules are not enough.
+- Do not paste large schemas or entire DTOs when a compact field list is enough.
+- Prefer compact collection notation such as `items[]`, `errors[]`, `metadata...` over full nested expansions unless a nested field changes behavior.
 - Do not trace tests, mocks, generated files, or migrations unless they are the only reliable source of behavior.
-- Avoid repeating the same behavior across `## Flow Summary` and `## Full Flow`. Each section must add value the others don't: Summary = big picture logic path without data detail, Full Flow = interaction and data evolution with exact shapes.
-- If one path is the canonical production path and other paths are thin wrappers, document the canonical path fully and mention wrappers in one sentence instead of duplicating the sequence.
+- Do not repeat the same behavior across `## Flow Summary`, `## Full Flow`, and `## Điểm kết thúc`.
+- If one path is the canonical production path and other paths are thin wrappers, document the canonical path fully and mention wrappers once.
+- Stop reading when additional files no longer change the traced path, a decision branch, or a terminal.
 
 ## Mermaid Safety
 
@@ -172,19 +206,19 @@ Every Mermaid block must be renderable.
 
 Rules:
 - no placeholders such as `{{...}}` or `<...>` in final output
-- no curly braces or quotes inside labels
-- no nested `:` inside sequence arrow labels
+- no quotes or enum unions inside Mermaid labels
+- no `field: type` pairs inside Mermaid labels — move type detail to `Chú thích dữ liệu` (colons in URL paths like `/users/:id` are fine)
 - participant names must be identifier-safe
-- split diagrams when a single diagram would exceed about 40 nodes
+- split diagrams when one block would exceed about 40 nodes
 - use plain rectangle nodes for errors and outputs
 
 ## Quality Bar
 
-The output is only acceptable when all of these are true:
+The output is acceptable only when all of these are true:
 - every step is grounded in repo code
 - every documented file path exists
 - every meaningful branch maps to a real conditional
-- every [An] annotation traces each field change to its source layer
+- every annotation explains the changed or decision-relevant fields it introduces
 - every path reaches a real terminal or explicitly states why it stops
 - prior edit history rows are preserved on regeneration
 - no template notes, placeholders, or agent instructions remain in the generated file
