@@ -72,64 +72,51 @@ If multiple valid triggers exist, document each as a separate `Path`, but only w
 
 Starting from each entry point, follow the call chain depth-first until a terminal is reached.
 
-**Data notation standard** — use this format consistently in all Input/Output blocks, Data Shape Evolution, and Mutation Tables:
+**Data notation standard** — use this format in all annotation blocks and arrow labels:
 
 ```
 fieldName: Type               // required
 fieldName?: Type              // optional (may be absent)
 fieldName: Type | null        // required but nullable
-fieldName?: Type | null       // optional and nullable
 status: "a" | "b" | "c"      // enum — list all values
 amount: number                // required; constraint as inline comment: > 0, maxLength: 20, format: uuid|email|date, etc.
 ```
 
-Look for type information in: DTO classes, TypeScript interfaces, Zod/Joi/Pydantic schemas, Go structs, proto definitions, DB column definitions. If a constraint cannot be found in code, mark it `(inferred)`.
+Look for type information in: DTO classes, TypeScript interfaces, Zod/Joi/Pydantic schemas, Go structs, proto definitions, DB column definitions. Mark anything not found in code as `(inferred)`.
 
-For each traversed layer, capture:
-- `Layer`: API, Service, Repository, Cache, External, Queue, UI, Store, Worker, Domain
-- `File`
-- `Function / Method`
-- `Input data`: full shape using the notation above — every field with type, required/optional, nullable, and key constraints
-- `Logic`: key decisions, validations, and transformations applied
-- `Output data`: full shape using the notation above
-- `Mutations`: for every field that changes, record: field name, type, change type (`CREATE` / `UPDATE` / `DELETE` / `DERIVE` / `RENAME`), value or type before, value or type after, exact `file:line`
-- `Side effects`: DB writes, cache invalidations, events emitted, external calls made
-- `Evidence`: exact `file:line` for the call, mutation, conditional, or terminal when available
+For each traversed layer, extract what feeds the output:
+- **sequenceDiagram arrows**: the data shape at each handoff (abbreviated to `[An]` when complex)
+- **`Note over`**: the key action inside the layer — validate, transform, persist, emit
+- **`Chú thích dữ liệu [An]`**: full data shape + per-field change status (unchanged / derived from / removed / newly created)
+- **`## Điểm kết thúc`**: every DB write, event publish, external call, response, or error reached
+- **`## Câu hỏi còn mở`**: unresolved boundaries, inferred shapes, or cut-off points
+
+Evidence priority: (1) exact code path → (2) type/schema/DTO definitions → (3) tests or fixtures → (4) inference from usage. Record `file:line` for key decisions and mutations wherever possible.
+
+**Internal vs external service boundary** — classify every downstream call before tracing it:
+
+- **Internal**: the call target resolves to a handler file inside the current working directory tree. Continue tracing into that handler as a new participant. Mark it with `Note over <Service>: (internal service)`.
+- **External**: third-party API, managed platform (Stripe, SendGrid, AWS SQS), or any service whose source is not in this directory. Stop here — record the boundary, add `Note over <Service>: (TERMINAL - external)`, do not trace further.
+
+To classify: find the base URL or topic config of the HTTP client / message publisher. If it resolves via an env var (e.g. `INVENTORY_SERVICE_URL`) to a service directory that exists locally, search for the matching route handler — found → internal, otherwise → external. For message consumers: if the consuming service source exists locally, document its handler as a separate `### Path:` with its own trigger.
 
 Trace rules:
 - Follow callees, not unrelated callers.
 - Follow fan-out branches only when they change the outcome, mutate data, or create a side effect.
 - Treat helper functions as part of the same layer unless they introduce a new boundary or meaningful decision.
-- Treat downstream HTTP calls, published messages, and third-party SDK calls as terminals. Record the boundary; do not trace beyond it.
+- For internal service calls: cross the boundary and continue tracing into the target handler as a new participant.
+- For external service calls: treat as a terminal. Record the boundary; do not trace beyond it.
 - Stop at the first stable terminal for the path: DB write, cache write, external API call, event publish, returned response, or thrown error.
 
 Stop tracing when any of these is true:
 - terminal reached
-- depth exceeds 6 layers from the entry point
+- depth exceeds 6 layers from the current service's entry point (reset the counter when crossing into a new internal service)
 - next step enters third-party or standard-library code
-- next step crosses into another service not contained in this repo
+- next step is an external service call (not resolvable within this directory tree)
 
 If the real flow goes deeper, note the cutoff in `Open Questions`.
 
-### 4. Build the flow model
-
-Before writing the document, derive:
-1. `Sequence`: caller → callee handoffs with the data shape at each boundary
-2. `Decision points`: only conditionals that change behavior or output
-3. `Data mutations`: for every field that changes — change type, value before, value after, source location
-4. `Data shape evolution`: the full snapshot of the primary domain object at each layer boundary — shows how it is built up, transformed, and finalized from trigger to terminal
-5. `Terminals`: writes, emits, responses, and errors
-6. `Open questions`: unresolved boundaries, inferred shapes, or missing downstream code
-
-Evidence priority:
-1. exact code path
-2. nearby type/schema/DTO definitions
-3. tests or fixtures
-4. inference from usage
-
-Mark inferred details explicitly with `(inferred)`.
-
-### 5. Generate `docs/flow/<feature-name>.md`
+### 4. Generate `docs/flow/<feature-name>.md`
 
 Read `generate-flow/templates/flow.template.md` as the output skeleton if the file is accessible (it may not be when the skill is installed outside the `ai-tools` repo). If it cannot be found, rely on the rendering rules and table headers below instead. Read `generate-flow/references/example-checkout-flow.md` only when you need a full finished example; do not read it by default.
 

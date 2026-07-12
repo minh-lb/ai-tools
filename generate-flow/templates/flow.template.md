@@ -35,8 +35,6 @@ flowchart LR
 
 ## Full Flow
 
-> Diagram dưới đây thể hiện đồng thời **logic flow** (ai gọi ai, theo thứ tự nào) và **data flow** (data có hình dạng gì tại mỗi bước, thay đổi ra sao khi đi qua từng layer). Khi data quá phức tạp để ghi vào arrow label, dùng ký hiệu `[An]` và giải thích chi tiết trong phần **Chú thích dữ liệu** bên dưới.
-
 ### Path: {{path-name}}
 
 ```mermaid
@@ -60,8 +58,6 @@ sequenceDiagram
 ```
 
 #### Chú thích dữ liệu
-
-> Mỗi annotation giải thích đầy đủ data shape tại một điểm trong flow, bao gồm rõ field nào được thêm, giữ nguyên, tính lại, hay loại bỏ so với bước trước.
 
 **[A1]** `Trigger` → `LayerA` — raw input:
 ```
@@ -89,8 +85,6 @@ data: TypeD                 // từ [A3]
 ```
 
 #### Sơ đồ quyết định
-
-> Chỉ thêm khi flow không tuyến tính. Bỏ section này nếu flow thẳng.
 
 ```mermaid
 flowchart TD
