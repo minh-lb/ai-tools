@@ -487,4 +487,52 @@ test("loadSelectionCatalog includes curated local skills in installer choices", 
       targets: undefined
     }
   );
+
+  assert.deepEqual(
+    catalog.skills.find((skill) => skill.id === "team-sp"),
+    {
+      id: "team-sp",
+      label: "Team SP",
+      description: "Superpowers-native agent team — Planner (brainstorming + writing-plans), Leader (executing-plans), Coder (Codex + verification). Best for complex or ambiguous tasks.",
+      sourceBranch: "agent-skills",
+      sourcePath: "team-sp",
+      targets: undefined
+    }
+  );
+
+  assert.deepEqual(
+    catalog.skills.find((skill) => skill.id === "review-code"),
+    {
+      id: "review-code",
+      label: "Review code",
+      description: "Structured code review for backend services, APIs, and server-side code.",
+      sourceBranch: "agent-skills",
+      sourcePath: "review-code",
+      targets: undefined
+    }
+  );
+
+  assert.deepEqual(
+    catalog.skills.find((skill) => skill.id === "make-task"),
+    {
+      id: "make-task",
+      label: "Make Task",
+      description: "Create or update structured task documents from Jira, Trello, Notion, Linear, GitHub Issues, or plain descriptions.",
+      sourceBranch: "agent-skills",
+      sourcePath: "make-task",
+      targets: undefined
+    }
+  );
+
+  assert.deepEqual(
+    catalog.skills.find((skill) => skill.id === "generate-flow"),
+    {
+      id: "generate-flow",
+      label: "Generate Flow",
+      description: "Trace a feature's data and logic end-to-end through source code layers — from trigger to persistence, event emission, response, or failure.",
+      sourceBranch: "agent-skills",
+      sourcePath: "generate-flow",
+      targets: undefined
+    }
+  );
 });

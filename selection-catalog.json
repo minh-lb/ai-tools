@@ -65,6 +65,13 @@
       "sourcePath": "team-full"
     },
     {
+      "id": "team-sp",
+      "label": "Team SP",
+      "description": "Superpowers-native agent team — Planner (brainstorming + writing-plans), Leader (executing-plans), Coder (Codex + verification). Best for complex or ambiguous tasks.",
+      "sourceBranch": "agent-skills",
+      "sourcePath": "team-sp"
+    },
+    {
       "id": "make-task",
       "label": "Make Task",
       "description": "Create or update structured task documents from Jira, Trello, Notion, Linear, GitHub Issues, or plain descriptions.",
