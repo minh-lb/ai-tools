@@ -1,4 +1,5 @@
 import * as process from "node:process";
+import { rm } from "node:fs/promises";
 import { buildLibInstallPlan, executeLibInstallPlan } from "./lib/ai-libs.js";
 import { loadPackageConfig } from "./lib/config.js";
 import { createGitHubClient } from "./lib/github.js";
@@ -22,6 +23,7 @@ import {
 } from "./lib/mcp.js";
 import { buildPluginInstallPlan, executePluginInstallPlan } from "./lib/plugins.js";
 import { blessedConfirm } from "./lib/tui-utils.js";
+import { runSkillsWizard, resolveSkillsDir } from "./lib/tui-skills.js";
 import { runAiLibsWizard } from "./lib/tui-ai-libs.js";
 import { runEntryMenu } from "./lib/tui-entry-menu.js";
 import { runMcpWizard } from "./lib/tui-mcp.js";
@@ -520,6 +522,52 @@ export async function runCli(): Promise<void> {
         results.map((result) => `${result.id} -> ${result.targetPath}`),
         "success"
       );
+      return;
+    }
+
+    if (entryAction === "manage-skills") {
+      const skillsResult = await runSkillsWizard();
+
+      if ("backToMenu" in skillsResult) {
+        continue;
+      }
+
+      const { agent, skillsToDelete } = skillsResult;
+      const skillsDir = resolveSkillsDir(agent);
+
+      printSectionHeader(
+        "Manage skills",
+        `Deleting ${skillsToDelete.length} skill(s) for ${agent}.`
+      );
+
+      const deleted: string[] = [];
+      const failed: Array<{ name: string; error: string }> = [];
+
+      for (const skillName of skillsToDelete) {
+        const skillPath = `${skillsDir}/${skillName}`;
+        try {
+          await rm(skillPath, { recursive: true, force: true });
+          deleted.push(skillName);
+          printStatusLine("delete", skillPath, "muted");
+        } catch (error) {
+          const message = error instanceof Error ? error.message : String(error);
+          failed.push({ name: skillName, error: message });
+          printStatusLine("warn", `Failed to delete ${skillPath}: ${message}`, "warning");
+        }
+      }
+
+      if (deleted.length > 0) {
+        printBulletPanel(`Deleted (${deleted.length})`, deleted, "success");
+      }
+
+      if (failed.length > 0) {
+        printBulletPanel(
+          `Failed (${failed.length})`,
+          failed.map((f) => `${f.name}: ${f.error}`),
+          "warning"
+        );
+      }
+
       return;
     }
 
