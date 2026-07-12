@@ -59,6 +59,8 @@ sequenceDiagram
 
 #### Chú thích dữ liệu
 
+<!-- required whenever any arrow label uses [An] notation. Omit entirely if all data shapes are expressed inline on arrows. -->
+
 **[A1]** `Trigger` → `LayerA` — raw input:
 ```
 fieldA: TypeA               // required

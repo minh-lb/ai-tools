@@ -99,7 +99,12 @@ Evidence priority: (1) exact code path → (2) type/schema/DTO definitions → (
 - **Internal**: the call target resolves to a handler file inside the current working directory tree. Continue tracing into that handler as a new participant. Mark it with `Note over <Service>: (internal service)`.
 - **External**: third-party API, managed platform (Stripe, SendGrid, AWS SQS), or any service whose source is not in this directory. Stop here — record the boundary, add `Note over <Service>: (TERMINAL - external)`, do not trace further.
 
-To classify: find the base URL or topic config of the HTTP client / message publisher. If it resolves via an env var (e.g. `INVENTORY_SERVICE_URL`) to a service directory that exists locally, search for the matching route handler — found → internal, otherwise → external. For message consumers: if the consuming service source exists locally, document its handler as a separate `### Path:` with its own trigger.
+To classify: find the base URL or topic config of the HTTP client / message publisher.
+1. **Env var set**: resolve the value (e.g. `INVENTORY_SERVICE_URL=http://inventory-service:3001`) → extract the hostname stem → search for a matching service directory (`inventory-service/`, `inventory/`, etc.) in this directory tree → found → **internal**; not found → **external**.
+2. **Env var name known but value not set**: check `.env.example` or config files for the hostname or URL pattern → extract the stem → search for the matching directory as above.
+3. **No env var or config hint**: derive the likely directory name from the client class or package name (e.g. `InventoryClient` → `inventory-service/`) → search → found → **internal**; not found → **external**.
+
+For message consumers: if the consuming service source exists locally, document its handler as a separate `### Path:` with its own trigger.
 
 Trace rules:
 - Follow callees, not unrelated callers.
