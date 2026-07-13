@@ -1,6 +1,8 @@
 ---
 name: team-sp
 description: Boot a superpowers-native agent team (Planner + Leader + Coder). Planner explores intent and creates spec+plan using brainstorming+writing-plans. Leader executes plan using executing-plans. Coder implements via Codex with verification. Use only when the user explicitly asks for "team-sp".
+metadata:
+  author: Minh Luu
 ---
 
 # CC Team SP

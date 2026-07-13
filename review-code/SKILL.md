@@ -1,6 +1,8 @@
 ---
 name: review-code
 description: Structured code review for backend services, APIs, and server-side code. Use ONLY when the user explicitly calls /review-code. Do NOT auto-trigger for ordinary coding, debugging, or any task where code review was not requested.
+metadata:
+  author: Minh Luu
 argument-hint: codebase|git-diff
 ---
 

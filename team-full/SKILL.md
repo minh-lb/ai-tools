@@ -1,6 +1,8 @@
 ---
 name: team-full
 description: Boot a full Claude Code + Codex agent team with Leader and Tester agents. TDD-first workflow — spec → testcases → tests → implement → verify → review. Coder and Reviewer are Codex on-demand. Use only when the user explicitly asks for "team-full".
+metadata:
+  author: Minh Luu
 ---
 
 # CC Team Full

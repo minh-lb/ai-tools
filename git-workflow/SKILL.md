@@ -1,6 +1,8 @@
 ---
 name: git-workflow
 description: GitFlow-style git workflow. Use this skill for any git task — committing, branching, merging, PRs, releases, conflict resolution, or worktree management — in a GitFlow-style repository.
+metadata:
+  author: Minh Luu
 ---
 
 # Git Workflow

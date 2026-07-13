@@ -1,6 +1,8 @@
 ---
 name: backend-testcase-writer
 description: Write detailed backend testcase documents for API endpoints, services, repositories, and workers/consumers in any backend project.
+metadata:
+  author: Minh Luu
 argument-hint: <target — endpoint, service, repository, or worker>
 ---
 

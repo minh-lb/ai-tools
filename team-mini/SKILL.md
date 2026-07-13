@@ -1,6 +1,8 @@
 ---
 name: team-mini
 description: Boot a Claude Code + Codex agent team using TeamCreate. Creates the Leader agent and waits for the user to provide a task before running anything. Use only when the user explicitly asks for "team-mini".
+metadata:
+  author: Minh Luu
 ---
 
 # CC Team

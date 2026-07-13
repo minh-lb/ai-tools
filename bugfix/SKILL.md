@@ -1,6 +1,8 @@
 ---
 name: bugfix
 description: Trace, isolate, and fix bugs in an active project or codebase. Use when Codex needs to investigate failing behavior, regressions, runtime errors, incorrect outputs, broken integrations, flaky/intermittent issues, performance regressions, concurrency defects, or unclear defects; follow a user-provided starting point when present, otherwise discover the likely fault from symptoms, logs, tests, and code search, then perform full-path tracing, impact analysis, and a post-fix logic summary.
+metadata:
+  author: Minh Luu
 ---
 
 # Bugfix

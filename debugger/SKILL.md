@@ -1,6 +1,8 @@
 ---
 name: debugger
 description: Investigate a defect by tracing data flow and logic flow from the input source. Use when the user wants to understand how data moves through layers or services, map transformation mismatches, or identify where behavior diverges — without applying any fix.
+metadata:
+  author: Minh Luu
 ---
 
 # Debugger

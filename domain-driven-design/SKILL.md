@@ -1,6 +1,8 @@
 ---
 name: domain-driven-design
 description: Laravel backend module design using DDD layers, Actions, DTOs, repositories, and events.
+metadata:
+  author: Minh Luu
 ---
 
 # Domain Driven Design

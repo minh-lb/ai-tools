@@ -1,6 +1,8 @@
 ---
 name: business-analyst
 description: Analyze requirements and produce SRS documentation. Use only when the user explicitly requests this skill.
+metadata:
+  author: Minh Luu
 ---
 
 # Business Analyst

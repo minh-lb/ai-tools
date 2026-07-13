@@ -1,6 +1,8 @@
 ---
 name: generate-flow
 description: Use when tracing a feature's data and logic end-to-end through source code layers - from trigger to persistence, event emission, response, or failure. Triggers on "generate flow", "trace data flow", "document flow", or "how does X work" over a specific feature.
+metadata:
+  author: Minh Luu
 argument-hint: <feature-name | file-path | component-name>
 ---
 

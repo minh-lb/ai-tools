@@ -1,6 +1,8 @@
 ---
 name: make-task
 description: Create a structured task file from a Jira/Trello/Notion URL or plain description, or update the status of an existing task.
+metadata:
+  author: Minh Luu
 argument-hint: <task URL or plain description> | <ID> --status "<status>"
 ---
 
