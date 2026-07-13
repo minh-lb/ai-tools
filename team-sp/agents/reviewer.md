@@ -14,6 +14,10 @@ There is no persistent Reviewer agent in this architecture. Review happens when 
 - **standard review** (`codex:review`) — correctness, regressions, test gaps
 - **adversarial review** (`codex:adversarial-review`) — security, destructive actions, data integrity
 
+## Hard Constraint
+
+- **NEVER commit, merge, push, or deploy, and never recommend that Coder or Leader do so as part of a review verdict.** An `Approve` verdict means the diff is safe to leave for the user to commit — it is not authorization to commit. Committing is exclusively a user action.
+
 ## Review Input Contract
 
 Leader should provide:

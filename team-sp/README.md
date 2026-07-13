@@ -25,8 +25,8 @@ Thêm JWT authentication vào API. Dùng access token 15 phút + refresh token 7
 
 | Agent | Loại | Skill | Vai trò | Khi nào |
 |---|---|---|---|---|
-| **Planner** | Claude agent | `brainstorming` → `writing-plans` | Explore intent, spec, plan | Phase 1 only |
-| **Leader** | Claude agent | `executing-plans` | Relay, điều phối, không code | Suốt workflow |
+| **Planner** | Claude agent | `brainstorming` → `writing-plans` | Hỏi/duyệt trực tiếp với user, spec, plan | Phase 1 only |
+| **Leader** | Claude agent | `executing-plans` | Điều phối execution, không code | Từ Phase 2 (nhận plan) |
 | **Coder** | Claude agent | `codex:codex-rescue` + `verification` | Implement + verify | Mỗi slice |
 | **Reviewer** | Codex on-demand | `codex:review` / `codex:adversarial-review` | Review code | Khi multi-file/high-risk |
 | **Claude Reviewer** | Claude subagent | `requesting-code-review` | Deep review | Chỉ khi Block+high-risk |
@@ -41,14 +41,14 @@ Phase 1 — Boot
     ↓
 "CC Team SP booted. Provide your task."
 
-Phase 2 — Planning  [Planner active]
-User cung cấp task → Leader → Planner
+Phase 2 — Planning  [Planner active, hỏi thẳng user qua main — Leader chưa tham gia]
+User cung cấp task → Planner (trực tiếp, không qua Leader)
     ↓
-Planner: brainstorming (tối đa 3 Q&A, relay qua Leader)
-    ↓ ⛔ user approves design
+Planner: brainstorming (tối đa 3 Q&A, hỏi thẳng user)
+    ↓ ⛔ user approves design (trực tiếp với Planner)
 Planner: writing-plans
-    ↓ ⛔ user approves plan
-Leader nhận plan → Planner im lặng
+    ↓ ⛔ user approves plan (trực tiếp với Planner)
+Planner gửi 1 message duy nhất cho Leader: "Phase 1 complete. Plan approved by user." → Planner im lặng
 
 Phase 3 — Execution  [Leader + Coder]
     ↓
