@@ -84,6 +84,13 @@
       "description": "Trace a feature's data and logic end-to-end through source code layers — from trigger to persistence, event emission, response, or failure.",
       "sourceBranch": "agent-skills",
       "sourcePath": "generate-flow"
+    },
+    {
+      "id": "coding-rules",
+      "label": "Coding Rules",
+      "description": "Mandatory coding rules for JavaScript, TypeScript, PHP, ReactJS, Laravel, Docker, and SQL, plus SOLID/OOP/Clean Code baselines.",
+      "sourceBranch": "agent-skills",
+      "sourcePath": "coding-rules"
     }
   ]
 }

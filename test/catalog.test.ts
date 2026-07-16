@@ -535,4 +535,16 @@ test("loadSelectionCatalog includes curated local skills in installer choices", 
       targets: undefined
     }
   );
+
+  assert.deepEqual(
+    catalog.skills.find((skill) => skill.id === "coding-rules"),
+    {
+      id: "coding-rules",
+      label: "Coding Rules",
+      description: "Mandatory coding rules for JavaScript, TypeScript, PHP, ReactJS, Laravel, Docker, and SQL, plus SOLID/OOP/Clean Code baselines.",
+      sourceBranch: "agent-skills",
+      sourcePath: "coding-rules",
+      targets: undefined
+    }
+  );
 });
