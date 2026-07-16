@@ -13,6 +13,8 @@ description: >-
   performance, security, testing, anti-patterns) for React, Laravel,
   Docker (image security, secrets), and SQL (injection, indexing, N+1,
   transactions, migrations).
+metadata:
+  author: Minh Luu
 ---
 
 # Coding Rules
