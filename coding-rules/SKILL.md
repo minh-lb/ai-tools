@@ -2,24 +2,26 @@
 name: coding-rules
 description: >-
   Mandatory coding rules for JavaScript, TypeScript, PHP, ReactJS (JS/TS),
-  Laravel (PHP), Docker, and SQL. MUST be consulted and followed every
-  time code, container config, or SQL is written, edited, generated, or
-  reviewed — not just when the user asks for "best practices" explicitly.
-  Treat as required conventions, not optional suggestions. Covers SOLID,
-  general OOP practices (encapsulation, Tell-Don't-Ask, immutability,
-  avoiding anemic models/primitive obsession/static state), and Clean
-  Code as baseline rules for any class-based code, plus language- and
-  framework-specific rules (naming, structure, state management,
-  performance, security, testing, anti-patterns) for React, Laravel,
-  Docker (image security, secrets), and SQL (injection, indexing, N+1,
-  transactions, migrations).
+  Laravel (PHP), Docker, SQL, and HTTP API design. MUST be consulted and
+  followed every time code, container config, SQL, or an API endpoint is
+  written, edited, generated, or reviewed — not just when the user asks
+  for "best practices" explicitly. Treat as required conventions, not
+  optional suggestions. Covers SOLID, general OOP practices
+  (encapsulation, Tell-Don't-Ask, immutability, avoiding anemic
+  models/primitive obsession/static state), and Clean Code as baseline
+  rules for any class-based code, plus language- and framework-specific
+  rules (naming, structure, state management, performance, security,
+  testing, anti-patterns) for React, Laravel, Docker (image security,
+  secrets), SQL (injection, indexing, N+1, transactions, migrations),
+  and API design (HTTP status code correctness, contract stability,
+  idempotency, pagination, versioning).
 metadata:
   author: Minh Luu
 ---
 
 # Coding Rules
 
-Rules to enforce for: JS/TS, PHP, ReactJS, Laravel, Docker, SQL — plus language-agnostic SOLID, OOP, Clean Code. AI-facing only: apply directly, don't narrate this file's existence to the user.
+Rules to enforce for: JS/TS, PHP, ReactJS, Laravel, Docker, SQL, HTTP API design — plus language-agnostic SOLID, OOP, Clean Code. AI-facing only: apply directly, don't narrate this file's existence to the user.
 
 ## Severity
 
@@ -42,6 +44,7 @@ Don't preload files you won't use.
 | Laravel | `laravel.md` (with `php.md`) |
 | Dockerfile/docker-compose | `docker.md` |
 | Raw SQL, schema, migrations | `sql.md` (with `laravel.md` if Eloquent) |
+| HTTP API endpoints/contracts (any framework) | `api.md` (with `laravel.md` if Laravel controllers/resources) |
 
 Narrow syntax question → one file. Design/review/new-feature task → add `solid.md`/`clean-code.md`/`oop.md` as relevant. Apply rules in the output directly; don't write non-compliant code then mention the rule after. When reviewing, cite the specific rule + fix, not the full checklist.
 
