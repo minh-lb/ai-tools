@@ -48,7 +48,7 @@
   ```
   Don't use `useEffect` to derive a value computable from existing state/props — compute inline or `useMemo`.
 - `useState`: don't duplicate state that's derivable from other state. Use functional updates (`setCount(prev => prev + 1)`) when updating from previous value, especially in closures.
-- `useMemo`/`useCallback`: only for a concrete reason (expensive re-render, heavy computation, referential equality for a dependency) — not by default everywhere.
+- `useMemo`/`useCallback`: see §5 for the compiler-aware rule — with React Compiler enabled, don't add these by default; without it, only for a concrete reason (expensive re-render, heavy computation, referential equality for a dependency).
 - Custom hooks: name `use*`, self-contain state+effect+logic, return a clear API.
 
 ## 3. State management
@@ -56,7 +56,7 @@
 - Local state (`useState`/`useReducer`) first; lift to context/store only when genuinely shared across unrelated components.
 - Complex multi-action state (wizards, multi-step forms) → `useReducer` over scattered `useState`.
 - Context for rarely-changing data (theme, auth, i18n) only — not for high-frequency-changing values (every consumer re-renders).
-- App-wide complex state at scale → dedicated library (Redux Toolkit, Zustand, Jotai), not a hand-rolled Context store.
+- App-wide complex state at scale → dedicated library, not a hand-rolled Context store. Default to **Zustand** (minimal boilerplate, small bundle, works with Server Components) unless the project already has an established choice; reach for **Jotai** when state is naturally atomic/derived (many independent pieces with computed relationships); reach for **Redux Toolkit** on large multi-team codebases that need its structure, devtools ecosystem, and middleware conventions. Don't introduce a second state library into a codebase that already has one without a stated reason.
 
 ## 4. Async data / API calls
 
@@ -75,8 +75,8 @@
 ## 5. Rendering & performance
 
 - Stable unique `key` from real data — never array index if the list can reorder/add/remove.
-- Avoid creating new objects/arrays/functions in JSX for a `React.memo`-wrapped child (breaks memoization).
-- `React.memo` only for expensive components with stable props, not by default.
+- **If the React Compiler is enabled in the project** (React 19+ toolchain with `babel-plugin-react-compiler` / the Next.js/Vite compiler integration, released stable in Oct 2025): write new components without manual `useMemo`/`useCallback`/`React.memo` and let the compiler infer memoization. Only add manual memoization back when integrating a third-party API that depends on referential equality (e.g. a library reading a ref via interior mutation the compiler can't see) or after profiling shows the compiler's heuristic misses a real hot path — state which case applies. Don't mix manual memoization into new code speculatively; the compiler bails out of optimizing a component/hook when its inferred memoization disagrees with a hand-written one.
+- **If the React Compiler is not enabled** (pre-19 codebase, or 19+ without the plugin configured): follow the pre-compiler discipline — `React.memo`/`useMemo`/`useCallback` only for expensive components with stable props or a measured re-render cost, not by default; avoid creating new objects/arrays/functions in JSX for a `React.memo`-wrapped child (breaks memoization).
 - `React.lazy` + `Suspense` for routes/heavy components not needed on initial load.
 - Avoid inline styles recomputed every render when a CSS class/module/Tailwind would do.
 
@@ -89,6 +89,13 @@
   ```
 - No `any` for event handlers — use `React.ChangeEvent<HTMLInputElement>`, `React.MouseEvent<HTMLButtonElement>`, etc.
 - Define API response types once (`types/api.ts`), reuse between hook and component.
+- **Refs on React 19+**: accept `ref` as a normal prop, no `forwardRef` needed — `forwardRef` is deprecated for function components and slated for eventual removal.
+  ```tsx
+  function Input({ ref, ...rest }: { ref?: React.Ref<HTMLInputElement> } & InputProps) {
+    return <input ref={ref} {...rest} />;
+  }
+  ```
+  **Refs on React 18 and earlier**: still use `forwardRef` — the plain-prop form does not work pre-19. Check the project's React major version before generating either form.
 
 ## 7. API communication (frontend calling a backend)
 
@@ -99,7 +106,10 @@
 
 ## 8. Testing
 
-Test user-visible behavior (RTL: query by role/text), not implementation details. Mock the API layer, not internal HTTP libraries.
+- Test user-visible behavior (React Testing Library: query by role/label/text), not implementation details.
+- Runner: **Vitest** for Vite-based projects (faster, native ESM — the majority default as of 2026); **Jest** for existing/enterprise/CRA/Next.js codebases already on it. Don't switch an established project's runner without a stated reason.
+- Mock the network boundary with **MSW** (Mock Service Worker), not the HTTP client/internal fetch wrapper — this exercises the same code path production traffic does.
+- Reserve Playwright/Cypress (component or E2E mode) for interaction that RTL+jsdom cannot exercise: real layout/scroll, drag-and-drop, cross-frame, browser-native animation.
 
 ## 9. Error boundaries (mandatory)
 
