@@ -74,6 +74,22 @@ Summary of steps:
 - Treat missing tests, missing observability, and unsafe migrations as real review concerns when they increase deployment risk.
 - **Cumulative risk:** When three or more Medium findings cluster on the same code path or subsystem, assess whether the combined risk warrants escalating that cluster to High. State the escalation explicitly in the Summary.
 
+## Coordinating with `coding-rules`
+
+`coding-rules` defines the MUST/SHOULD authoring standard (SOLID, OOP, Clean Code, and per-language/framework rules including its own `api.md`). This skill's own reference files define *what to look for* during review; `coding-rules` files are the *authoritative standard to cite* when a finding is actually a violation of one of those rules, not just a generic judgment call.
+
+When a finding's root cause matches a `coding-rules` rule, load the matching file from that skill and name the specific rule in `Why`/`Fix` (e.g. "vi phạm SRP — `coding-rules/solid.md`", "thiếu pagination limit theo `coding-rules/api.md` §Pagination") instead of restating generic advice. Do not add a new output field for this — fold the citation into the existing `Why`/`Fix` text.
+
+| This skill's dimension | Load from `coding-rules` when the finding is a rule violation |
+|---|---|
+| ARCH | `solid.md`, `oop.md` |
+| MAINT | `clean-code.md` |
+| API | `api.md` — complements this skill's own `references/api.md`: use this skill's file to decide *what's wrong*, cite `coding-rules/api.md`'s naming/status-code/idempotency/pagination rules for *why it's a defect* |
+| DB | `sql.md`, and `laravel.md` if the change touches Eloquent |
+| Any dimension touching JS/TS, React, PHP, Laravel, or Docker code | `javascript-typescript.md`, `reactjs.md`, `php.md`, `laravel.md`, `docker.md` respectively |
+
+Don't load `coding-rules` files speculatively — only pull the ones matching a surface actually touched, same discipline as the 12-dimension Load Order below. If `coding-rules` isn't installed/available, review normally using only this skill's own references.
+
 ## Load Order
 
 Always read these first:
