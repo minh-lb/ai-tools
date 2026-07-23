@@ -547,4 +547,16 @@ test("loadSelectionCatalog includes curated local skills in installer choices", 
       targets: undefined
     }
   );
+
+  assert.deepEqual(
+    catalog.skills.find((skill) => skill.id === "react-component-generator"),
+    {
+      id: "react-component-generator",
+      label: "React Component Generator",
+      description: "Create or refactor repo-aligned React components under components/**, with index.tsx, controller.ts, and style.module.css conventions.",
+      sourceBranch: "agent-skills",
+      sourcePath: "react-component-generator",
+      targets: undefined
+    }
+  );
 });
