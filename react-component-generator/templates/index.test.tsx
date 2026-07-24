@@ -16,12 +16,12 @@ describe("ComponentName", () => {
     expect(screen.getByText("Test value")).toBeInTheDocument();
   });
 
-  it("calls handler when action is triggered", async () => {
+  it("calls onConfirm when the action is triggered", async () => {
     const user = userEvent.setup(); // required for @testing-library/user-event v14+
-    const handleAction = vi.fn(); // jest.fn() if the repo uses Jest
-    render(<ComponentName label="Click me" onAction={handleAction} />);
+    const handleConfirm = vi.fn(); // jest.fn() if the repo uses Jest
+    render(<ComponentName label="Click me" onConfirm={handleConfirm} />);
     await user.click(screen.getByRole("button"));
-    expect(handleAction).toHaveBeenCalledTimes(1);
+    expect(handleConfirm).toHaveBeenCalledTimes(1);
   });
 
   // Add a test per state the component owns (loading, empty, error, disabled, success).

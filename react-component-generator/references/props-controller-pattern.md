@@ -7,6 +7,8 @@ Follow `coding-rules/references/reactjs.md` for the underlying React/TS conventi
 ## index.tsx
 
 ```tsx
+// controller.ts always uses client-only hooks, so this needs "use client" in RSC-enabled repos (Next.js App
+// Router etc.). In non-RSC repos (Vite, CRA, plain SPA), delete this directive line — it's a no-op there.
 "use client";
 
 import { useController } from "./controller";

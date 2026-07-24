@@ -11,11 +11,14 @@ This skill decides file layout and template selection; for the underlying React/
 - Hook: `useController`
 - CSS module classes: `camelCase`
 - Export style: default export
-- Sub-component split out of an oversized `index.tsx` (per `coding-rules/references/reactjs.md` §1: >~200-300 lines or complex render logic): always a sibling component folder, `components/<kebab-case-name>/index.tsx` (same convention as any other component, private or not) — not a nested folder inside the parent, not a flat `PascalCase.tsx` file.
+- Sub-component split out of an oversized `index.tsx`: same sibling-component-folder convention as any other component (private or not) — see `SKILL.md`'s Execution workflow step 5 ("Split when too large") for the full rule.
 
 ## Props conventions
 
+For deciding which props a component should expose in the first place — prop-count review signals, grouping into objects, boolean vs. union-type props, and when to split the component instead — see `references/props-design.md`. The conventions below cover shape/naming/typing of props once the set is decided.
+
 - Create `type Props = {}` (or `interface Props` only if it needs to be extended/declaration-merged) only when props exist. Never `IProps` — no Hungarian prefix, per `coding-rules/references/reactjs.md` §6.
+- Do not `export` the `Props` type by default. Export it only when something outside `index.tsx` actually needs to import it — in practice, this means: the component has a `controller.ts` that imports it via `import type { Props } from "."` (see Controller conventions), or a parent/sibling file genuinely needs to reference the same shape. A component with no `controller.ts` and no external consumer of its prop shape keeps `type Props = {}` unexported.
 - Do not type the component with `React.FC<Props>`. Type the destructured parameter directly: `({ value }: Props) => {}`.
 - Destructure props in the function signature — no `props.x` access in the body — except the props-controller pattern below, where the whole `props` object is intentionally forwarded to `useController(props)`.
 - Required props: no `?`.
@@ -41,7 +44,7 @@ When `controller.ts` calls `useQuery`/`useMutation`, handle the error state expl
 
 - No-props signature: `export const useController = () => { ... }`
 - With props: `export const useController = (props: Props) => { ... }`
-- Import `Props` from `./index` (`import type { Props } from "."`).
+- Import `Props` from `./index` (`import type { Props } from "."`) — this is the case that requires `index.tsx` to `export type Props` (see Props conventions above); a no-props controller needs no `Props` export at all.
 - Pass the full `props` object to `useController(props)` unless local repo style says otherwise — this is the one deliberate exception to destructuring props in the component signature (see Props conventions above).
 - Return only values used by the view.
 
