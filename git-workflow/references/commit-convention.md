@@ -522,7 +522,7 @@ Target outcome:
 
 - each visible commit should have a clear purpose
 - the branch should read like a coherent implementation story
-- do not use `git rebase`, `git rebase -i`, `git rebase --continue`, or `git rebase --abort` at any stage
+- no rebase at any stage — see `references/principles.md` for the full banned-command list
 
 ## Before committing
 

@@ -24,14 +24,14 @@ Or create a different branch.
 
 ## Need to recover a deleted or overwritten commit
 
-Use reflog:
+Use reflog, and land directly on a new branch — do not stop at a bare `git checkout <commit>`. That leaves you in detached HEAD, and if anything checks out another ref before a branch is created, the recovered commit can become unreachable again and eventually get garbage-collected.
 
 ```bash
 git reflog
-git checkout <commit>
+git checkout -b recovery/<short-description> <commit>
 ```
 
-Recover first, then create a new branch from the recovered commit if needed.
+Reflog only recovers *committed* content. It cannot bring back deleted untracked files or a dropped stash entry that was itself already removed — there is no path back from those; see `references/principles.md` for the commands that cause that kind of unrecoverable loss.
 
 ## Merge is going wrong
 

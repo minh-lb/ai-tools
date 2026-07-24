@@ -77,6 +77,52 @@ Confirm:
 6. Database migrations are reviewed for safety and rollback.
 7. Backward compatibility is checked when relevant.
 
+## Creating the PR from local (GitHub or GitLab CLI)
+
+Detect the platform from the remote before doing anything else:
+
+```bash
+git remote get-url origin
+```
+
+- URL contains `github.com` → use `gh` (GitHub CLI)
+- URL contains `gitlab.com` or a self-hosted GitLab domain → use `glab` (GitLab CLI)
+
+Both require the CLI installed and authenticated first — check with `gh auth status` / `glab auth status`. If the CLI isn't installed or isn't authenticated, do not fake a PR or improvise an API call: tell the user the CLI is unavailable and hand them the validated title/body to paste into the platform's web UI instead.
+
+Push the branch before creating the PR (never force):
+
+```bash
+git push -u origin <branch-name>
+```
+
+### GitHub
+
+```bash
+gh pr create \
+  --base develop \
+  --head <branch-name> \
+  --title "<type>(<scope>): <summary>" \
+  --body "$(cat <<'EOF'
+<what changed, why, test plan>
+EOF
+)"
+```
+
+### GitLab
+
+```bash
+glab mr create \
+  --source-branch <branch-name> \
+  --target-branch develop \
+  --title "<type>(<scope>): <summary>" \
+  --description "<what changed, why, test plan>"
+```
+
+GitLab calls it a merge request (MR) rather than a pull request — same title convention and same base-branch rules apply.
+
+For both: only use `--base main` / `--target-branch main` when this is a `release/*` or `hotfix/*` PR that targets `main` directly (see [Branch Strategy](branch-strategy.md)); everything else targets `develop`. The generated title still has to pass the same `<type>(<scope>): <summary>` validation as any commit message — the CLI accepting the string is not the same as it being correct.
+
 ## Review expectations
 
 Reviewers should inspect:

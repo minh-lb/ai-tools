@@ -61,7 +61,8 @@ These rules apply to every Git action taken under this skill:
 7. Never commit directly on `main`, `master`, or `develop`.
 8. Never use `git push --force`, `git push -f`, or `git push --force-with-lease`. Keep remote history forward-moving.
 9. Never use `git rebase`, `git rebase -i`, `git rebase --continue`, `git rebase --abort`, or `git reset --hard`. Use merge-based updates instead.
-10. If the task is a merge continuation and Git provides a merge commit template, keep the merge flow consistent with `references/merge-strategy.md` instead of forcing a normal conventional summary line.
+10. If the task is a merge continuation and Git provides a merge commit template, keep the merge flow consistent with `references/merge-strategy.md` instead of forcing a normal conventional summary line. If the merge had actual conflicts, append a `Conflicts resolved in:` list (file + how it was resolved) to the commit body — see `references/conflict-resolution.md`.
+11. Never run `git clean -f`/`-fd`/`-fx`, `git checkout -- <path>` or `git restore <path>` (without `--staged`), or `git worktree remove --force` on anything but a confirmed-clean target. These discard uncommitted or untracked work with no reflog recovery — run `git status` and get explicit user confirmation first (see `references/principles.md`).
 
 ## Commit Task Contract
 

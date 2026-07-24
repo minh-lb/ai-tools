@@ -42,33 +42,12 @@ git merge origin/main
 
 ## History safety rules
 
-This workflow does not permit history-rewriting operations on task branches.
+This workflow does not permit history-rewriting operations on task branches — see `references/principles.md` for the full banned-command list and safe alternatives.
 
-Safe default:
+Branch-specific additions to that baseline:
 
-- sync branches by merging from the correct base: `develop` for task branches, `main` for hotfix branches
-- keep new corrective work as forward-moving commits
-- avoid destructive history edits even on local branches when the same result can be achieved with merge or follow-up commits
-- do not rewrite shared release or hotfix branch history
-
-This skill does not permit:
-
-- `git rebase`
-- `git rebase -i`
-- `git rebase --continue`
-- `git rebase --abort`
-- `git reset --hard`
-- `git push --force`
-- `git push --force-with-lease`
-
-If a branch needs the latest `develop`, prefer:
-
-```bash
-git fetch origin
-git merge origin/develop
-```
-
-If local commits become messy, add a clean follow-up commit instead of rewriting history.
+- do not rewrite shared release or hotfix branch history, even locally, once the branch is published
+- if local commits become messy, add a clean follow-up commit instead of rewriting history (see "Keep branches up to date" above for the sync commands)
 
 ## Hotfix branches
 
@@ -103,5 +82,15 @@ git push origin develop
 ```
 
 The order matters: merge into `release/*` before `develop` so the release stabilization history stays intact. If no `release/*` branch is open, skip step 2 and go directly from step 1 to step 3.
+
+Step 3 (merge into `develop`) is mandatory, exactly like the equivalent step in [Release Process](release-process.md). A hotfix is not done once `main` is tagged — if step 2 or step 3 hits a conflict or gets interrupted, the task is still open until every applicable target (`main`, the open `release/*` if any, and `develop`) has the fix. Do not treat tagging `main` as a stopping point.
+
+Before considering a hotfix finished, verify every required target actually contains the fix:
+
+```bash
+git branch --all --contains <hotfix-merge-commit-or-tag>
+```
+
+It should list `main`, `develop`, and the open `release/*` branch (if one existed). If any expected branch is missing, the hotfix merge to that branch was skipped or lost — go back and complete it before closing out the task.
 
 Do not cherry-pick as the primary merge strategy. Use full merges to keep the history traceable.

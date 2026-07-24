@@ -83,11 +83,23 @@ To bring a branch up to date, use `git fetch origin` followed by a merge from th
 
 If local work appears lost, use `git reflog` to recover commits before considering any reset.
 
+## Never run commands that discard work with no recovery path
+
+`git reflog` only helps for content that was committed at some point — it cannot bring back untracked files or uncommitted working-directory edits. Some commands destroy exactly that, permanently, in one shot. Do not use:
+
+- `git clean -f`, `git clean -fd`, `git clean -fx` (or any `-f`/`--force` variant) — deletes untracked files and directories with no reflog, no trash, no undo
+- `git checkout -- <path>` or `git restore <path>` (without `--staged`) — discards uncommitted changes to tracked files
+- `git worktree remove --force` on a worktree that has uncommitted or untracked changes
+
+If any of these seem like the right fix, stop and confirm with the user first: run `git status` (and `git status` inside the worktree, for the worktree case) to show exactly what would be discarded, and only proceed once the user explicitly accepts the loss — or commit/stash the work to a safe branch instead.
+
 ## Do not delete branches as routine cleanup
 
 This workflow does not use branch deletion as a default cleanup step.
 
 Keep branch records for traceability unless the repository has an explicit archival or retention policy outside this skill.
+
+If a branch must be deleted, use `git branch -d` (refuses to delete a branch with unmerged commits) — never `git branch -D` (force-deletes regardless of merge status) unless the user has explicitly confirmed the branch's commits are no longer needed anywhere.
 
 ## Review AI output like human output
 
