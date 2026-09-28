@@ -25,7 +25,8 @@
     "build": "npm run clean && tsc -p tsconfig.json",
     "prepack": "npm run build",
     "test": "npm run build && node --test dist/test/*.test.js",
-    "install:global": "npm pack && npm install -g ./minhluudev-ai-tools-$(npm pkg get version | tr -d '\"').tgz"
+    "install:global": "npm pack && npm install -g ./minhluudev-ai-tools-$(npm pkg get version | tr -d '\"').tgz",
+    "new-version": "npm version patch"
   },
   "publishConfig": {
     "access": "public"
