@@ -1,6 +1,6 @@
 {
   "name": "@minhluudev/ai-tools",
-  "version": "1.0.23",
+  "version": "1.0.24",
   "description": "CLI to install AI skills from GitHub branches for Codex, Claude, and Pi.",
   "license": "MIT",
   "type": "module",
