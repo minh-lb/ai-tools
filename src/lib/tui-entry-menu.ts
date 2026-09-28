@@ -10,10 +10,6 @@ import {
 
 export type EntryMenuAction =
   | "install-skills"
-  | "install-project-docs"
-  | "install-libs"
-  | "install-plugin"
-  | "install-mcp"
   | "manage-skills"
   | "cancel";
 
@@ -29,30 +25,6 @@ const MENU_ITEMS: EntryMenuItem[] = [
     id: "install-skills",
     label: "◈  Install agent skills",
     description: "Open the guided installer for Codex skills and Claude custom agents.",
-    meta: "Codex + Claude"
-  },
-  {
-    id: "install-project-docs",
-    label: "▤  Install project docs",
-    description: "Copy selected project docs and workflow templates into the current repository.",
-    meta: "Current repo"
-  },
-  {
-    id: "install-libs",
-    label: "⬡  Install libs for AI",
-    description: "Install RTK, ICM, or ECC, then run the supported setup flow for Codex and Claude.",
-    meta: "Mac + Linux"
-  },
-  {
-    id: "install-plugin",
-    label: "◉  Install plugin",
-    description: "Install or remove shared plugins such as Lumin for Codex and Claude.",
-    meta: "Codex + Claude"
-  },
-  {
-    id: "install-mcp",
-    label: "◎  Install MCP",
-    description: "Add or remove Ant Design, GitLab, GitHub, and Figma MCP servers for Codex or Claude.",
     meta: "Codex + Claude"
   },
   {

@@ -60,7 +60,6 @@ Change the `EntryMenuAction` type (add `"manage-skills"`):
 ```typescript
 export type EntryMenuAction =
   | "install-skills"
-  | "install-project-docs"
   | "install-libs"
   | "install-plugin"
   | "install-mcp"

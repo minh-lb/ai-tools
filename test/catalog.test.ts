@@ -130,7 +130,6 @@ test("loadCatalogIndex falls back to default branch when configured skills branc
       repo: "ai-tools",
       defaultBranch: "main",
       skillsBranch: "skill-general",
-      pluginsBranch: "plugins",
       manifestPath: "ai-tools.catalog.json",
       excludeBranches: ["main", "master"]
     },
@@ -181,7 +180,6 @@ test("loadCatalogIndex reports available branches when no manifest can be loaded
       repo: "ai-tools",
       defaultBranch: "main",
       skillsBranch: "skill-general",
-      pluginsBranch: "plugins",
       manifestPath: "ai-tools.catalog.json",
       excludeBranches: ["main", "master"]
     },
@@ -230,7 +228,6 @@ test("resolveSelectionItems loads manifests only after the user has made selecti
       repo: "ai-tools",
       defaultBranch: "main",
       skillsBranch: "skill-general",
-      pluginsBranch: "plugins",
       manifestPath: "ai-tools.catalog.json",
       excludeBranches: ["main", "master"]
     },
@@ -291,7 +288,6 @@ test("resolveSelectionItems loads manifests only after the user has made selecti
     config: {
       packageRoot: "/tmp/project",
       selectionCatalogPath: "selection-catalog.json",
-      projectDocsCatalogPath: "project-docs-catalog.json",
       github: client.config
     },
     selectionCatalog,
@@ -326,7 +322,6 @@ test("resolveSelectionItems supports direct branch folders without a manifest", 
       repo: "ai-tools",
       defaultBranch: "main",
       skillsBranch: "skill-general",
-      pluginsBranch: "plugins",
       manifestPath: "ai-tools.catalog.json",
       excludeBranches: ["main", "master"]
     },
@@ -349,7 +344,6 @@ test("resolveSelectionItems supports direct branch folders without a manifest", 
     config: {
       packageRoot: "/tmp/project",
       selectionCatalogPath: "selection-catalog.json",
-      projectDocsCatalogPath: "project-docs-catalog.json",
       github: client.config
     },
     selectionCatalog,
@@ -380,52 +374,30 @@ test("loadSelectionCatalog includes curated local skills in installer choices", 
   const catalog = await loadSelectionCatalog({
     packageRoot: process.cwd(),
     selectionCatalogPath: "selection-catalog.json",
-    projectDocsCatalogPath: "project-docs-catalog.json",
     github: {
       owner: "minhluudev",
       repo: "ai-tools",
       defaultBranch: "main",
       skillsBranch: "skill-general",
-      pluginsBranch: "plugins",
       manifestPath: "ai-tools.catalog.json",
       excludeBranches: ["main", "master"]
     }
   });
 
   assert.deepEqual(
-    catalog.skills.find((skill) => skill.id === "bugfix"),
-    {
-      id: "bugfix",
-      label: "Bugfix",
-      description: "Trace, isolate, and fix bugs — regressions, runtime errors, flaky issues, and performance defects.",
-      sourceBranch: "agent-skills",
-      sourcePath: "bugfix",
-      targets: undefined
-    }
-  );
-
-  assert.deepEqual(
-    catalog.skills.find((skill) => skill.id === "debugger"),
-    {
-      id: "debugger",
-      label: "Debugger",
-      description: "Investigate code defects without applying a fix — root cause analysis and debugging handoff.",
-      sourceBranch: "agent-skills",
-      sourcePath: "debugger",
-      targets: undefined
-    }
-  );
-
-  assert.deepEqual(
-    catalog.skills.find((skill) => skill.id === "business-analyst"),
-    {
-      id: "business-analyst",
-      label: "Business analyst",
-      description: "Analyze requirements and produce SRS documentation.",
-      sourceBranch: "agent-skills",
-      sourcePath: "business-analyst",
-      targets: undefined
-    }
+    catalog.skills.map((skill) => skill.id),
+    [
+      "domain-driven-design",
+      "generate-flow",
+      "git-workflow",
+      "react-component-generator",
+      "refine-antd",
+      "review-code",
+      "task-creator",
+      "team-mini",
+      "team-sp",
+      "testcase-creator"
+    ]
   );
 
   assert.deepEqual(
@@ -441,13 +413,13 @@ test("loadSelectionCatalog includes curated local skills in installer choices", 
   );
 
   assert.deepEqual(
-    catalog.skills.find((skill) => skill.id === "backend-testcase-writer"),
+    catalog.skills.find((skill) => skill.id === "testcase-creator"),
     {
-      id: "backend-testcase-writer",
-      label: "Backend testcase writer",
-      description: "Write detailed backend testcase documents for API endpoints, services, repositories, and workers/consumers.",
+      id: "testcase-creator",
+      label: "Testcase Creator",
+      description: "Create or expand per-feature Markdown test case suites covering frontend and backend from specifications, designs, and the built-in QA checklists.",
       sourceBranch: "agent-skills",
-      sourcePath: "backend-testcase-writer",
+      sourcePath: "testcase-creator",
       targets: undefined
     }
   );
@@ -477,18 +449,6 @@ test("loadSelectionCatalog includes curated local skills in installer choices", 
   );
 
   assert.deepEqual(
-    catalog.skills.find((skill) => skill.id === "team-full"),
-    {
-      id: "team-full",
-      label: "Team Full",
-      description: "Full TDD agent team — spec → testcases → tests → implement → verify → review. Leader and Tester agents included.",
-      sourceBranch: "agent-skills",
-      sourcePath: "team-full",
-      targets: undefined
-    }
-  );
-
-  assert.deepEqual(
     catalog.skills.find((skill) => skill.id === "team-sp"),
     {
       id: "team-sp",
@@ -496,6 +456,18 @@ test("loadSelectionCatalog includes curated local skills in installer choices", 
       description: "Superpowers-native agent team — Planner (brainstorming + writing-plans), Leader (executing-plans), Coder (Codex + verification). Best for complex or ambiguous tasks.",
       sourceBranch: "agent-skills",
       sourcePath: "team-sp",
+      targets: undefined
+    }
+  );
+
+  assert.deepEqual(
+    catalog.skills.find((skill) => skill.id === "refine-antd"),
+    {
+      id: "refine-antd",
+      label: "Refine + Ant Design",
+      description: "Guides building and modifying admin panels, dashboards, and internal CRUD tools with the Refine framework and Ant Design.",
+      sourceBranch: "agent-skills",
+      sourcePath: "refine-antd",
       targets: undefined
     }
   );
@@ -537,18 +509,6 @@ test("loadSelectionCatalog includes curated local skills in installer choices", 
   );
 
   assert.deepEqual(
-    catalog.skills.find((skill) => skill.id === "coding-rules"),
-    {
-      id: "coding-rules",
-      label: "Coding Rules",
-      description: "Mandatory coding rules for JavaScript, TypeScript, PHP, ReactJS, Laravel, Docker, and SQL, plus SOLID/OOP/Clean Code baselines.",
-      sourceBranch: "agent-skills",
-      sourcePath: "coding-rules",
-      targets: undefined
-    }
-  );
-
-  assert.deepEqual(
     catalog.skills.find((skill) => skill.id === "react-component-generator"),
     {
       id: "react-component-generator",
@@ -560,15 +520,4 @@ test("loadSelectionCatalog includes curated local skills in installer choices", 
     }
   );
 
-  assert.deepEqual(
-    catalog.skills.find((skill) => skill.id === "vercel-react-best-practices"),
-    {
-      id: "vercel-react-best-practices",
-      label: "Vercel React Best Practices",
-      description: "React and Next.js performance optimization guidelines from Vercel Engineering — 70 rules across waterfalls, bundle size, server/client rendering, re-renders, and JS performance.",
-      sourceBranch: "agent-skills",
-      sourcePath: "vercel-react-best-practices",
-      targets: undefined
-    }
-  );
 });

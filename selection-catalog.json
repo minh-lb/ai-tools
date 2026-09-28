@@ -2,81 +2,11 @@
   "version": 1,
   "skills": [
     {
-      "id": "bugfix",
-      "label": "Bugfix",
-      "description": "Trace, isolate, and fix bugs — regressions, runtime errors, flaky issues, and performance defects.",
-      "sourceBranch": "agent-skills",
-      "sourcePath": "bugfix"
-    },
-    {
-      "id": "debugger",
-      "label": "Debugger",
-      "description": "Investigate code defects without applying a fix — root cause analysis and debugging handoff.",
-      "sourceBranch": "agent-skills",
-      "sourcePath": "debugger"
-    },
-    {
-      "id": "backend-testcase-writer",
-      "label": "Backend testcase writer",
-      "description": "Write detailed backend testcase documents for API endpoints, services, repositories, and workers/consumers.",
-      "sourceBranch": "agent-skills",
-      "sourcePath": "backend-testcase-writer"
-    },
-    {
-      "id": "business-analyst",
-      "label": "Business analyst",
-      "description": "Analyze requirements and produce SRS documentation.",
-      "sourceBranch": "agent-skills",
-      "sourcePath": "business-analyst"
-    },
-    {
       "id": "domain-driven-design",
       "label": "Domain Driven Design",
       "description": "Laravel backend module design using DDD layers, Actions, DTOs, repositories, and events.",
       "sourceBranch": "agent-skills",
       "sourcePath": "domain-driven-design"
-    },
-    {
-      "id": "git-workflow",
-      "label": "Git workflow",
-      "description": "GitFlow-style git workflow — committing, branching, merging, PRs, releases, and conflict resolution.",
-      "sourceBranch": "agent-skills",
-      "sourcePath": "git-workflow"
-    },
-    {
-      "id": "review-code",
-      "label": "Review code",
-      "description": "Structured code review for backend services, APIs, and server-side code.",
-      "sourceBranch": "agent-skills",
-      "sourcePath": "review-code"
-    },
-    {
-      "id": "team-mini",
-      "label": "Team Mini",
-      "description": "Boot a Claude Code + Codex agent team (Leader + on-demand Coder). Waits for user task before running.",
-      "sourceBranch": "agent-skills",
-      "sourcePath": "team-mini"
-    },
-    {
-      "id": "team-full",
-      "label": "Team Full",
-      "description": "Full TDD agent team — spec → testcases → tests → implement → verify → review. Leader and Tester agents included.",
-      "sourceBranch": "agent-skills",
-      "sourcePath": "team-full"
-    },
-    {
-      "id": "team-sp",
-      "label": "Team SP",
-      "description": "Superpowers-native agent team — Planner (brainstorming + writing-plans), Leader (executing-plans), Coder (Codex + verification). Best for complex or ambiguous tasks.",
-      "sourceBranch": "agent-skills",
-      "sourcePath": "team-sp"
-    },
-    {
-      "id": "task-creator",
-      "label": "Task Creator",
-      "description": "Draft and push tasks/tickets to Jira, Trello, Notion, Linear, Asana, monday.com, or a local file, with an objective estimate and user review before creation.",
-      "sourceBranch": "agent-skills",
-      "sourcePath": "task-creator"
     },
     {
       "id": "generate-flow",
@@ -86,11 +16,11 @@
       "sourcePath": "generate-flow"
     },
     {
-      "id": "coding-rules",
-      "label": "Coding Rules",
-      "description": "Mandatory coding rules for JavaScript, TypeScript, PHP, ReactJS, Laravel, Docker, and SQL, plus SOLID/OOP/Clean Code baselines.",
+      "id": "git-workflow",
+      "label": "Git workflow",
+      "description": "GitFlow-style git workflow — committing, branching, merging, PRs, releases, and conflict resolution.",
       "sourceBranch": "agent-skills",
-      "sourcePath": "coding-rules"
+      "sourcePath": "git-workflow"
     },
     {
       "id": "react-component-generator",
@@ -100,11 +30,46 @@
       "sourcePath": "react-component-generator"
     },
     {
-      "id": "vercel-react-best-practices",
-      "label": "Vercel React Best Practices",
-      "description": "React and Next.js performance optimization guidelines from Vercel Engineering — 70 rules across waterfalls, bundle size, server/client rendering, re-renders, and JS performance.",
+      "id": "refine-antd",
+      "label": "Refine + Ant Design",
+      "description": "Guides building and modifying admin panels, dashboards, and internal CRUD tools with the Refine framework and Ant Design.",
       "sourceBranch": "agent-skills",
-      "sourcePath": "vercel-react-best-practices"
+      "sourcePath": "refine-antd"
+    },
+    {
+      "id": "review-code",
+      "label": "Review code",
+      "description": "Structured code review for backend services, APIs, and server-side code.",
+      "sourceBranch": "agent-skills",
+      "sourcePath": "review-code"
+    },
+    {
+      "id": "task-creator",
+      "label": "Task Creator",
+      "description": "Draft and push tasks/tickets to Jira, Trello, Notion, Linear, Asana, monday.com, or a local file, with an objective estimate and user review before creation.",
+      "sourceBranch": "agent-skills",
+      "sourcePath": "task-creator"
+    },
+    {
+      "id": "team-mini",
+      "label": "Team Mini",
+      "description": "Boot a Claude Code + Codex agent team (Leader + on-demand Coder). Waits for user task before running.",
+      "sourceBranch": "agent-skills",
+      "sourcePath": "team-mini"
+    },
+    {
+      "id": "team-sp",
+      "label": "Team SP",
+      "description": "Superpowers-native agent team — Planner (brainstorming + writing-plans), Leader (executing-plans), Coder (Codex + verification). Best for complex or ambiguous tasks.",
+      "sourceBranch": "agent-skills",
+      "sourcePath": "team-sp"
+    },
+    {
+      "id": "testcase-creator",
+      "label": "Testcase Creator",
+      "description": "Create or expand per-feature Markdown test case suites covering frontend and backend from specifications, designs, and the built-in QA checklists.",
+      "sourceBranch": "agent-skills",
+      "sourcePath": "testcase-creator"
     }
   ]
 }

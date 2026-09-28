@@ -4,10 +4,10 @@ import { mkdir, rm, writeFile } from "node:fs/promises";
 import * as os from "node:os";
 import * as path from "node:path";
 
-test("EntryMenuAction includes manage-skills", async () => {
+test("entry menu exposes supported workflows and omits removed installers", async () => {
   const { MENU_ITEMS_FOR_TEST } = await import("../src/lib/tui-entry-menu.js");
   const ids = MENU_ITEMS_FOR_TEST.map((item: { id: string }) => item.id);
-  assert.ok(ids.includes("manage-skills"), `manage-skills not found in menu items: ${ids.join(", ")}`);
+  assert.deepEqual(ids, ["install-skills", "manage-skills", "cancel"]);
 });
 
 test("resolveSkillsDir returns correct path for claude", async () => {
