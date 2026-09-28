@@ -14,7 +14,7 @@ Boot a superpowers-native multi-agent team. Planner runs full planning workflow 
 Use only when the user explicitly asks for `team-sp`.
 
 Do not auto-apply to ordinary coding, debugging, or single-agent tasks.
-Use `team-mini` for quick tasks with clear specs. Use `team-full` for TDD workflows.
+Use `team-mini` for quick tasks with clear specs. For TDD workflows, use a test-first process.
 
 ## When to Use team-sp
 
@@ -24,7 +24,7 @@ Use `team-mini` for quick tasks with clear specs. Use `team-full` for TDD workfl
 | Multi-file, multi-system changes | team-sp |
 | Task would benefit from structured spec before implementation | team-sp |
 | Task is a quick fix with clear spec | team-mini |
-| Task requires TDD with test-first discipline | team-full |
+| Task requires TDD with test-first discipline | Follow a test-first process |
 
 ## Boot Sequence
 

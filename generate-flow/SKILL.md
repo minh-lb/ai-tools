@@ -34,7 +34,7 @@ Use this skill for:
 - preparing test design from real decision branches and terminals
 
 Skip this skill for:
-- defect investigation without documentation output -> use `debugger`
+- defect investigation without documentation output
 - implementing or fixing behavior
 - architecture design across services whose source is not in this directory tree
 

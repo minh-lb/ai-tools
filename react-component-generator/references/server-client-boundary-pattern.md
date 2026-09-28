@@ -58,6 +58,6 @@ export default ProductListFilters;
 ## Conventions
 
 - Only the inner (client) component gets a `controller.ts` for its interactive state — the outer Server Component has no controller; async data fetching lives directly in its body.
-- Pass only the fields the client component actually needs, not the raw fetch response — see `references/props-design.md` on avoiding oversized prop objects; this also keeps the RSC-to-client serialization payload minimal (`server-dedup-props`/`server-serialization` in `vercel-react-best-practices/rules/` cover the performance rationale in more depth).
+- Pass only the fields the client component actually needs, not the raw fetch response — see `references/props-design.md` on avoiding oversized prop objects; this also keeps the RSC-to-client serialization payload minimal.
 - If the interactive part is small (a single button, a single toggle), still extract it — don't leave `'use client'` on a component that also fetches data, even for "just one handler."
 - Naming the inner component: prefer a name describing what it does (`ProductListFilters`, `CommentComposer`) over a mechanical `*Client`/`*Interactive` suffix, unless the repo already has an established suffix convention — check 1-2 nearby split components first.

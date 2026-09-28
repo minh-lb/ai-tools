@@ -43,7 +43,7 @@ External service chỉ là điểm dừng của việc trace xuyên biên giới
 
 ## Khi nào nên bỏ qua
 
-- Debug lỗi mà không cần tạo tài liệu → dùng `debugger`
+- Debug lỗi mà không cần tạo tài liệu
 - Đang implement hoặc thay đổi hành vi code
 - Thiết kế kiến trúc spanning các service không có source trong directory tree này
 
@@ -77,7 +77,3 @@ Chạy lại skill trên cùng feature sau khi:
 - Một nhánh logic thay đổi
 
 Mỗi lần chạy sẽ append thêm một dòng vào bảng `Lịch sử chỉnh sửa` với nội dung `Tái tạo từ code` — các dòng cũ không bao giờ bị xóa.
-
-## Kết hợp với skill khác
-
-Sau khi tạo flow doc, dùng `backend-testcase-writer` để viết test case dựa trên các nhánh quyết định và terminal đã được tài liệu hóa.

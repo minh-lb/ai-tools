@@ -1,7 +1,0 @@
-interface:
-  display_name: "Debugger"
-  short_description: "Trace data flow and logic flow from input source — investigation only, no code edits"
-  default_prompt: "Use $debugger to investigate this defect without fixing it."
-
-policy:
-  allow_implicit_invocation: false

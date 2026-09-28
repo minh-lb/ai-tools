@@ -4,7 +4,7 @@ Use this reference when the component being generated collects user input and ne
 
 ## Default stack
 
-**React Hook Form + Zod** (via `@hookform/resolvers/zod`) is the default choice for new form components. Before generating, check `package.json` for an existing form library (Formik, `react-final-form`, `remix-validated-form`, etc.) — if the repo already has an established choice, follow it instead of introducing a second one, per `coding-rules/references/reactjs.md`'s general "don't introduce a second library into a codebase that already has one" principle (§3, stated there for state libraries, applies the same way here).
+**React Hook Form + Zod** (via `@hookform/resolvers/zod`) is the default choice for new form components. Before generating, check `package.json` for an existing form library (Formik, `react-final-form`, `remix-validated-form`, etc.) — if the repo already has an established choice, follow it instead of introducing a second one.
 
 ## File layout
 
@@ -33,8 +33,8 @@ export const useController = () => {
 
   const onSubmit = handleSubmit(async (values) => {
     // Add real submit behavior here (API call, server action, etc.).
-    // Map backend field-level errors back onto `errors` per
-    // coding-rules/references/reactjs.md §7 if the request can return them.
+    // Map backend field-level errors into the relevant form fields
+    // if the request can return them.
   });
 
   return { register, errors, isSubmitting, onSubmit };
@@ -73,10 +73,10 @@ export default LoginForm;
 
 ## Conventions specific to forms
 
-- Schema lives in `controller.ts` next to the hook that uses it. Only hoist it to a shared `schemas/` file when the same schema is genuinely reused by another component (not defensively, per `coding-rules/references/reactjs.md`'s general no-speculative-abstraction stance).
+- Schema lives in `controller.ts` next to the hook that uses it. Only hoist it to a shared `schemas/` file when the same schema is genuinely reused by another component (not defensively).
 - Export the inferred type (`export type FormValues = z.infer<typeof formSchema>`) only if something outside `controller.ts` needs it — same "don't export by default" rule as `Props` (see `references/component-authoring-reference.md`).
-- Every input needs an associated `<label htmlFor>` — no placeholder-only labeling (per `coding-rules/references/reactjs.md` §10).
+- Every input needs an associated `<label htmlFor>` — no placeholder-only labeling.
 - Render field errors next to their field, `role="alert"`, driven by `formState.errors.<field>`, not a single top-level error blob — this is what lets a screen reader announce the specific failing field.
 - Disable the submit control while `isSubmitting`; don't hand-roll a separate `isLoading` state next to it — React Hook Form already tracks this.
 - If the same submission handler needs to surface a server-side/network error (not a per-field validation error), track that separately (e.g. from the controller's async submit) and render it as a form-level alert above the fields — don't force it into `formState.errors`, which is reserved for schema/field validation.
-- Testing: query fields with `getByLabelText`, submit with `user.click(getByRole('button', { name: /submit/i }))`, and assert on the rendered error text — not on `formState` internals (per `coding-rules/references/reactjs.md` §8, behavior over implementation detail).
+- Testing: query fields with `getByLabelText`, submit with `user.click(getByRole('button', { name: /submit/i }))`, and assert on the rendered error text — not on `formState` internals (test behavior, not implementation details).

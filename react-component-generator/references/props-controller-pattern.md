@@ -2,7 +2,7 @@
 
 Use this reference only when a component needs both props and separated controller logic. Do not copy names or fields verbatim; replace them with the real component API.
 
-Follow `coding-rules/references/reactjs.md` for the underlying React/TS conventions (no `React.FC`, no `IProps` Hungarian-prefix naming, guard-clause early returns for loading/error, `count > 0 && ...` instead of bare `count && ...`). This pattern only adds the controller-forwarding wiring on top.
+Follow `references/component-authoring-reference.md` for the underlying React/TS conventions (no `React.FC`, no `IProps` Hungarian-prefix naming, guard-clause early returns for loading/error, `count > 0 && ...` instead of bare `count && ...`). This pattern adds the controller-forwarding wiring on top.
 
 Note on the `component-authoring-reference.md` "more than 4 props → `(props: Props)`" rule: it doesn't apply here regardless of prop count — the props-controller pattern always forwards the whole, un-destructured `props` object to `useController(props)` (see `index.tsx` below), so there's no destructuring decision to make in the first place.
 

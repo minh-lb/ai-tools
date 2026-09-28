@@ -20,13 +20,11 @@ Load each only when its trigger condition applies — don't front-load all of th
 
 | File | Load when | For |
 |---|---|---|
-| `coding-rules/references/reactjs.md` + `javascript-typescript.md` | always, before generating | authoritative React/TS rules — this skill's own references only paraphrase a subset |
 | `references/component-authoring-reference.md` | naming/import/testing conventions needed | naming, props/controller shape, imports, testing conventions + quick examples |
 | `references/props-controller-pattern.md` | component has both props and a controller | the mandatory props-forwarding wiring for this combination — not just for complex cases |
 | `references/props-design.md` | component has ~5+ props, you're considering grouping props into an object, or the prop list exceeds ~7 | prop-count review signals, grouping/composition/union-type guidance, required pre-finish checks |
 | `references/form-component-pattern.md` | component collects user input and needs validation + submission | React Hook Form + Zod wiring in `controller.ts`, field-error rendering, testing conventions for forms |
 | `references/server-client-boundary-pattern.md` | RSC-enabled repo AND the component needs both server-side data fetching and client-side interactivity | splitting into a Server Component (data) + sibling Client Component (interactivity), instead of one file with `'use client'` |
-| `vercel-react-best-practices/rules/*` (sibling skill) | the component renders a large/expensive list, does non-trivial client-side computation, imports a heavy third-party library, or otherwise looks perf-sensitive | performance rules (memoization, re-render, bundle size, dynamic imports) — this skill decides file layout and code shape, that skill decides performance tactics; load only the specific rule file(s) relevant to the concern at hand, not the whole set |
 | `references/component-delivery-checklist.md` | final self-check / delivery reporting | self-check gates beyond this file's own workflow |
 | `agents/openai.yaml` | provider-specific, not loaded by default | OpenAI agent adapter config |
 
@@ -38,8 +36,8 @@ Do not use for route architecture or repo-wide setup work.
 ## Cross-Skill Rules
 
 - Server/client boundary: applies only in repos that use React Server Components (Next.js App Router or another RSC-compiling framework — see the `app/`/`next.config.*`/existing-directive detection in step 1). In those repos, default a new file to Server Component; add `'use client'` only when the file needs state, effects, refs, browser APIs, or event handlers. In non-RSC repos (Vite, CRA, plain SPA), never add `'use client'` — it's a no-op string literal there, not a real directive, and its presence would be misleading. If the component needs both server-side data fetching and client-side interactivity, don't put `'use client'` on the whole file — see `references/server-client-boundary-pattern.md` for the split.
-- `coding-rules/references/reactjs.md` and `coding-rules/references/javascript-typescript.md` are authoritative for code shape inside the files this skill generates (e.g. no `React.FC`, no `IProps` naming, destructure props in the signature, guard-clause loading/error states, mandatory error handling, Error Boundaries around data-heavy widgets). They do NOT override this skill's file-layout decisions — the `index.tsx`/`controller.ts`/`style.module.css` folder-per-component convention, the literal filename `index.tsx` (vs. coding-rules' generic `PascalCase.tsx` guidance), and the resulting `export default` on every component (vs. `javascript-typescript.md` §3's general "named exports over default" preference — default export is what makes the `index.tsx`-per-folder layout ergonomic to import) are this skill's own, deliberate, flagged deviations and stay as-is.
-- `vercel-react-best-practices` is authoritative for performance tactics (when to memoize, when to dynamic-import, how to avoid waterfalls) inside the files this skill generates. It does NOT override this skill's file-layout or code-shape decisions either — apply its rules within whatever template/structure this skill already chose.
+- Follow this skill's `index.tsx`/`controller.ts`/`style.module.css` layout and the local React/TypeScript conventions in `references/component-authoring-reference.md`: avoid `React.FC` and `IProps`, handle loading/errors explicitly, and use an Error Boundary when a hook can throw during render. Match the target repo's established conventions when they differ.
+- For performance-sensitive components, investigate measured bottlenecks and the target repo's established patterns before adding memoization, dynamic imports, or other optimizations; preserve this skill's file layout.
 
 ## Execution workflow
 
@@ -66,7 +64,7 @@ Do not use for route architecture or repo-wide setup work.
 - `templates/style.module.css` only applies to the Tailwind/CSS-Modules case above; CSS-in-JS repos don't use it (see step 3).
 - Only when the repo has no established styling approach yet (greenfield component, no prior signal), default to Tailwind CSS first, CSS Module only when Tailwind is insufficient.
 
-5. Split when too large (per `coding-rules/references/reactjs.md` §1: one component per file, split at >~200-300 lines or complex render logic):
+5. Split when too large (one component per file; consider splitting at >~200-300 lines or when render logic is complex):
 - Small sub-component used only by this component → keep inline in `index.tsx`.
 - Sub-component too large/complex to stay inline (whether private or reused) → extract to its own sibling component: a new `components/<kebab-case-name>/` folder with its own `index.tsx` (and `controller.ts`/`style.module.css` if it needs them) — re-run this workflow for it. Don't nest it inside the parent's folder and don't use a flat `PascalCase.tsx` file.
 - Complex non-trivial logic inside the render → extract to a custom hook in `controller.ts` (or a dedicated hook file if reused elsewhere), not left inline in JSX.
