@@ -1,7 +1,7 @@
 {
   "name": "@minhluudev/ai-tools",
-  "version": "1.0.22",
-  "description": "CLI to install AI skills from GitHub branches into Codex and Claude.",
+  "version": "1.0.23",
+  "description": "CLI to install AI skills from GitHub branches for Codex, Claude, and Pi.",
   "license": "MIT",
   "type": "module",
   "repository": {
@@ -21,9 +21,11 @@
     "README.md"
   ],
   "scripts": {
-    "build": "tsc -p tsconfig.json",
+    "clean": "node -e \"require('node:fs').rmSync('dist', { recursive: true, force: true })\"",
+    "build": "npm run clean && tsc -p tsconfig.json",
     "prepack": "npm run build",
-    "test": "npm run build && node --test dist/test/*.test.js"
+    "test": "npm run build && node --test dist/test/*.test.js",
+    "install:global": "npm pack && npm install -g ./minhluudev-ai-tools-$(npm pkg get version | tr -d '\"').tgz"
   },
   "publishConfig": {
     "access": "public"
