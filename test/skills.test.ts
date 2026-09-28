@@ -24,6 +24,13 @@ test("resolveSkillsDir returns correct path for codex", async () => {
   assert.equal(dir, expected);
 });
 
+test("resolveSkillsDir returns correct path for Pi", async () => {
+  const { resolveSkillsDir } = await import("../src/lib/tui-skills.js");
+  const dir = resolveSkillsDir("pi");
+  const expected = path.join(os.homedir(), ".pi", "agent", "skills");
+  assert.equal(dir, expected);
+});
+
 test("readInstalledSkills returns empty array when dir missing", async () => {
   const { readInstalledSkills } = await import("../src/lib/tui-skills.js");
   const skills = await readInstalledSkills("/tmp/__nonexistent_ai_tools_test__");

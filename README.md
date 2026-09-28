@@ -28,4 +28,5 @@ Controls:
 - `q` or `esc` cancel
 
 `Install agent skills`
-- installs selected skills into `~/.codex`, `~/.claude`, `./.codex`, or `./.claude`
+- installs selected skills into `~/.codex`, `~/.claude`, or `~/.pi/agent` globally
+- installs project-local skills into `./.codex`, `./.claude`, or `./.pi`

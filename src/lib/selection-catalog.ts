@@ -61,7 +61,7 @@ function validateSelectionEntry(
   if (entry.targets && typeof entry.targets === "object" && !Array.isArray(entry.targets)) {
     const rawTargets = entry.targets as Record<string, unknown>;
     targets = {};
-    for (const agent of ["codex", "claude"] as Agent[]) {
+    for (const agent of ["codex", "claude", "pi"] as Agent[]) {
       if (rawTargets[agent]) {
         targets[agent] = validateTarget(rawTargets[agent], agent, entry.id.trim());
       }
@@ -164,7 +164,11 @@ export async function resolveSelectionItems(input: {
         description: selection.description,
         sourceBranch,
         sourcePath: selection.sourcePath,
-        targets: selection.targets ?? { codex: { type: "directory" }, claude: { type: "directory" } }
+        targets: selection.targets ?? {
+          codex: { type: "directory" },
+          claude: { type: "directory" },
+          pi: { type: "directory" }
+        }
       });
       continue;
     }

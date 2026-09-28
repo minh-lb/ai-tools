@@ -1,4 +1,4 @@
-export type Agent = "codex" | "claude";
+export type Agent = "codex" | "claude" | "pi";
 export type InstallLocation = "global" | "local";
 export interface PromptChoice<T extends string = string> {
   value: T;
@@ -124,6 +124,7 @@ export interface PlannedInstallation extends ManifestItem {
   targetType: "directory" | "file";
   outputPath: string;
   targetPath: string;
+  piDirectoryFallback?: boolean;
 }
 
 export interface InstallResult {

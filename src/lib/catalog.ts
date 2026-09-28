@@ -110,7 +110,11 @@ export function validateManifest(
       targets.claude = validateTarget(manifestItem.targets.claude, "claude", manifestItem.id);
     }
 
-    if (!targets.codex && !targets.claude) {
+    if (manifestItem.targets.pi) {
+      targets.pi = validateTarget(manifestItem.targets.pi, "pi", manifestItem.id);
+    }
+
+    if (!targets.codex && !targets.claude && !targets.pi) {
       throw new Error(`Manifest item "${manifestItem.id}" in branch "${input.branch}" must support at least one agent.`);
     }
 

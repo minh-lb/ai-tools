@@ -34,7 +34,8 @@ const TAB_ORDER: WizardTab[] = ["agent", "skills", "review"];
 
 const AGENT_DIR: Record<Agent, string> = {
   claude: ".claude",
-  codex: ".codex"
+  codex: ".codex",
+  pi: path.join(".pi", "agent")
 };
 
 export function resolveSkillsDir(agent: Agent): string {
@@ -67,7 +68,8 @@ function buildInitialState(availableSkills: string[]): WizardState {
 function agentItems(): Array<{ id: Agent; label: string }> {
   return [
     { id: "claude", label: "◇  Claude" },
-    { id: "codex", label: "◇  Codex" }
+    { id: "codex", label: "◇  Codex" },
+    { id: "pi", label: "◇  Pi" }
   ];
 }
 

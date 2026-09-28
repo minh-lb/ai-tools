@@ -24,6 +24,10 @@ test("validateManifest normalizes a valid manifest", () => {
             claude: {
               type: "file",
               outputPath: "agents/skill-1.md"
+            },
+            pi: {
+              type: "directory",
+              outputPath: "skills/skill-1"
             }
           }
         }
@@ -38,6 +42,7 @@ test("validateManifest normalizes a valid manifest", () => {
   assert.equal(manifest.label, "General Skills");
   assert.equal(manifest.items[0].sourceBranch, "skill-general");
   assert.equal(manifest.items[0].targets.claude?.outputPath, "agents/skill-1.md");
+  assert.equal(manifest.items[0].targets.pi?.outputPath, "skills/skill-1");
 });
 
 test("mergeSelectedItems deduplicates identical items", () => {
@@ -363,6 +368,9 @@ test("resolveSelectionItems supports direct branch folders without a manifest", 
           type: "directory"
         },
         claude: {
+          type: "directory"
+        },
+        pi: {
           type: "directory"
         }
       }

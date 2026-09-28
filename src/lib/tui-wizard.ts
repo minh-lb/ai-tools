@@ -1,4 +1,11 @@
 import type { Agent, InstallLocation, SelectionCatalog } from "./types.js";
+import {
+  AGENT_SELECTION_CHOICES,
+  isAgentOptionSelected,
+  toggleAgentOption,
+  toggleAllAgents,
+  type AgentSelectionOption
+} from "./agent-selection.js";
 import { resolveInstallRoot } from "./install.js";
 import {
   canRun,
@@ -74,33 +81,23 @@ function currentTabItems(
       {
         id: "global",
         label: "⊙  Global",
-        description: "Install into the current user's home directory (~/.claude / ~/.codex).",
+        description: "Install into the current user's home directory (~/.claude / ~/.codex / ~/.pi/agent).",
         kind: "locations"
       },
       {
         id: "local",
         label: "⊕  Local",
-        description: "Install into this project's dot directories (.claude / .codex).",
+        description: "Install into this project's dot directories (.claude / .codex / .pi).",
         kind: "locations"
       }
     ];
   }
 
   if (state.activeTab === "agents") {
-    return [
-      {
-        id: "codex",
-        label: "◇  Codex",
-        description: "Install as Codex skills.",
-        kind: "agents"
-      },
-      {
-        id: "claude",
-        label: "◇  Claude",
-        description: "Install as Claude custom agents.",
-        kind: "agents"
-      }
-    ];
+    return AGENT_SELECTION_CHOICES.map((choice) => ({
+      ...choice,
+      kind: "agents" as const
+    }));
   }
 
   return [
@@ -135,7 +132,7 @@ function isItemSelected(item: TabItem, state: WizardState): boolean {
   }
 
   if (item.kind === "agents") {
-    return state.selectedAgents.has(item.id as Agent);
+    return isAgentOptionSelected(item.id as AgentSelectionOption, state.selectedAgents);
   }
 
   return state.reviewAction === item.id;
@@ -162,12 +159,7 @@ function toggleItem(item: TabItem, state: WizardState): void {
   }
 
   if (item.kind === "agents") {
-    const agent = item.id as Agent;
-    if (state.selectedAgents.has(agent)) {
-      state.selectedAgents.delete(agent);
-    } else {
-      state.selectedAgents.add(agent);
-    }
+    toggleAgentOption(state.selectedAgents, item.id as AgentSelectionOption);
     return;
   }
 
@@ -496,6 +488,12 @@ export async function runTabbedWizard(
 
       const items = currentTabItems(state, selectionCatalog);
       if (items.length === 0) {
+        return;
+      }
+
+      if (state.activeTab === "agents") {
+        toggleAllAgents(state.selectedAgents);
+        render();
         return;
       }
 

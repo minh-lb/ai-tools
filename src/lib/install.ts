@@ -1,4 +1,4 @@
-import { access, cp, mkdir, mkdtemp, rm } from "node:fs/promises";
+import { access, cp, lstat, mkdir, mkdtemp, readdir, rm } from "node:fs/promises";
 import * as os from "node:os";
 import * as path from "node:path";
 import { normalizeManifestPath, resolveInsideRoot } from "./paths.js";
@@ -11,9 +11,10 @@ import type {
   PlannedInstallation
 } from "./types.js";
 
-const AGENT_INSTALL_DIR: Record<Agent, string> = {
-  codex: ".codex",
-  claude: ".claude"
+const AGENT_INSTALL_DIR: Record<Agent, Record<InstallLocation, string>> = {
+  codex: { global: ".codex", local: ".codex" },
+  claude: { global: ".claude", local: ".claude" },
+  pi: { global: ".pi/agent", local: ".pi" }
 };
 
 export function resolveInstallRoot(input: {
@@ -21,17 +22,14 @@ export function resolveInstallRoot(input: {
   location: InstallLocation;
   cwd: string;
 }): string {
-  const dir = AGENT_INSTALL_DIR[input.agent];
-
-  if (input.location === "global") {
-    return path.join(os.homedir(), dir);
+  if (input.location !== "global" && input.location !== "local") {
+    throw new Error(`Unsupported install location "${input.location}".`);
   }
 
-  if (input.location === "local") {
-    return path.join(input.cwd, dir);
-  }
+  const basePath = input.location === "global" ? os.homedir() : input.cwd;
+  const dir = AGENT_INSTALL_DIR[input.agent][input.location];
 
-  throw new Error(`Unsupported install location "${input.location}".`);
+  return path.join(basePath, dir);
 }
 
 function defaultOutputPath(item: ManifestItem): string {
@@ -44,7 +42,12 @@ export function planInstallations(input: {
   installRoot: string;
 }): PlannedInstallation[] {
   return input.items.flatMap((item) => {
-    const target = item.targets[input.agent];
+    const explicitTarget = item.targets[input.agent];
+    const piDirectoryFallback =
+      input.agent === "pi" &&
+      !explicitTarget &&
+      Object.values(item.targets).some((existing) => existing?.type === "directory");
+    const target = explicitTarget ?? (piDirectoryFallback ? { type: "directory" as const } : undefined);
     if (!target) {
       return [];
     }
@@ -60,7 +63,8 @@ export function planInstallations(input: {
       agent: input.agent,
       targetType: target.type,
       outputPath,
-      targetPath: resolveInsideRoot(input.installRoot, outputPath)
+      targetPath: resolveInsideRoot(input.installRoot, outputPath),
+      ...(piDirectoryFallback ? { piDirectoryFallback: true } : {})
     }];
   });
 }
@@ -78,6 +82,37 @@ export async function detectExistingTargets(plannedItems: PlannedInstallation[])
   }
 
   return existingItems;
+}
+
+async function validatePiFallbackSource(sourcePath: string, skillId: string): Promise<void> {
+  const invalidSourceMessage = `Cannot install "${skillId}" for Pi: source must be a directory with a regular SKILL.md and no symbolic links.`;
+  const sourceStat = await lstat(sourcePath);
+  let skillFileStat;
+  try {
+    skillFileStat = await lstat(path.join(sourcePath, "SKILL.md"));
+  } catch {
+    throw new Error(invalidSourceMessage);
+  }
+
+  if (!sourceStat.isDirectory() || !skillFileStat.isFile()) {
+    throw new Error(invalidSourceMessage);
+  }
+
+  async function rejectSymbolicLinks(directory: string): Promise<void> {
+    const entries = await readdir(directory, { withFileTypes: true });
+    for (const entry of entries) {
+      const entryPath = path.join(directory, entry.name);
+      const entryStat = await lstat(entryPath);
+      if (entryStat.isSymbolicLink()) {
+        throw new Error(invalidSourceMessage);
+      }
+      if (entryStat.isDirectory()) {
+        await rejectSymbolicLinks(entryPath);
+      }
+    }
+  }
+
+  await rejectSymbolicLinks(sourcePath);
 }
 
 async function copyToTarget(input: {
@@ -127,6 +162,10 @@ export async function installPlannedItems(input: {
       entryPath: item.sourcePath,
       destinationDir: tempDir
     });
+
+    if (item.piDirectoryFallback) {
+      await validatePiFallbackSource(extractedPath, item.id);
+    }
 
     await copyToTarget({
       sourcePath: extractedPath,
