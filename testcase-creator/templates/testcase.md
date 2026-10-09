@@ -1,82 +1,70 @@
 ---
-title: "<Feature name> — Test Cases"
+title: "<Feature name> — E2E Test Cases"
 type: testcase
-display_language: "" # Set to en or vi after confirming with the user
 feature_id: "<Stable feature ID>"
-feature_slug: "<feature-slug>"
-module: "<domain/module>"
-service_components: [] # participating UI/API/services/data stores/jobs/queues
-suite_owner: "<team or person>"
-shared_suites: [] # canonical linked suite IDs; do not duplicate shared cases
-tags: [qa, testcase, "feature/<feature-slug>"]
+display_language: "" # en | vi
 status: draft # draft | review | approved
-priority: high # critical | high | medium | low
-owners: []
 updated: YYYY-MM-DD
-sources: [] # approved spec, AC, design version, API contract, BR/E/EC links; no placeholders when approved
-platforms: [frontend, backend] # keep both even if one is N/A
-coverage: [] # requirement/group IDs actually considered; include justified N/A and exclusions
+sources: [] # approved specs, AC, versioned designs/contracts, BR/E/EC
 ---
 
-<!-- Remove all instructional HTML comments from the generated file. Translate human-readable headings and placeholder prose to the confirmed display_language; keep YAML keys, controlled values, IDs, and technical identifiers unchanged. -->
+<!-- Remove instructional comments and example entries from the generated file. Translate human-readable text to display_language; keep IDs, YAML keys, controlled values, and technical identifiers unchanged. -->
 
-# <Feature name>
+# <Feature name> — E2E Test Cases
 
-## Scope and evidence
-- Description / capability / entry points: <...>
-- Design/version, API/version, AC/BR/E/EC, NFR: <link or missing>
-- Actor × permissions × tenant/ownership: <...>
-- States/transitions and input data: <...>
-- Requirements/AC and owning team: <stable IDs / team>
-- Service/component boundaries and dependencies (versions/contracts): <...>
-- Build/version, release, environment, browser/device/OS, locale/timezone, config/flags: <...>
-- Dataset, account/role/tenant, setup/starting state, dependencies/tools: <...>
-- Cleanup/reset and safety constraints (especially destructive/external effects): <...>
+## Scope and sources
+<!-- Keep concise; retain only facts needed to understand or reproduce these journeys. -->
+- User goal / E2E start → end: <...>
+- Approved sources and versions: <links/IDs>
+- Actors, roles, and permissions: <...>
+- Environment, supported client, and approved test base URL / native-app deep link: <...>
+- Shared starting state: <...>
+- Shared test data / fixtures: <...>
+- Cleanup, safety, and material exclusions: <only what applies>
 
-## Coverage matrix
-| Requirement/risk/dimension | Applicable variants / service or contract version | Case IDs or N/A (reason) | Exclusions/gaps/owner |
-| --- | --- | --- | --- |
-| Input/boundaries/Unicode/malicious data | <...> | <...> | <...> |
-| Actor/permissions/tenant | <...> | <...> | <...> |
-| State/sequence/time | <...> | <...> | <...> |
-| Concurrency/retry/dependency/volume | <...> | <...> | <...> |
-| NFR/integration | <...> | <...> | <...> |
+## E2E scenarios
+<!-- Use structured lists, not a Markdown testcase table. One user/business goal per deterministic case. Use separate Preconditions and Test data fields. Make User actions executable without guessing: start with an approved URL/route or app deep link, specify navigation targets, control labels, exact values, submit actions, and resulting screens/URLs. Include sign-in steps when auth is in scope; otherwise state the authenticated session in Preconditions. Do not invent routes or controls, and never put credentials/session tokens in this file. -->
 
-## Frontend
-<!-- Remove this comment when generating a file. If no UI exists, state N/A and the evidence-based reason. Consider access, title/GUI/default, each element's Default/Validation/Event, flow/state, accessibility, responsive, and i18n. One observable objective per case; link/version the design for GUI checks. -->
-| ID | Type / level | Group / element | Preconditions, setup & data | Steps | Expected UI (oracle) | Link/Trace | Risk/Priority |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| TC-<FEATURE>-FE-001 | <functional / E2E> | <group/element> | <actor, state, value, setup> | 1. <action> | <specific observable result> | <AC/design/BR> | <high> |
+### TC-001 — <User goal / scenario>
+- **Preconditions:** <actor/session, permissions, required initial state, setup>
+- **Test data:** <concrete inputs, fixture IDs, approved credential-store reference if needed; never the secret itself>
+- **User actions:**
+  1. Launch <browser/app> and open <approved test base URL + route or native-app deep link>; verify <starting screen>.
+  2. <If login is in scope: follow the approved sign-in/SSO procedure at the documented route, identify the test account, retrieve any secret only through the approved credential-store alias, complete required factors, and verify the signed-in state; otherwise omit and use the authenticated-session precondition. Never write the secret itself.>
+  3. <Navigate via the named control/link or approved route; state the resulting screen/URL.>
+  4. <Enter exact test values, submit using the named control, and verify the next screen/URL.>
+- **Expected outcome / postcondition (oracle):** <observable UI/end-state; required side effect only if needed>
+- **Trace:** <approved source/test condition>
+- **Risk / priority rationale:** <evidence-based priority and concise rationale>
 
-## Backend
-<!-- Remove this comment when generating a file. If no backend exists, state N/A and the evidence-based reason. Negative cases specify expected DB/cache/message/log state; positive cases verify side effects too. -->
-| ID | Type / level | Group | Preconditions, setup & data | Auth | Request / trigger steps | Expected response (status + schema/body) | Side effects (DB/cache/queue/log before → after) | Trace | Risk/Priority |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| TC-<FEATURE>-BE-001 | <API / integration> | <group> | <record/tenant/state, setup> | <actor/token> | <METHOD /path headers body> | <approved response oracle> | <no change / specific state to verify> | <BR/E/EC/contract> | <high> |
+## Pending decisions (optional; include only when nonempty)
+- **Affected journey / case ID:** <...>
+  - **Unresolved expected outcome or evidence:** <...>
+  - **Owner / source needed:** <...>
+  - **Impact:** <...>
 
-## Related integration & NFRs
-<!-- Remove this comment when generating a file. Cross-feature cases belong in the initiating flow or link to a shared suite; avoid duplication. Distinguish FE and BE measurement thresholds. -->
-| Objective | FE / BE oracle | Threshold / measurement / environment | Case ID or link | Coverage note / N/A rationale |
-| --- | --- | --- | --- | --- |
-| <flow/performance/security/operations> | <...> | <...> | <...> | pending-spec |
+## Exploratory charters (optional; separate from deterministic pass/fail cases)
+<!-- A charter has an observation goal, not an expected result. Never assign it a pass/fail result. -->
 
-## Readiness register
-<!-- Keep readiness separate from the FE/BE test case tables and from execution results. -->
-| Case ID | Design readiness (ready/pending-spec/blocked/N/A) | Reason / decision needed |
-| --- | --- | --- |
-| <TC-ID> | <pending-spec> | <missing oracle / owner / evidence> |
+### XC-001 — <Charter objective>
+- **Observation focus:** <...>
+- **Scope, data and setup:** <...>
+- **Timebox / safety / cleanup:** <...>
+- **Risk / incident / trace:** <...>
 
-## Open questions / coverage gaps
-| Question or gap | Blocked cases | Owner / source needed | Risk |
-| --- | --- | --- | --- |
-| <...> | <...> | <...> | <...> |
+## Exploratory run notes (optional; include only after charter execution)
+<!-- Record observations and follow-ups, not pass/fail. Convert findings into defects or deterministic E2E cases with approved oracles. -->
 
-## Review summary
-- Design readiness: ready <n>; pending-spec <n>; blocked <n>; N/A (with reason) <n>.
-- Coverage method/denominator: <requirements, transitions, risks considered; method/strength>.
-- Explicit exclusions, untested paths, residual risks and owners: <...>.
+### Run notes — XC-001
+- **Date / tester / environment:** <...>
+- **Timebox:** <...>
+- **Observations / anomalies / evidence:** <...>
+- **Follow-up defects or E2E case IDs:** <...>
 
-## Execution records (separate from case design; link an external run log if used)
-| Release / run ID / date / tester | Requirement → feature → case IDs | Build & environment / dependency mode | Result (not-run/passed/failed/blocked/not-applicable/inconclusive) | Actual result & redacted evidence | Defect ID / notes |
-| --- | --- | --- | --- | --- | --- |
-| <release/run> | <REQ → FEATURE → TC-ID> | <build/env/provider mode> | not-run | <actual/evidence link> | <defect or note> |
+## Execution records (optional; deterministic E2E cases only)
+### Run <run-ID> — TC-001
+- **Date / tester:** <...>
+- **Build / environment:** <...>
+- **Result:** <not-run | passed | failed | blocked | not-applicable | inconclusive>
+- **Actual result / redacted evidence:** <...>
+- **Defect / follow-up:** <...>

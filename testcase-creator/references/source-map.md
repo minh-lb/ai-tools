@@ -1,15 +1,35 @@
-# QA Model and Expected-Result Rules
+# E2E Scope and Expected-Result Rules
 
-The skill works independently using two QA surfaces: **frontend** (screens, components, interactions) and **backend** (APIs, data, authentication, transactions, cache, queues, jobs, logs). Shared concerns include NFRs, integration, and a unit-test coverage map organized by complexity. FE has a library of 87 checks / 17 components / 7 groups. BE has 10 checklist groups, but expected results depend on feature-specific rules. The remaining references contain the checklists needed to create test cases without relying on an external knowledge base.
+This skill produces **one E2E user-journey case set**, not separate frontend and backend suites. Each deterministic case begins at a product entry point and asserts an approved user-visible outcome. Include a cross-layer effect (persistence, notification, job completion, etc.) only when it is part of the user outcome; prefer a UI/product read-back over database inspection.
 
-## Scope-building templates
+## E2E case fields
 
-- **Unit Group 1 — few fields:** access, tab title, navigation, roles, GUI, defaults, validation, events, integration. **Unit Group 2 — many fields:** group by each element × Default / Validation / Event. **Group 3 — integration:** cross-component events, performance, security; requires a specification and measurable thresholds. The Unit template is a **coverage map**, not an executable test when expected results are missing. For complex multi-state flows, draw a state machine, then derive cases for valid/blocked transitions and recovery.
-- **FE case fields:** `ID`, `Pre - Condition`, `Test Case Procedure`, `Expected Output`, `Link`, `Note`. Suggested order: access (logged in/out), tab title, GUI (design link + version), defaults, validation per field, business flow. An example flow that creates public/private content is **illustrative only**; never copy its defaults, Japanese messages, limits, or behavior into another feature. Create→sign in as another user→view in a list is an integration flow across users, not just screen validation.
-- **BE case fields:** `ID`, `Pre - Condition`, `Auth`, `Request`, `Expected Response`, `Side effect`, `Trace`, `Note`. `Expected Response` = status + body/schema; `Side effect` = DB/cache/message/log, including no change. BE checklists are **questions to resolve**, not approved expected results. Do not assume `403` vs `404` for another user's record, `400` vs `422` for validation, or retry/TTL/idempotency behavior. `(pending spec)` is not an expected result; `—` means not applicable; `BR-__`/`E-_`/`EC-_` are placeholders that must be replaced by real IDs.
+Each case entry in the template's E2E scenarios list contains:
 
-## Sources for a feature's expected results
+- `ID`: short stable `TC-001`, scoped to this feature file. When referenced outside the file, pair it with the feature ID or suite path.
+- `User goal / scenario`: one independently verifiable end-to-end objective.
+- `Preconditions`: actor/permissions, required starting state, and setup needed before user actions.
+- `Test data`: concrete input values and fixture records, separately from preconditions.
+- `User actions`: numbered actions detailed enough to execute without guessing. Begin at the approved test base URL plus route (or native-app deep link), then name each navigation target/control, exact test value, submit action, and resulting screen/URL. Include explicit sign-in steps when login is part of the tested journey; otherwise state the authenticated session as a precondition. Never include credentials or session tokens—use an approved secret-store alias. Do not invent undocumented URLs or control labels; use approved UI navigation from a known route or record a pending decision if the route is essential. Include fixture resets between parameterized data variants when needed. Each case is a short-ID heading with labeled fields, not a table row.
+- `Expected outcome / postcondition`: approved, observable result. Prefer UI/read-back evidence; add a narrowly scoped read-only backend assertion only if an important in-scope effect cannot otherwise be observed.
+- `Trace`: approved source and applicable test condition.
+- `Risk / priority rationale`: evidence-based priority with a concise reason; keep it separate from source traceability.
 
-Prioritize: approved specification/acceptance criteria → OpenAPI/API contract, versioned design, role matrix → `BR-xx` (business rules), `E-x` (error conditions), `EC-x` (edge cases), screen documents if the project has them → code/schema as evidence of current behavior, **not** the source of truth when it conflicts with the specification. Link the source on each case. Call out conflicts and wait for BA/backend confirmation; HTTP conventions may guide questions but do not replace business decisions. Never copy defaults, error messages, or limits from examples for unrelated projects.
+## Test basis and oracle
 
-FE observes UI/keyboard/layout; BE verifies actual authentication/authorization, IDOR, tenant isolation, transactions, cache, and queues. Hiding a UI button does not prove the API rejects a request. NFR/integration may span both layers, but screen-transition time and API latency are separate measures. Describe each common check once in the checklist; feature suites reference the relevant group and specify feature-specific data, steps, and results. If there is insufficient evidence that a surface exists, mark it “investigate” rather than assuming N/A.
+Prioritize the approved test basis: specification/acceptance criteria → versioned design and role/ownership rules → API contract when it affects the journey → business/error/edge-case registers → relevant architecture/current implementation. Code is evidence of current behavior, not the source of truth when it conflicts with an approved requirement. Link each deterministic case to its source and applicable test condition. Do not infer UI messages, redirects, status codes, permissions, persistence, retry behavior, or error policy from conventions.
+
+If a required user outcome is unresolved, do not invent an oracle: record the journey as `pending-spec` with its owner/source in the optional Pending decisions section. A separate API contract/authentication/database test may be referenced by suite ID, but do not duplicate its direct-request steps in this E2E file.
+
+## Cross-layer verification boundaries
+
+- Start with user actions and end with product-visible behavior. A refresh/list/detail read-back is usually stronger and less coupled than inspecting internal tables.
+- Use read-only backend verification only when required by the approved outcome and not observable through the product. Name the authoritative state, environment, and safe query/fixture mechanism.
+- A UI case may cover the user's permission experience, but hiding a control does not prove API authorization. Direct unauthorized requests, schema/status checks, transaction invariants, and isolated security probes belong in a separate backend/API suite.
+- API calls may be used for setup/cleanup, or as the entry point only when the product journey is genuinely API-native. A pure endpoint call is not an E2E case.
+
+## Optional documentation sections
+
+- Keep Scope and sources to entry/exit point, approved links, actors/data, environment, cleanup, and material exclusions.
+- Add Pending decisions only when a journey is genuinely blocked on an oracle/source/owner. Do not keep empty gaps or review-summary sections.
+- Exploratory charters are not deterministic pass/fail cases. Record objective, observation focus, scope/data, timebox, safety, and risk/incident trace in the optional charter list. When run, record observations and follow-ups in separate exploratory run notes; never mark a charter passed/failed. Turn findings into defects or deterministic E2E cases with approved oracles.
