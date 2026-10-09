@@ -4,16 +4,16 @@ Use this skill to keep Git history clean, collaboration predictable, and AI-assi
 
 This workflow assumes a GitFlow-style repository with:
 
-- `main` or `master` is the production branch
-- `develop` is the integration branch
+- a configured production branch, commonly `main` or `master`
+- an integration branch, commonly `develop`
 - `release/*` branches for stabilization
 - `hotfix/*` branches for urgent production fixes
 
-If a repository uses equivalent branch roles with different names, substitute the names accordingly.
+Identify the actual branch roles and remote roles from repository configuration and docs before acting. Use `<fetch-remote>` for authoritative upstream/base refs and `<push-remote>` for the approved writable destination; they may be the same in a single-project workflow and differ in a fork. Do not infer production from `main`/`master` or remote roles from `origin`/`upstream` names. A push to a fork does not integrate or release on upstream; direct release/hotfix pushes and production tags must target the actual authorized project, otherwise use its PR/MR flow and verify upstream integration.
 
 Do not apply this skill unchanged when the repository:
 
-- releases directly from `main`
+- releases directly from its production branch without a separate integration/release flow
 - does not use an integration branch
 - uses short-lived trunk-based branches without release branches
 

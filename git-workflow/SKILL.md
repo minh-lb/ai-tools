@@ -1,6 +1,6 @@
 ---
 name: git-workflow
-description: GitFlow-style git workflow. Use this skill for any git task — committing, branching, merging, PRs, releases, conflict resolution, or worktree management — in a GitFlow-style repository.
+description: Use when performing GitFlow-style repository tasks involving commits, branch changes, merges, pushes, PR/MRs, releases, hotfixes, reverts, conflicts, or worktrees.
 metadata:
   author: Minh Luu
 ---
@@ -9,11 +9,11 @@ metadata:
 
 Use this skill to keep Git history clean, collaboration predictable, and AI-assisted changes safe to review.
 
-This skill is written for GitFlow-style repositories. Do not apply it verbatim to trunk-based repositories or repos that release directly from `main`.
+This skill is written for GitFlow-style repositories. Do not apply it verbatim to trunk-based repositories or repos that release directly from their production branch (commonly `main` or `master`).
 
 ## When To Use
 
-Activate automatically for any of these tasks — no explicit invocation required:
+Use this skill for any of these task types. The host may auto-load it based on its description, but activation depends on the agent environment; if it was not loaded, invoke/load it explicitly:
 
 - **Commit**: commit, amend, validate or review a commit message, prepare a squash message, split staged changes
 - **Branch**: create, name, sync, or validate a branch
@@ -23,11 +23,11 @@ Activate automatically for any of these tasks — no explicit invocation require
 - **Worktree**: create, list, or remove a worktree
 
 For commit tasks, load `references/commit-convention.md` before acting.
-For PR or squash message tasks, load both `references/merge-strategy.md` and `references/commit-convention.md`.
+For PR/MR creation or title tasks, load `references/merge-strategy.md` and use `templates/pull-request-template.md` for the description. Before creating, ask the description language, default the title to English, and show a complete preview for user approval. Prefer MCP when an appropriate tool is available; otherwise use authenticated `gh` or `glab`. Load `references/commit-convention.md` when preparing a squash commit message.
 
 ## When Not To Use
 
-- The repository is trunk-based or releases directly from `main`
+- The repository is trunk-based or releases directly from its production branch (commonly `main` or `master`)
 - The task is code editing with no Git workflow decision
 - The user wants a generic Git explanation unrelated to this workflow
 
@@ -58,11 +58,12 @@ These rules apply to every Git action taken under this skill:
 4. If staged changes span unrelated scopes or intents, stop and split into multiple commits instead of using a vague or catch-all scope.
 5. Before committing, verify the commit message matches the real intent of the diff and that no debug artifacts, secrets, or unintended files are staged.
 6. Never add any `Co-authored-by` or co-author attribution line — not in the body, not in the footer, not in squash messages.
-7. Never commit directly on `main`, `master`, or `develop`.
+7. Use a task branch by default. Before making a code commit on the repository's production branch (commonly `main` or `master`) or integration branch (commonly `develop`), ask the user for explicit confirmation. If approved, committing on the current branch is allowed; do not force a checkout to a new task branch. Confirmation does not bypass branch protection or separate push/merge policies. For release/hotfix integration merges, also follow the branch/release references and repository policy.
 8. Never use `git push --force`, `git push -f`, or `git push --force-with-lease`. Keep remote history forward-moving.
-9. Never use `git rebase`, `git rebase -i`, `git rebase --continue`, `git rebase --abort`, or `git reset --hard`. Use merge-based updates instead.
-10. If the task is a merge continuation and Git provides a merge commit template, keep the merge flow consistent with `references/merge-strategy.md` instead of forcing a normal conventional summary line. If the merge had actual conflicts, append a `Conflicts resolved in:` list (file + how it was resolved) to the commit body — see `references/conflict-resolution.md`.
-11. Never run `git clean -f`/`-fd`/`-fx`, `git checkout -- <path>` or `git restore <path>` (without `--staged`), or `git worktree remove --force` on anything but a confirmed-clean target. These discard uncommitted or untracked work with no reflog recovery — run `git status` and get explicit user confirmation first (see `references/principles.md`).
+9. Before any push, enumerate all effective destinations with `git remote get-url --push --all <push-remote>` and require exactly one approved destination. If the command fails, returns no destination, or returns multiple destinations, stop; recheck the same destination immediately before pushing. This applies to direct pushes and PR/MR source-branch preparation — see `references/principles.md`.
+10. Never use `git rebase`, `git rebase -i`, `git rebase --continue`, `git rebase --abort`, or `git reset --hard`. Use merge-based updates instead.
+11. If the task is a merge continuation and Git provides a merge commit template, keep the merge flow consistent with `references/merge-strategy.md` instead of forcing a normal conventional summary line. If the merge had actual conflicts, append a `Conflicts resolved in:` list (file + how it was resolved) to the commit body — see `references/conflict-resolution.md`.
+12. Never run `git clean -f`/`-fd`/`-fx`, `git checkout -- <path>`, or `git restore <path>` (without `--staged`) on uncommitted or untracked work without explicit user approval. Never use `git worktree remove --force` to discard a dirty worktree, even with approval; preserve the changes and remove it normally once clean. Consider `--force` only for a confirmed-clean worktree if Git still requires it, after checking `git status` and getting explicit user confirmation (see `references/principles.md`).
 
 ## Commit Task Contract
 

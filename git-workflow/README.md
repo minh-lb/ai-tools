@@ -1,8 +1,8 @@
 # Git Workflow
 
-Skill dành cho các repository theo mô hình GitFlow (`main`/`master` là nhánh production, `develop` là nhánh tích hợp, có `release/*` và `hotfix/*`). Dùng skill này cho **mọi** tác vụ Git: commit, branch, merge, PR, resolve conflict, release, hotfix, worktree.
+Skill dành cho repository theo GitFlow: nhánh production (thường là `main` hoặc `master`), nhánh tích hợp (thường là `develop`), cùng `release/*` và `hotfix/*`. Dùng cho tác vụ GitFlow như commit, branch, merge, PR/MR, conflict, release, hotfix và worktree.
 
-Skill tự động kích hoạt khi phát hiện tác vụ Git — không cần gọi tường minh (ví dụ chỉ cần gõ "commit" là đủ).
+Agent có thể tự chọn skill dựa trên mô tả và tác vụ, nhưng việc tự kích hoạt phụ thuộc môi trường agent. Nếu skill chưa được nạp, hãy gọi rõ `git-workflow`; không giả định từ khóa như "commit" luôn kích hoạt skill.
 
 ---
 
@@ -16,17 +16,17 @@ Skill tự động kích hoạt khi phát hiện tác vụ Git — không cần 
 
 ### 2. Branch đúng quy ước
 - Tạo/đặt tên branch theo `feature/*`, `bugfix/*`, `hotfix/*`, `release/*`, `chore/*`, `docs/*`, `ci/*`.
-- Đồng bộ branch với base đúng (`develop` cho task branch, `main` cho hotfix) — luôn bằng merge, không bao giờ rebase.
+- Xác định đúng vai trò branch và remote trước khi thao tác (integration branch thực tế, thường là `develop`, cho task branch; production branch thực tế cho hotfix). Cập nhật local base/release branch bằng `fetch` + `merge --ff-only`; đồng bộ task/hotfix branch bằng `fetch` + merge thường. Workflow này không dùng rebase.
 
 ### 3. PR và merge
 - Soạn PR title/squash message đúng convention.
 - Chọn đúng merge mode: squash cho task branch, merge thường (giữ nguyên lịch sử) cho `release/*` và `hotfix/*`.
 - Checklist review trước khi mở PR (test pass, không còn conflict, migration an toàn...).
-- **Tạo PR/MR trực tiếp từ local** bằng CLI — tự nhận diện GitHub (`gh pr create`) hay GitLab (`glab mr create`) dựa trên remote URL, push branch trước, chọn đúng base branch (`develop` hoặc `main` cho release/hotfix). Nếu chưa cài/đăng nhập CLI, skill sẽ không tự bịa API mà đưa lại title/body hợp lệ để dán thủ công vào web UI.
+- **Tạo PR/MR có kiểm soát:** hỏi người dùng muốn mô tả bằng tiếng Anh hay tiếng Việt (title mặc định tiếng Anh), điền template đầy đủ, rồi hiển thị preview gồm source owner/project, fetch/base remote, source push remote và push target hiệu lực (nếu khác), tip SHA, target project/branch, push dự kiến, title và toàn bộ description. Trước preview, liệt kê mọi push destination hiệu lực bằng `git remote get-url --push --all <push-remote>`; nếu có nhiều hơn một destination, dừng và yêu cầu cấu hình/chọn đúng một đích được duyệt. Xác minh branch/SHA trên cùng endpoint đó và kiểm tra lại endpoint ngay trước khi push; không chia sẻ hoặc ghi log URL thô có credentials. Chỉ tạo sau khi người dùng duyệt rõ ràng; mọi thay đổi sau duyệt phải được preview và duyệt lại. Ưu tiên MCP đã xác thực phù hợp với nền tảng, chỉ rõ source và target project; nếu không có thì dùng `gh`/`glab` đã cài và đăng nhập, nhưng phải bind đúng source/target. Chỉ push source branch khi thiếu remote ref và user đã duyệt push trong preview; SHA không khớp hoặc lỗi network/auth thì dừng, không force-push. Sau khi tạo, xác minh URL, branch, title, trạng thái và nội dung. Dùng PR/MR cho protected branch theo chính sách repo; không bypass branch protection.
 
 ### 4. Resolve conflict — có kèm quy trình đảm bảo không mất code
 Đây là phần được đầu tư kỹ nhất trong skill:
-- Xác định đúng loại thao tác đang diễn ra (merge / rebase / cherry-pick) trước khi resolve — nếu phát hiện rebase từ ngoài quy trình (bị cấm), skill sẽ dừng lại hỏi người dùng thay vì tự ý chạy lệnh.
+- Xác định thao tác đang diễn ra trước khi xử lý conflict. Chỉ resolve merge conflict theo quy trình; nếu đang rebase hoặc cherry-pick thì dừng, không sửa file hay tự chạy lệnh continue/abort, và hỏi người dùng hướng xử lý.
 - Trước khi quyết định giữ bên nào, phải xem `git log`/`git show` của cả hai bên để hiểu **tại sao** mỗi bên thay đổi — không đoán từ mỗi đoạn diff.
 - Mặc định **hợp nhất ý định cả hai bên** thay vì chọn 1 bên (phần lớn conflict thực tế là hai thay đổi hợp lệ, độc lập trên cùng một chỗ) — chỉ chọn hẳn 1 bên khi hai thay đổi thực sự loại trừ lẫn nhau.
 - Sau khi resolve, verify bằng `git diff HEAD` và `git diff MERGE_HEAD` để đảm bảo không âm thầm làm mất phần đóng góp của bên nào.
@@ -35,14 +35,16 @@ Skill tự động kích hoạt khi phát hiện tác vụ Git — không cần 
 - Có tiêu chí rõ ràng để dừng lại hỏi người dùng: conflict đụng vào business logic, auth, tính toán tài chính, hoặc lan rộng bất thường (15+ file).
 
 ### 5. Release và hotfix
-- Cắt, ổn định hoá, finalize, rollback nhánh `release/*` theo đúng thứ tự (merge vào `main` → tag → merge lại vào `develop`, không được bỏ bước nào).
-- Xử lý hotfix production đúng thứ tự merge (`main` → `release/*` nếu đang mở → `develop`), có lệnh verify (`git branch --all --contains <sha>`) để xác nhận hotfix đã tới đủ mọi nhánh cần thiết trước khi coi là xong.
+- Cắt, ổn định hoá, finalize, rollback nhánh `release/*` theo đúng thứ tự (merge vào production branch thực tế → tag → merge lại vào integration branch thực tế, thường là `develop`; không được bỏ bước nào).
+- Xử lý hotfix production theo thứ tự (production branch thực tế → `release/*` nếu đang mở → integration branch thực tế, thường là `develop`), ưu tiên PR/MR cho protected branch và giữ ancestry bằng merge commit/fast-forward (không squash hoặc rebase-and-merge). Trước code commit hoặc integration merge trực tiếp trên production/integration branch, hỏi xác nhận rõ ràng; nếu được duyệt thì không bắt buộc checkout sang nhánh mới. Trước thao tác remote, xác định `<fetch-remote>` là nguồn refs authoritative và `<push-remote>` là đích ghi được duyệt (có thể khác nhau trong fork); sau khi fetch, xác minh từng target upstream chứa **tip commit của hotfix branch** bằng `git branch -r --contains <hotfix-branch-tip-sha>`.
 
 ### 6. Worktree
 - Tạo/liệt kê/dọn dẹp worktree cho việc làm nhiều task song song.
-- Luôn kiểm tra worktree sạch (`git status`) trước khi remove; không dùng `--force` để bỏ qua cảnh báo an toàn của Git.
+- Kiểm tra `git status` trước khi remove; nếu worktree còn thay đổi, bảo toàn chúng và chỉ remove bình thường sau khi sạch. Không dùng `--force` để discard worktree bẩn; chỉ cân nhắc `--force` với worktree sạch nếu Git vẫn yêu cầu và người dùng xác nhận.
 
 ### 7. Nguyên tắc an toàn — không làm mất code
+Dùng task branch làm mặc định. Nếu đang ở production branch (thường là `main`/`master`) hoặc integration branch (thường là `develop`) đã xác minh của repo, hỏi xác nhận rõ ràng trước khi tạo code commit; sau khi được duyệt có thể commit ngay trên nhánh hiện tại, không bắt buộc checkout nhánh mới. Việc duyệt commit không thay thế quyền push/merge hay bỏ qua branch protection. Trước mọi push, kể cả push trực tiếp trong release/hotfix, xác minh chỉ có đúng một effective destination được duyệt bằng quy tắc trong `references/principles.md`; nếu có nhiều đích thì dừng.
+
 Xuyên suốt mọi tác vụ trên, skill cấm tuyệt đối các lệnh có thể làm mất code không thể phục hồi:
 - `git rebase`, `git rebase -i`, `git rebase --continue`, `git rebase --abort`, `git reset --hard`
 - `git push --force` / `--force-with-lease`
@@ -105,7 +107,7 @@ Dùng git-workflow để tạo merge request cho feature/user-authentication t�
 
 ### Đồng bộ branch
 ```text
-Dùng git-workflow để cập nhật feature/user-authentication theo develop mới nhất.
+Dùng git-workflow để cập nhật `feature/user-authentication` theo integration branch mới nhất.
 ```
 
 ### Resolve conflict
@@ -134,7 +136,7 @@ Dùng git-workflow để finalize và tag release/v2.3.0.
 Dùng git-workflow để tạo hotfix cho lỗi timeout thanh toán nghiêm trọng và merge lại đúng quy trình.
 ```
 ```text
-Dùng git-workflow để xác nhận hotfix đã được merge vào cả main và develop sau khi deploy.
+Dùng git-workflow để xác nhận hotfix đã được merge vào cả production branch và integration branch sau khi deploy.
 ```
 
 ### Khôi phục sau sự cố
@@ -150,15 +152,14 @@ Dùng git-workflow để quyết định nên làm gì khi merge đang lỗi và
 
 ### Revert
 ```text
-Dùng git-workflow để revert một squash-merge commit đã push lên develop.
+Dùng git-workflow để revert một squash-merge commit đã push lên integration branch.
 ```
 
 ---
 
 ## Khi nào KHÔNG dùng skill này
 
-- Repository release trực tiếp từ `main`, không có `develop`
+- Repository không có integration branch (thường tên `develop`) và release trực tiếp từ production branch (thường `main`/`master`)
 - Repository dùng trunk-based development, không có nhánh release
-- Repository không có nhánh tích hợp (integration branch)
 
 Nếu repo dùng vai trò nhánh khác hoặc mô hình release không phải GitFlow, cần điều chỉnh lại quy tắc trước khi áp dụng nguyên văn.

@@ -2,33 +2,33 @@
 
 ## Sync from the correct base first
 
-Before resolving any conflict, make sure the branch is being merged from the correct base.
+Before starting a merge, inspect `git status` and `git branch --show-current`. Do not merge with unrelated staged/unstaged/untracked changes or while another merge, rebase, cherry-pick, or revert is in progress. Preserve unrelated work; do not stash or discard it automatically. Before resolving any conflict, make sure the branch is being merged from the correct base. Examples use `develop` as the integration branch; replace it with the repository's verified integration branch if different. Use `<fetch-remote>` for the authoritative remote containing the intended base ref. In a fork, do not assume the writable push remote is the correct merge base or infer either role from `origin`/`upstream` names.
 
 For `feature/*`, `bugfix/*`, `chore/*`, `docs/*`, `ci/*` — sync from `develop`:
 
 ```bash
-git fetch origin
-git merge origin/develop
+git fetch <fetch-remote>
+git merge <fetch-remote>/develop
 ```
 
-For `hotfix/*` — sync from `main`, not `develop`:
+For `hotfix/*` — sync from the configured production branch, not the integration branch:
 
 ```bash
-git fetch origin
-git merge origin/main
+git fetch <fetch-remote>
+git merge <fetch-remote>/<production-branch>
 ```
 
 ## Confirm what operation is actually in progress
 
-Conflict markers can come from a merge, a rebase, or a cherry-pick — each needs a different continuation command, and this workflow only supports the merge path.
+This workflow resolves merge conflicts only. Rebase and cherry-pick conflicts are outside scope; identify them with `git status`, stop without editing conflicted files or running an operation-specific continue/abort command, and ask the user how they want to proceed.
 
 ```bash
 git status
 ```
 
 - `"You have unmerged paths"` / `"All conflicts fixed but you are still merging"` → a merge is in progress. Proceed with the steps below.
-- `"interactive rebase in progress"`, or a `.git/rebase-merge`/`.git/rebase-apply` directory exists → a rebase is in progress. This workflow does not use rebase and does not use `git rebase --abort` either (see `references/principles.md` — it's on the forbidden list along with the rest of the rebase family). This state did not come from this skill's own flow, so do not try to resolve or continue it yourself: stop, explain to the user that the branch has an in-progress rebase from outside this workflow, and let them decide how to exit it before you touch the branch further.
-- `"You are currently cherry-picking"` → resolve the same way as a merge conflict below, then run `git cherry-pick --continue` (or `--abort` to drop the cherry-pick).
+- `"interactive rebase in progress"` → a rebase is in progress. This workflow does not use rebase and does not use `git rebase --abort` either (see `references/principles.md` — it is on the forbidden list along with the rest of the rebase family). Stop and explain that the branch has an in-progress rebase from outside this workflow; do not edit files or run a rebase command. Let the user decide how to exit it.
+- `"You are currently cherry-picking"` → cherry-pick conflict. This workflow does not resolve cherry-pick conflicts: stop and ask the user how to proceed. Do not use merge-specific commands, and do not run `git cherry-pick --continue` or `git cherry-pick --abort` without explicit user instruction.
 
 ## Resolving conflicts
 
@@ -38,7 +38,7 @@ When a merge conflict appears:
 2. For each conflicted file, open it and read both sides of the conflict markers carefully:
    - `<<<<<<< HEAD` — your branch (current)
    - `=======` — divider
-   - `>>>>>>> origin/develop` — the incoming branch
+   - `>>>>>>> <fetch-remote>/<branch-being-merged>` — the incoming branch
 3. Before deciding anything, find out *why* each side changed this code — the markers only show *what* changed, not the intent behind it:
    ```bash
    git log --oneline -3 HEAD -- <file>          # recent history on our side
@@ -55,16 +55,16 @@ When a merge conflict appears:
    ```
    If either of these is empty, the resolution is identical to one side in full — confirm that's actually correct for a genuine content conflict (it sometimes is, e.g. a full rewrite that supersedes the other side), rather than assuming it's fine by default.
 7. Stage each resolved file: `git add <file>`
-8. Before completing the merge, note every conflicted file in the commit body — keep Git's default summary line (`Merge branch '<x>' into <y>`), append a `Conflicts resolved in:` list naming each file and, briefly, how it was resolved:
+8. Before running `git merge --continue`, verify `git status` reports a merge in progress and `git rev-parse -q --verify MERGE_HEAD` succeeds. If either check fails, or status identifies a rebase, cherry-pick, revert, or unclear operation, stop—do not run `git merge --continue` or substitute another operation's continue command. Inspect the current branch, ensure every conflict is resolved and staged, review the staged diff, and run relevant checks. If the current branch is the configured production or integration branch, obtain explicit user confirmation for this specific merge commit; until confirmation is received, do not run the continue command. Keep Git's default summary line (`Merge branch '<x>' into <y>`), then append a `Conflicts resolved in:` list naming each conflicted file and briefly how it was resolved. Use the prepared merge message and editor:
    ```bash
-   git commit -m "$(cat .git/MERGE_MSG)
-
-   Conflicts resolved in:
-   - path/to/fileA.ts: kept incoming refactor, reapplied our validation guard
-   - path/to/fileB.json: merged both sides' additions
-   - path/to/package-lock.json: regenerated from resolved package.json"
+   git rev-parse -q --verify MERGE_HEAD
+   git status
+   git branch --show-current
+   git diff --cached
+   git rev-parse --git-path MERGE_MSG
+   git merge --continue
    ```
-   `.git/MERGE_MSG` holds Git's prepared default message while the merge is in progress — reuse it instead of retyping the summary line. If resolving interactively via `git merge --continue`, append the same `Conflicts resolved in:` list to the message in the editor before saving instead.
+   The `--git-path` command returns the correct message path even in linked worktrees. `git merge --continue` opens the configured editor with that prepared message; edit it there, then save and close the editor. Do not assume `.git/MERGE_MSG` is a valid path in a linked worktree.
 9. Run the project's test suite when feasible, even if every conflict looked mechanical. A merge with zero leftover markers can still be semantically broken — see "Semantic conflicts" below.
 
 The conflicted-files list in the body is not optional busywork — it is what makes a later `git log` or `git blame` on a file in this merge immediately explain why its history has an extra merge commit and what decision was made there, without needing to re-diff the merge.
@@ -79,13 +79,20 @@ Not every unmerged file has markers to read. `git status` may instead show:
 
 Never resolve a delete/rename conflict with `--ours`/`--theirs` reflexively — confirm which side's intent should win before staging.
 
-Useful commands during resolution:
+Useful commands during a positively identified merge:
 
 ```bash
-git status           # list conflicted files
+git status           # identify the operation and list conflicted files
 git diff             # inspect unresolved hunks
-git merge --abort    # abandon the merge and return to pre-merge state
 ```
+
+Only if `git status` and `git rev-parse -q --verify MERGE_HEAD` confirm this is an active merge, the user chooses to abandon it, and inspection confirms aborting will not discard pre-existing work, run:
+
+```bash
+git merge --abort
+```
+
+Do not run merge-specific commands when the operation is a rebase, cherry-pick, revert, or is unclear. Aborting a merge may not restore unrelated pre-existing work.
 
 ## Choosing what the resolved file should contain
 
@@ -112,15 +119,15 @@ For files where line-level merging is not meaningful and there's no manifest to 
 
 ```bash
 # Keep our version entirely
-git checkout --ours <file>
+git restore --ours -- <file>
 git add <file>
 
 # Keep their version entirely
-git checkout --theirs <file>
+git restore --theirs -- <file>
 git add <file>
 ```
 
-Use `--ours` / `--theirs` only when you are certain one side is definitively correct. For most source files, edit the conflict markers manually instead.
+These commands replace the conflicted file with one side and discard the other side's content. First verify `<file>` is actually conflicted and inspect both versions and their history. Run either command only after the user explicitly approves that exact side for that file; this is an intentional exception to the normal no-discard rule in [Principles](principles.md). For most source files, edit the conflict markers manually instead.
 
 ## Semantic conflicts
 
@@ -150,7 +157,7 @@ Stop and ask the user before resolving the conflict when any of these conditions
 
 To detect whether an incident may be in progress, check: does the branch name or any recent commit message reference a support ticket, incident label, on-call mention, or hotfix keyword? If yes, treat it as a potential live incident and escalate regardless of whether the conflict itself looks resolvable.
 
-When escalating, run `git merge --abort` to restore the pre-merge state, then explain exactly which files conflict, what each side contains, and what decision is needed from the user. Do not guess at the correct resolution for high-stakes conflicts. An incorrect merge is harder to detect and fix than a clean conflict marker.
+When escalating, stop and explain which files conflict, what each side contains, and what decision is needed. Do not automatically abort: first identify the operation and check whether there was uncommitted work before it began; aborting can discard that work. Leave the operation unchanged until the user decides. If the user asks to abort a confirmed merge, use `git merge --abort` only after confirming that doing so will not lose pre-existing changes. This workflow does not abort rebase or cherry-pick operations.
 
 ## Shared branch conflicts
 
