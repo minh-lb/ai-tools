@@ -26,6 +26,7 @@ Review whether concurrent execution, retries, async processing, or shared mutabl
 - Non-idempotent create, charge, send, or delete operations behind retryable paths (if the idempotency gap is primarily an API contract issue — missing idempotency key field, unstable response — see [API](api.md) — raise one combined finding, not two)
 - Read-modify-write logic without lock, version check, or transaction protection (if the root fix is a DB-level transaction or constraint rather than application-level coordination, see [Database](database.md) — raise one combined finding, not two)
 - Queue consumers that assume exactly-once delivery
+- Workers that acknowledge before durable completion, or leave in-flight work neither requeued nor idempotently resumable on shutdown (if the root cause is runtime termination/drain configuration, see [Infrastructure](infrastructure.md) and report one combined finding)
 - State machines updated by multiple actors without explicit sequencing
 - Cache or flag used as a lock without expiration and ownership safeguards
 - Background jobs started before the transaction that creates their data commits

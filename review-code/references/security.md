@@ -8,8 +8,10 @@ Review whether the change preserves confidentiality, integrity, and access contr
 
 - Authentication, authorization, and tenant scoping
 - Input validation and output encoding
-- File paths, shell calls, template rendering, and serialization
+- File paths, shell calls, template rendering, serialization, and untrusted file/archive uploads
 - Network calls, redirects, webhooks, SSRF exposure, and trust boundaries
+- Browser-facing controls: CORS policy, CSRF protection for cookie-authenticated mutations, cookie attributes, and security headers
+- Webhook/callback authentication, signature freshness, and replay protection
 - Secret handling, token lifecycle, and logging of sensitive values
 - Rate limiting, abuse resistance, and denial-of-service amplification
 - **Dependency security**: new packages added — known CVEs, supply chain risk, license compatibility
@@ -19,7 +21,9 @@ Review whether the change preserves confidentiality, integrity, and access contr
 ## Review Questions
 
 - Who is allowed to trigger this path, and how is that enforced?
-- Can an attacker supply data that changes query shape, file path, command, or template behavior?
+- Can an attacker supply data that changes query shape, file path, command, template behavior, or uploaded/extracted file location?
+- For browser/cookie-authenticated flows, can a cross-origin page trigger a state-changing request, or does CORS allow an untrusted origin with credentials?
+- Are inbound webhook signatures verified and are stale/replayed deliveries controlled?
 - Are secrets or PII ever exposed through logs, errors, client payloads, or metrics labels?
 - Does the code trust upstream identity or input more than it should?
 - Can retries, race conditions, or idempotency gaps be abused to bypass controls?
@@ -33,7 +37,9 @@ Review whether the change preserves confidentiality, integrity, and access contr
 - Client-controlled identifiers used without server-side ownership validation
 - Direct string interpolation into SQL, shell, HTML, or config
 - Secrets or PII stored in code, config, or logs
-- Open redirects, path traversal, insecure deserialization, or unsafe temp-file handling
+- Open redirects, path traversal, insecure deserialization, unsafe temp-file handling, or archive extraction outside the intended directory
+- Missing CSRF mitigation for cookie-authenticated state changes, reflected permissive CORS with credentials, or insecure session-cookie attributes where applicable
+- Unsigned/unverified webhooks or replayable callbacks that can repeat sensitive actions
 - Security decisions made only in the frontend or only by convention
 - New dependency with a known CVE or without license vetting
 - Weak or deprecated cryptographic algorithm; IV reuse; string equality used for secret comparison
@@ -51,7 +57,9 @@ A security finding should describe:
 
 - Enforce authorization on the server at the resource boundary
 - Validate and constrain untrusted input before use
-- Use safe APIs for queries, files, templates, and subprocesses
+- Use safe APIs for queries, files, templates, and subprocesses; constrain upload size/type and isolate stored files where applicable
+- Set explicit origin allowlists, CSRF controls, secure cookie attributes, and security headers for the applicable browser surface
+- Verify webhook authenticity and freshness, and make replay handling idempotent
 - Redact secrets and PII from logs, errors, and external payloads
 - Add abuse controls where the path can be amplified
 - Vet new dependencies for CVEs before merging; pin versions; audit licenses

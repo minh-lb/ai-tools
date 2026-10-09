@@ -24,7 +24,7 @@ Review whether the change can coexist safely with older clients, older servers, 
 ## Red Flags
 
 - Breaking response or event shape change without versioning or compatibility layer (if this is a live API contract issue rather than a multi-version coexistence issue, see [API](api.md) — raise one combined finding, not two)
-- Schema migration that requires all app instances to update simultaneously (if the issue is the deployment sequencing mechanism — missing feature flag, no staged rollout strategy — see [Infrastructure](infrastructure.md) — raise one combined finding, not two)
+- Schema migration that requires all app instances to update simultaneously (if the issue is the deployment sequencing mechanism — missing rollout guard or staged rollout strategy — see [Infrastructure](infrastructure.md) — raise one combined finding, not two)
 - Enum or status rename that invalidates stored data or consumer logic
 - Cache format change without namespacing or invalidation plan
 - Background jobs serialized with old code shape but deserialized by new workers

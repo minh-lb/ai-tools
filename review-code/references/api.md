@@ -47,6 +47,7 @@ Explicitly verify that each reviewed HTTP endpoint uses response codes that matc
 - `412 Precondition Failed` when explicit request preconditions such as `If-Match`, `If-Unmodified-Since`, or conditional update headers fail
 - `413 Content Too Large` when the payload exceeds the accepted size
 - `415 Unsupported Media Type` when the request content type is not supported
+- `416 Range Not Satisfiable` when none of the requested byte ranges can be served
 - `422 Unprocessable Entity` when the payload is syntactically valid but fails domain or validation rules
 - `428 Precondition Required` when the server requires a conditional request to avoid lost updates or conflicting writes
 - `429 Too Many Requests` when rate limiting or throttling is the reason for rejection
@@ -68,6 +69,7 @@ Also check code/body consistency:
 - `204` must not include a response body
 - `206` should align with `Range` / partial-content semantics and should not be used for arbitrary partial success
 - `304` must not include a new response body for the cached representation
+- `416` should be reserved for an unsatisfiable `Range` request, not used as a generic validation response
 - `202` should describe async tracking or follow-up expectations when relevant
 - `408` should reflect client-side send timeout, not generic upstream or server processing slowness
 - Redirect codes should preserve or change method intentionally: `307/308` preserve method, while `303` redirects to `GET`

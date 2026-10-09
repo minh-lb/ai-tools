@@ -23,10 +23,12 @@ Review whether schema changes, queries, writes, and transactions are safe for da
 - Does a batch write or update operation hold row or table locks long enough to block concurrent reads or writes from other users?
 - Is there a statement timeout or query timeout configured for long-running queries? What happens to the caller if the query exceeds it?
 - For large table operations (backfills, reindexing, mass updates): is the operation chunked and throttled, or does it lock the whole table for the duration?
+- For destructive or non-reconstructable data changes, is there a verified backup/restore, reconciliation, or other recovery path if the migration fails partway?
 
 ## Red Flags
 
 - Destructive migration without phased rollout or backfill plan
+- Irreversible rewrite/drop of non-reconstructable data without a verified recovery path
 - Adding a non-null column without safe default or staged population
 - Query predicates that cannot use supporting indexes (this overlaps with [Performance](performance.md) "full-table scans" — raise one combined finding that covers both the integrity/access risk and the latency impact; do not raise separately in both dimensions)
 - Read-modify-write sequence without transaction or concurrency control (if the race involves concurrent actors or queue workers rather than pure DB isolation, see [Concurrency](concurrency.md) — raise one combined finding, not two)
@@ -50,3 +52,4 @@ A database finding should describe:
 - Add the right index, constraint, or transactional guard
 - Make ordering and uniqueness explicit
 - Separate backfills from request-time logic and throttle them appropriately
+- Validate restore/reconciliation procedures before irreversible data changes when recovery depends on them

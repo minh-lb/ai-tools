@@ -11,6 +11,7 @@ Review whether the change introduces avoidable latency, throughput limits, resou
 - Serialization, compression, payload size, and object allocation
 - Cache usage, invalidation strategy, and stampede risk
 - Network fan-out, retry storms, and synchronous dependency chains
+- Failure isolation and graceful degradation: bounded concurrency, bulkheads, circuit breakers where appropriate, load shedding, queue limits, and fallbacks consistent with the contract
 - Background jobs, cron tasks, and backfill behavior at scale
 - Connection pool exhaustion: DB, HTTP client, or thread pool limits under concurrent load
 - Memory growth patterns: unbounded accumulation in collections, event listeners, or long-lived objects
@@ -24,6 +25,7 @@ Review whether the change introduces avoidable latency, throughput limits, resou
 - Does this path perform repeated work that could be batched, memoized, or cached safely?
 - Are heavy operations placed on request paths instead of async paths?
 - Can retries multiply load on already-failing dependencies?
+- Can a slow or unavailable dependency exhaust shared pools or cascade failure, and are isolation or graceful-degradation controls appropriate for this path?
 - Does the change create unbounded memory growth or large payload expansion?
 - Can concurrent requests exhaust a connection pool or shared resource?
 - Do chained I/O calls each carry their own timeout, or can the total exceed the caller's deadline?
@@ -46,6 +48,7 @@ Review whether the change introduces avoidable latency, throughput limits, resou
 - Connection or file descriptor created inside a loop without pooling or explicit release
 - Event listener or callback registered repeatedly without cleanup, leading to accumulation over time
 - Retry with no backoff or jitter on a shared downstream, risking thundering-herd
+- No failure isolation or bounded concurrency on a dependency path where slowdown can exhaust shared pools or cascade an outage
 - **Large-data red flags**:
   - Algorithm whose complexity is O(n²) or worse and n is unbounded or user-controlled
   - In-memory sort, group, join, or dedup over a collection that grows with data volume
@@ -103,6 +106,7 @@ A performance finding should connect:
 - Set explicit timeouts per I/O call; align them with the caller's deadline budget
 - Use connection pools; never open connections inside loops
 - Stream or paginate large datasets instead of loading them fully into memory
+- Add failure isolation, bounded concurrency, load shedding, or graceful fallback when justified by the path's availability requirements
 - Add performance tests or instrumentation if risk is hard to quantify statically
 - Replace OFFSET pagination with keyset (cursor) pagination for large tables
 - Add checkpointing to batch jobs so partial progress survives failure
