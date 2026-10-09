@@ -5,14 +5,16 @@ interface:
     Use generate-flow to trace one concrete feature through the local codebase and write a Markdown flow document.
 
     Steps:
-    1. Resolve the smallest clear scope from the user's target.
-    2. Find the real entry point before tracing internals.
+    1. Resolve the smallest clear scope and keep both source and output paths inside the project root.
+    2. Find the real entry point before tracing internals; document in-scope async consumers as separate paths, not synchronous calls.
     3. Follow only the executed path from trigger to terminal.
     4. Capture code-backed decisions, data transformations, and side effects only.
-    5. Classify downstream calls as internal or external before crossing boundaries.
-    6. Write `docs/flow/<feature-name>.md` with edit history, summary, full flow, terminals, and open questions.
-    7. Keep Mermaid labels compact and render-safe; move full typed detail into data annotations.
-    8. Stop when the flow is maintainable and testable; do not reverse-engineer unrelated code.
+    5. Classify downstream calls as internal, external, or unresolved before crossing boundaries; never expose secrets or personal data.
+    6. Follow local error handling through catch, retry, rollback, and acknowledgment before calling a branch terminal.
+    7. Write `docs/flow/<feature-name>.md` with collision-safe naming, preserved edit history, per-path source references, terminals, and open questions.
+    8. Keep Mermaid labels compact and render-safe; move full typed detail into data annotations.
+    9. Verify file/symbol references, terminals, prior history, paths, and absence of placeholders or sensitive values before reporting success.
+    10. Stop when the flow is maintainable and testable; do not reverse-engineer unrelated code.
 
 policy:
   allow_implicit_invocation: false

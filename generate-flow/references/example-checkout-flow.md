@@ -88,6 +88,14 @@ sequenceDiagram
     deactivate Controller
 ```
 
+#### Nguồn code
+
+- `src/api/orders/checkout.controller.ts` — `CheckoutController.create`: nhận request, validate body và lấy `userId` từ JWT.
+- `src/orders/checkout.service.ts` — `CheckoutService.checkout`: kiểm tra giỏ hàng, áp dụng discount, điều phối thanh toán/lưu đơn và publish event.
+- `src/orders/cart.repository.ts` — `CartRepository.findById`: đọc giỏ hàng.
+- `src/payments/payment.gateway.ts` — `PaymentGateway.charge`: gọi Stripe và trả kết quả thanh toán.
+- `src/orders/order.repository.ts` — `OrderRepository.create`: lưu order, items và cập nhật cart.
+
 #### Chú thích dữ liệu
 
 **[A1]** `Client` → `CheckoutController` — raw HTTP body:
@@ -192,6 +200,10 @@ flowchart TD
 | DB Write | Cập nhật `carts.status = "checked_out"` | `src/orders/order.repository.ts` | `OrderRepository.create` |
 | Event | `order.created` publish lên exchange `orders` | `src/orders/checkout.service.ts` | `CheckoutService.checkout` |
 | Response | `201` với `{ orderId, total, currency, status: "pending" }` | `src/api/orders/checkout.controller.ts` | `CheckoutController.create` |
+| Response | `404` — cart not found | `src/orders/checkout.service.ts` | `CheckoutService.checkout` |
+| Response | `409` — cart is not open | `src/orders/checkout.service.ts` | `CheckoutService.checkout` |
+| Response | `400` — invalid discount code | `src/orders/checkout.service.ts` | `CheckoutService.checkout` |
+| Response | `402` — payment failed | `src/orders/checkout.service.ts` | `CheckoutService.checkout` |
 
 ---
 

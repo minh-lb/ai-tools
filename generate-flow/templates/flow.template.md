@@ -11,6 +11,8 @@
 | --- | --- | --- |
 | {{date}} | Tạo mới | generate-flow |
 
+<!-- Use the actual current date in YYYY-MM-DD format; do not guess. Use Unknown if unavailable. -->
+
 ---
 
 ## Flow Summary
@@ -56,6 +58,12 @@ sequenceDiagram
     LayerA-->>Trigger: [A4] status=200, data=TypeD
     deactivate LayerA
 ```
+
+#### Nguồn code
+
+- `{{repo-relative-path}}` — `{{function-or-symbol}}`: {{hành vi được xác nhận}}
+
+<!-- List source files/functions that support the entry, important handoffs/branches, and terminals. Use only real repo-relative paths and symbols. -->
 
 #### Chú thích dữ liệu
 
@@ -116,9 +124,12 @@ flowchart TD
 | --- | --- | --- | --- |
 | DB Write | {{mô tả dữ liệu được lưu}} | `{{file-path}}` | `{{function-name}}` |
 | External | `{{method-or-event}}` tới `{{service-or-provider}}` | `{{file-path}}` | `{{function-name}}` |
+| Trace cutoff | {{target chưa xác định hoặc giới hạn trace}} | `{{file-path}}` | `{{function-name}}` |
 | Event | {{tên event}} publish đến `{{topic-or-queue}}` | `{{file-path}}` | `{{function-name}}` |
 | Error | `{{error-code-or-name}}` tại `{{boundary}}` | `{{file-path}}` | `{{function-name}}` |
 | Response | `{{status-code}}` với `{{response-shape}}` | `{{file-path}}` | `{{function-name}}` |
+| Acknowledgment | `{{message-ack}}` | `{{file-path}}` | `{{function-name}}` |
+| Completion | {{normal job, command, or UI completion}} | `{{file-path}}` | `{{function-name}}` |
 
 ---
 

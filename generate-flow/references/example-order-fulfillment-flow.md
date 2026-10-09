@@ -96,6 +96,14 @@ sequenceDiagram
     deactivate Consumer
 ```
 
+#### Nguồn code
+
+- `fulfillment-service/src/consumers/order-created.consumer.ts` — `OrderCreatedConsumer.handle`: nhận, giải mã và xác nhận event; ACK/NACK message.
+- `fulfillment-service/src/fulfillment/fulfillment.service.ts` — `FulfillmentService.fulfill`: điều phối reserve inventory, tạo shipment, lưu fulfillment và publish event.
+- `fulfillment-service/src/clients/inventory.client.ts` — `InventoryClient.reserve`: gọi Inventory Service.
+- `fulfillment-service/src/clients/shipping.client.ts` — `ShippingClient.createShipment`: gọi Shipping Service.
+- `fulfillment-service/src/fulfillment/fulfillment.repository.ts` — `FulfillmentRepository.create`: lưu fulfillment record.
+
 #### Chú thích dữ liệu
 
 **[A1]** `MessageQueue` → `OrderCreatedConsumer` — raw message payload:
@@ -185,8 +193,8 @@ flowchart TD
     R2{Shipment created OK?}
     E1[Throw InventoryUnavailableException]
     E2[Throw ShipmentCreationException]
-    Retry1[Queue NACK - retry / DLQ]
-    Retry2[Queue NACK - retry / DLQ]
+    Retry1[Failure delivery policy unresolved]
+    Retry2[Failure delivery policy unresolved]
     Persist[Insert fulfillment record]
     Publish[Publish fulfillment.started]
     Done([Queue ACK])
@@ -236,6 +244,12 @@ sequenceDiagram
     deactivate NotiConsumer
 ```
 
+#### Nguồn code
+
+- `notification-service/src/consumers/fulfillment-started.consumer.ts` — `FulfillmentStartedConsumer.handle`: nhận và xác nhận event.
+- `notification-service/src/notification/notification.service.ts` — `NotificationService.sendFulfillmentEmail`: lấy user, render email và gửi qua provider.
+- `notification-service/src/clients/user.client.ts` — `UserClient.findById`: lấy thông tin user từ service khác.
+
 #### Chú thích dữ liệu
 
 **[B1]** `MessageQueue` → `FulfillmentStartedConsumer` — raw message payload:
@@ -283,6 +297,12 @@ html: string                // tạo mới; render template với orderId, track
 | Event | `fulfillment.started` publish lên exchange `fulfillments` | `fulfillment-service/src/fulfillment/fulfillment.service.ts` | `FulfillmentService.fulfill` |
 | External HTTP | GET `/users/:id` — lấy thông tin user tại UserService | `notification-service/src/clients/user.client.ts` | `UserClient.findById` |
 | External API | Gửi email qua Email Provider (SendGrid / SMTP) | `notification-service/src/notification/notification.service.ts` | `NotificationService.sendFulfillmentEmail` |
+| Acknowledgment | ACK `order.created` sau khi fulfillment hoàn tất thành công | `fulfillment-service/src/consumers/order-created.consumer.ts` | `OrderCreatedConsumer.handle` |
+| Acknowledgment | ACK `fulfillment.started` sau khi xử lý notification thành công | `notification-service/src/consumers/fulfillment-started.consumer.ts` | `FulfillmentStartedConsumer.handle` |
+| Error | `InventoryUnavailableException` khi reserve thất bại | `fulfillment-service/src/fulfillment/fulfillment.service.ts` | `FulfillmentService.fulfill` |
+| Trace cutoff | Chính sách NACK/retry/DLQ sau lỗi inventory chưa xác định | `fulfillment-service/src/consumers/order-created.consumer.ts` | `OrderCreatedConsumer.handle` |
+| Error | `ShipmentCreationException` khi tạo shipment thất bại | `fulfillment-service/src/fulfillment/fulfillment.service.ts` | `FulfillmentService.fulfill` |
+| Trace cutoff | Chính sách NACK/retry/DLQ sau lỗi shipment chưa xác định | `fulfillment-service/src/consumers/order-created.consumer.ts` | `OrderCreatedConsumer.handle` |
 
 ---
 

@@ -10,14 +10,16 @@ Toàn bộ text mô tả viết bằng **tiếng Việt**. Các thuật ngữ k�
 
 Một file Markdown tại `docs/flow/<feature-name>.md` gồm các section theo thứ tự:
 
-- **Lịch sử chỉnh sửa** — bảng ghi lại mỗi lần tạo hoặc tái tạo tài liệu; các dòng cũ không bao giờ bị xóa
+- **Lịch sử chỉnh sửa** — bảng ghi lại mỗi lần tạo hoặc tái tạo tài liệu; các dòng cũ không bao giờ bị xóa; dùng ngày hiện tại thực tế, không đoán
 - **Flow Summary** — mô tả logic flow <= 3 câu, sơ đồ `flowchart LR` tổng quan (không có data detail), bảng các bước chính
-- **Full Flow** — `sequenceDiagram` thể hiện đồng thời logic flow (ai gọi ai, theo thứ tự nào) và data flow (data shape tại mỗi handoff, thay đổi ra sao qua từng bước); kèm **Chú thích dữ liệu** khi label cần rút gọn hoặc field evolution không còn rõ; **Sơ đồ quyết định** nếu flow không tuyến tính
-- **Điểm kết thúc** — toàn bộ DB write, cache write, event publish, external boundary, response, và error terminal mà flow đi qua
+- **Full Flow** — `sequenceDiagram` thể hiện đồng thời logic flow (ai gọi ai, theo thứ tự nào) và data flow (data shape tại mỗi handoff, thay đổi ra sao qua từng bước); mỗi path có **Nguồn code** dẫn tới file/function đã xác nhận; kèm **Chú thích dữ liệu** khi label cần rút gọn hoặc field evolution không còn rõ; **Sơ đồ quyết định** nếu flow không tuyến tính
+- **Điểm kết thúc** — toàn bộ DB/cache write, event publish, external boundary, response, message ACK, job/command completion, và error terminal mà flow đi qua
 - **Câu hỏi còn mở** — các boundary chưa rõ hoặc hành vi được suy luận (chỉ thêm khi cần)
 
 Mermaid labels được giữ ở dạng ngắn, an toàn để render, ví dụ `cartId=string, userId=string`; phần đầy đủ với enum, nullable, hoặc field-level changes nằm trong `Chú thích dữ liệu`.
-External service chỉ là điểm dừng của việc trace xuyên biên giới; nếu code local còn tiếp tục sau khi call trả về thì flow vẫn tiếp tục được ghi nhận ở service hiện tại.
+External service chỉ là điểm dừng của việc trace xuyên biên giới; nếu code local còn tiếp tục sau khi call trả về thì flow vẫn tiếp tục được ghi nhận ở service hiện tại. Nếu chưa xác định được target/topology từ code local, ghi là unresolved cutoff thay vì khẳng định external. Theo error qua các nhánh catch/retry/rollback/ack local trước khi gọi đó là terminal. Consumer của event/queue nếu nằm trong scope được mô tả thành `Path` riêng, không giả lập như call đồng bộ.
+
+Source và file output phải nằm trong project root; không đọc `.env`, không ghi qua symlink ra ngoài workspace, và không đưa credentials hay dữ liệu cá nhân thật vào flow document. Với API/UI có bảo vệ, xác nhận guard và ghi rõ session đã đăng nhập là precondition nếu phù hợp; không tự mở rộng flow sang sign-in.
 
 ## Cách dùng
 
@@ -51,7 +53,7 @@ External service chỉ là điểm dừng của việc trace xuyên biên giới
 
 | File | Mục đích |
 | --- | --- |
-| `SKILL.md` | Hướng dẫn thực thi chính của skill |
+| `SKILL.md` | Hướng dẫn thực thi, phân loại boundary, an toàn secrets, và kiểm tra chất lượng |
 | `agents/openai.yaml` | Metadata để Codex/ECC discover và hiển thị skill ổn định hơn |
 | `templates/flow.template.md` | Skeleton output — cấu trúc tham khảo cho file được tạo |
 | `references/example-checkout-flow.md` | Ví dụ monolith — feature checkout NestJS |
@@ -66,7 +68,7 @@ Flow generated for: checkout
   File: docs/flow/checkout.md
 ```
 
-Xem `references/` để biết file được tạo ra trông như thế nào.
+Xem `references/` để biết file được tạo ra trông như thế nào. Đây là ví dụ minh họa format; không dùng path/schema/behavior của ví dụ làm bằng chứng cho feature thật nếu chưa xác nhận trong repo.
 
 ## Tái tạo tài liệu
 
@@ -76,4 +78,4 @@ Chạy lại skill trên cùng feature sau khi:
 - Có thêm side effect mới (event, cache write)
 - Một nhánh logic thay đổi
 
-Mỗi lần chạy sẽ append thêm một dòng vào bảng `Lịch sử chỉnh sửa` với nội dung `Tái tạo từ code` — các dòng cũ không bao giờ bị xóa.
+Mỗi lần chạy sẽ append thêm một dòng vào bảng `Lịch sử chỉnh sửa` với nội dung `Tái tạo từ code` — các dòng cũ không bao giờ bị xóa. Nếu file đích cùng tên nhưng xác định là flow khác (hoặc không đủ thông tin để xác định), không ghi đè; hãy chọn slug khác hoặc hỏi người dùng.
