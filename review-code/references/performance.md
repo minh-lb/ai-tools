@@ -2,7 +2,7 @@
 
 ## Focus
 
-Review whether the change introduces avoidable latency, throughput limits, resource waste, or scale-sensitive behavior in realistic production workloads — including whether it remains stable and correct when data volume grows significantly beyond the current baseline.
+Review whether the in-scope code or proposed change creates avoidable latency, throughput limits, resource waste, or scale-sensitive behavior in realistic production workloads—including whether it remains stable and correct when data volume grows significantly beyond the current baseline.
 
 ## Inspect
 
@@ -18,10 +18,14 @@ Review whether the change introduces avoidable latency, throughput limits, resou
 - Timeout budget: whether timeouts are set per call and whether chained calls leave enough remaining budget
 - Streaming vs buffering: whether large responses are materialized fully into memory when streaming is possible
 - **Large-data stability**: whether the code degrades gracefully or breaks entirely when data volume grows — covering memory headroom, algorithmic complexity cliff, partial-result handling, and back-pressure
+- **Browser UI loading**: route-level JavaScript/CSS size, code splitting and lazy loading, critical rendering path, font/image delivery, cache behavior, and request waterfalls
+- **Browser UI runtime**: expensive render/re-render work, large lists, long main-thread tasks, layout thrashing, event-handler work, and animation/compositing costs
+- **Core Web Vitals where relevant**: Largest Contentful Paint (LCP), Interaction to Next Paint (INP), and Cumulative Layout Shift (CLS); distinguish field data from lab diagnostics
 
 ## Review Questions
 
-- What happens when input size, tenant count, or traffic volume grows?
+- What happens when input size, tenant count, or traffic volume grows, including for the largest expected customer/data set?
+- Does the path remain within the CPU, memory, connection, and concurrency limits of the minimum supported deployment profile, when that profile is known?
 - Does this path perform repeated work that could be batched, memoized, or cached safely?
 - Are heavy operations placed on request paths instead of async paths?
 - Can retries multiply load on already-failing dependencies?
@@ -35,6 +39,10 @@ Review whether the change introduces avoidable latency, throughput limits, resou
 - If processing a large batch fails midway, is partial progress recoverable or does the whole operation need to restart?
 - Is there any back-pressure mechanism to prevent a fast producer from overwhelming a slow consumer or downstream?
 - Does sorting, grouping, or joining operate on a bounded window, or can it grow with data size?
+- Does the change add large synchronous JavaScript, block hydration, trigger repeated expensive renders, or put long work on the main thread?
+- Are large images/fonts and below-the-fold modules delivered efficiently without delaying the critical content or interaction path?
+- Does the layout reserve space for late-loading content to avoid shifts? Are animations limited to properties that avoid repeated layout/paint work where appropriate?
+- If Core Web Vitals are available, are results evaluated at the 75th percentile and segmented across mobile and desktop? Are lab-only measurements being mistaken for real-user INP?
 
 ## Red Flags
 
@@ -58,6 +66,19 @@ Review whether the change introduces avoidable latency, throughput limits, resou
   - `OFFSET`-based pagination that gets progressively slower as page number increases
   - Regex or string scan applied to large blobs without a length cap or early termination
   - Recursive algorithm (tree walk, graph traversal) with no depth limit on user-supplied or database-backed data
+
+### Browser UI Metrics and Red Flags
+
+When the project uses Core Web Vitals as a target and no stricter project threshold is specified, web.dev's current "good" thresholds are LCP ≤ 2.5 seconds, INP ≤ 200 milliseconds, and CLS ≤ 0.1 at the 75th percentile, segmented across mobile and desktop. Treat these as field-performance targets, not as a substitute for understanding a concrete regression. Field data reflects real devices/network/interactions; lab data helps reproduce and diagnose. Lab tools without user interaction cannot measure INP directly; Total Blocking Time can help diagnose likely interaction issues but is not INP.
+
+Frontend performance red flags:
+
+- A route pulls a large application bundle or heavy dependency before the user needs it, with no route-level splitting or justified tradeoff.
+- Synchronous parsing, rendering, hydration, or event work blocks interaction on realistic devices.
+- Repeated re-renders or unbounded DOM growth makes a common interaction slow; large lists render all rows when a bounded/virtualized strategy is needed.
+- Images, embeds, or fonts cause avoidable layout shifts because dimensions/aspect ratio or reserved space are missing.
+- Critical content is delayed by avoidable request waterfalls, oversized media, blocking scripts, or unused code.
+- A lab score is presented as proof of real-user performance, or a field metric is compared without consistent device/route/percentile context.
 
 ## Large-Data Stability Checklist
 
@@ -113,3 +134,5 @@ A performance finding should connect:
 - Enforce depth limits on recursive traversal; rewrite as iterative with an explicit stack if depth is data-driven
 - Cap input length before applying regex or full-text scan
 - Add back-pressure signals (rate limiting, bounded queues, flow control) between producer and consumer
+- Split and defer noncritical frontend code; optimize critical assets, render work, and layout stability based on measured user impact
+- Use field Core Web Vitals and representative lab traces together; compare the same routes, devices, and percentiles
