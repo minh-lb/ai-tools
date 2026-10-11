@@ -2,8 +2,8 @@
 // Never add test dependencies or bootstrap a runner just to use this file without approval.
 // Adapt the component, props, and assertions to its real accessible behavior.
 // Detect Vitest vs Jest from the repository before using this template.
-// - Vitest: use vi.fn() / vi.mock(); if `globals: true` is not set, add: import { describe, it, expect, vi } from "vitest";
-// - Jest: replace every `vi.fn()` below with `jest.fn()` and `vi.mock()` with `jest.mock()` — no extra import needed, Jest globals are ambient.
+// Follow its existing import/global convention for describe, it, and expect; for Vitest without globals, import them from "vitest".
+// This example uses a callback counter rather than runner-specific mock functions.
 // If the component has a controller.ts that calls useQuery/useMutation, mock the controller module directly
 // (vi.mock("./controller") / jest.mock("./controller")) instead of the network layer — this is a component-level
 // unit test. Reserve MSW-based network mocking for container/integration tests that exercise the real controller.
@@ -19,10 +19,13 @@ describe("ComponentName", () => {
 
   it("calls onConfirm when the action is triggered", async () => {
     const user = userEvent.setup(); // required for @testing-library/user-event v14+
-    const handleConfirm = vi.fn(); // jest.fn() if the repo uses Jest
+    let callCount = 0;
+    const handleConfirm = () => {
+      callCount += 1;
+    };
     render(<ComponentName label="Click me" onConfirm={handleConfirm} />);
     await user.click(screen.getByRole("button"));
-    expect(handleConfirm).toHaveBeenCalledTimes(1);
+    expect(callCount).toBe(1);
   });
 
   // Add a test per state the component owns (loading, empty, error, disabled, success).

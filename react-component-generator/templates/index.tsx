@@ -1,10 +1,7 @@
 // Substitution required: replace "ComponentName" with the actual component name (PascalCase).
 // Checklist: rename Props, update props to match actual shape, remove unused props, delete this comment block.
-// This template has an event handler (onClick). In RSC-enabled repos (Next.js App Router etc.), that requires
-// "use client" — keep the directive below. In non-RSC repos (Vite, CRA, plain SPA), delete the directive line;
-// it's a no-op there. Either way, remove it entirely if the final component ends up with no state, effects,
-// refs, browser APIs, or event handlers.
-"use client";
+// In an RSC project, add 'use client' only if retaining this event handler; omit it in non-RSC projects.
+// Remove the handler and directive if the final component has no client-only behavior.
 
 type Props = {
   label: string;
