@@ -4,3 +4,4 @@ node_modules
 minhluudev-ai-tools-*
 .pi
 .claude
+.playwright-mcp
