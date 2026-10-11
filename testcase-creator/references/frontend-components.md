@@ -1,4 +1,4 @@
-# Frontend — Common Testcase Library (87 checks, 17 components, 7 groups)
+# Frontend — Common Testcase Library
 
 Use these as **procedure prompts**: include only components present in the feature and determine expected results from its specification. For each field, test applicable minimum/maximum and ±1 values, data variants, and specific messages. FE tests interaction/rendering; validate inputs again at BE.
 

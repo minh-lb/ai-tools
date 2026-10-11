@@ -1,4 +1,4 @@
 interface:
   display_name: "React Component Generator"
-  short_description: "Generate repo-aligned React components with repo-resolved placement"
-  default_prompt: "Use $react-component-generator to create or refactor a React component, placing it under components/**. Follow the component-authoring reference and the target repository's React/TS conventions for code shape inside generated files."
+  short_description: "Create or refactor React components that follow the target repository"
+  default_prompt: "Use $react-component-generator for component-level React work. Inspect the target repository first and follow its placement, rendering, styling, accessibility, state, testing, and TypeScript conventions. Adapt templates only when they fit; do not add dependencies or impose a new component architecture without approval."

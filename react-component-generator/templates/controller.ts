@@ -3,10 +3,7 @@
 // import { useQuery } from "@tanstack/react-query";
 
 export const useController = () => {
-  // Add state, effects, and service calls here.
-  // Return only values and handlers needed by index.tsx.
-  // Example shape: return { value, isLoading, handleSubmit };
-  return {
-    // TODO: replace with actual state and handlers, then destructure in index.tsx
-  };
+  // Replace this sample value with the minimal state and handlers the view needs.
+  // Add only hooks and side effects required by the component's behavior.
+  return { value: "ComponentName" };
 };

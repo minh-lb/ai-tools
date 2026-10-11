@@ -65,15 +65,9 @@ Adjust severity by considering:
 
 If safeguards strongly reduce exposure, mention them and lower confidence or severity where appropriate.
 
-## Cumulative Risk Escalation
+## Combined Risk
 
-Individual findings are assigned severity independently. However, when multiple findings cluster on the same entry point, function, or data path, the combined risk can exceed what any single finding represents.
-
-**Escalation rule:** When three or more Medium findings share the same entry point, function, or data path, assess the combined scenario:
-- If a realistic sequence of those conditions occurring together can cause a High-severity outcome (data loss, user-visible failure, security exposure), escalate the cluster and note it explicitly in the Summary.
-- State which findings form the cluster, the combined failure scenario, and the aggregate severity in the Summary.
-
-Do not escalate mechanically — only when the combined scenario is plausible, not merely theoretical. A cluster of three Mediums in unrelated subsystems does not trigger escalation. Keep each individual finding and its checklist status at its independently justified severity; report the aggregate separately rather than silently promoting the individual findings.
+Assign each finding its own evidence-based severity. When findings on the same entry point or data path interact, assess whether their combined behavior creates a more serious, realistic outcome than any finding alone. If so, describe the interacting findings, triggering sequence, and aggregate risk in the Summary. Do not combine unrelated concerns or escalate mechanically; keep each finding and checklist status at its independently justified severity.
 
 ## What Does Not Merit A Finding
 

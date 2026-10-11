@@ -1,68 +1,37 @@
 # Architecture Reference
 
-Index of layer references. Load only the layer file relevant to your current task.
+Use this as an index for the supplied Laravel module examples. The paths, filenames, and template catalog below describe one possible layout; inspect and follow the target repository before generating files.
 
-- [domain.md](domain.md) — Entity, Action, Event, Repository contract, Value Object.
-- [application.md](application.md) — UseCase, DTO, EventHandler.
-- [infrastructure.md](infrastructure.md) — Model, Repository implementation, Provider.
-- [interfaces.md](interfaces.md) — Controller, Request, Resource.
-- [cross-cutting.md](cross-cutting.md) — Event flow, imports, anti-patterns.
-- [verification.md](verification.md) — final file-set and validation checks.
+## Layer references
 
-## Paths
+- [domain.md](domain.md) — domain behavior, invariants, events, and repository boundaries.
+- [application.md](application.md) — use-case orchestration, DTOs, and event consumers.
+- [infrastructure.md](infrastructure.md) — persistence adapters, external clients, and dependency wiring.
+- [interfaces.md](interfaces.md) — HTTP/controllers, validation, resources, and routes.
+- [cross-cutting.md](cross-cutting.md) — module boundaries, event delivery, and idempotency.
+- [verification.md](verification.md) — final consistency and validation checks.
 
-| Component | Path | Naming |
-| --- | --- | --- |
+## Example template layout
+
+| Component | Example path | Example naming |
+|---|---|---|
 | Entity | `Modules/{Module}/Domain/Entities/` | `{Entity}.php` |
 | Action | `Modules/{Module}/Domain/Actions/` | `{Verb}{Entity}Action.php` |
 | Event | `Modules/{Module}/Domain/Events/` | `{Entity}{PastTense}.php` |
 | Repository contract | `Modules/{Module}/Domain/Repositories/` | `{Entity}Repository.php` |
 | DTO | `Modules/{Module}/Application/DTOs/` | `{Verb}{Entity}DTO.php` |
-| UseCase | `Modules/{Module}/Application/UseCases/` | `{Verb}{Entity}UseCase.php` |
-| EventHandler | `Modules/{Module}/Application/EventHandlers/` | `{Entity}{PastTense}Handler.php` |
+| Use case | `Modules/{Module}/Application/UseCases/` | `{Verb}{Entity}UseCase.php` |
+| Event handler | `Modules/{Module}/Application/EventHandlers/` | `{Entity}{PastTense}Handler.php` |
 | Model | `Modules/{Module}/Infrastructure/Models/` | `{Entity}Model.php` |
-| Repository impl | `Modules/{Module}/Infrastructure/Repositories/` | `{Entity}RepositoryImpl.php` |
+| Repository adapter | `Modules/{Module}/Infrastructure/Repositories/` | `{Entity}RepositoryImpl.php` |
 | Provider | `Modules/{Module}/Infrastructure/Providers/` | `{Module}ServiceProvider.php` |
 | Controller | `Modules/{Module}/Interfaces/Controllers/` | `{Verb}{Entity}Controller.php` |
 | Request | `Modules/{Module}/Interfaces/Requests/` | `{Verb}{Entity}Request.php` |
 | Resource | `Modules/{Module}/Interfaces/Resources/` | `{Entity}Resource.php` |
-| Value Object | `Modules/{Module}/Domain/ValueObjects/` | `{ValueObject}.php` |
-| Shared `Rules` attribute | `Modules/Shared/Attributes/` | `Rules.php` |
-| Shared `BaseDTO` | `Modules/Shared/DTOs/` | `BaseDTO.php` |
-| Shared `ApiResponse` | `Modules/Shared/Support/Http/` | `ApiResponse.php` |
-| Entity test | `tests/Unit/Modules/{Module}/Domain/Entities/` | `{Entity}Test.php` |
-| Action test | `tests/Unit/Modules/{Module}/Domain/Actions/` | `{Action}ActionTest.php` |
-| DTO test | `tests/Unit/Modules/{Module}/Application/DTOs/` | `{Name}DTOTest.php` |
-| UseCase test | `tests/Feature/Modules/{Module}/Application/UseCases/` | `{Name}UseCaseTest.php` |
-| EventHandler test | `tests/Unit/Modules/{Module}/Application/EventHandlers/` | `{EventName}HandlerTest.php` |
-| Controller test | `tests/Feature/Modules/{Module}/Interfaces/Controllers/` | `{Name}ControllerTest.php` |
+| Optional validation attribute/base DTO/response helper | `Modules/Shared/` | Only if project convention or requirement justifies it |
+
+Test locations also vary by project. Use the existing suite's organization and naming instead of moving tests to the example paths.
 
 ## Templates
 
-Template files follow `templates/{Component}.template`. Load only the templates needed for the current task.
-
-| Component | Template |
-| --- | --- |
-| Entity | `Entity.template` |
-| Value Object | `ValueObject.template` |
-| Action | `Action.template` |
-| DTO | `DTO.template` |
-| UseCase | `UseCase.template` |
-| Infrastructure model | `Model.template` |
-| Infrastructure provider | `Provider.template` |
-| Repository interface | `RepositoryInterface.template` |
-| Repository implementation | `RepositoryImplementation.template` |
-| Domain event | `DomainEvent.template` |
-| Event handler | `EventHandler.template` |
-| Controller | `Controller.template` |
-| Request | `Request.template` |
-| Resource | `Resource.template` |
-| Rules attribute | `RulesAttribute.template` |
-| Base DTO | `BaseDTO.template` |
-| ApiResponse | `ApiResponse.template` |
-| Entity test | `EntityTest.template` |
-| Action test | `ActionTest.template` |
-| DTO test | `DTOTest.template` |
-| UseCase test | `UseCaseTest.template` |
-| EventHandler test | `EventHandlerTest.template` |
-| Controller test | `ControllerTest.template` |
+Template files are `templates/{Component}.template`. Load only those needed and remove unused files. `ApiResponse`, `BaseDTO`, and `RulesAttribute` are optional examples; they are not required for a DTO or HTTP endpoint. Follow the existing response envelope and validation mechanism.

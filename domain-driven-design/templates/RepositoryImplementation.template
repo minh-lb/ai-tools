@@ -23,11 +23,6 @@ class {Entity}RepositoryImpl implements {Entity}Repository
         );
     }
 
-    public function delete(string $id): void
-    {
-        {Entity}Model::query()->where('id', $id)->delete();
-    }
-
     private function toDomain({Entity}Model $model): {Entity}
     {
         return new {Entity}(

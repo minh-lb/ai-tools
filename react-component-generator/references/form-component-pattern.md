@@ -1,30 +1,38 @@
 # Form Component Pattern
 
-Use this reference when the component being generated collects user input and needs validation + submission (login form, settings form, search filters with validated fields, etc.). Not needed for a single uncontrolled input with no validation — plain `useState`/`controller.ts` is enough for that.
+Load when a component collects user input and has validation or submission behavior. Follow the target application's installed form, schema, request, localization, and test conventions. This is not a reason to introduce a new form library.
 
-## Default stack
+## Choose the implementation
 
-**React Hook Form + Zod** (via `@hookform/resolvers/zod`) is the default choice for new form components. Before generating, check `package.json` for an existing form library (Formik, `react-final-form`, `remix-validated-form`, etc.) — if the repo already has an established choice, follow it instead of introducing a second one.
+- Reuse an established form library and validation schema when the repository already uses one for comparable forms.
+- If none exists, use the project's native/standard form approach for the actual complexity. Ask before adding dependencies or establishing a new form stack.
+- Derive validation rules from approved product/API requirements. Do not invent required fields, format rules, length limits, or messages. Client validation supports usability; the server remains authoritative for validation, authorization, and data integrity.
 
-## File layout
+## Form behavior
 
-A form component always gets a `controller.ts` — form state (`useForm`) is a hook, so it never stays in `index.tsx`. Follow the standard controller conventions in `references/component-authoring-reference.md`: all form logic lives in `controller.ts`, `index.tsx` stays pure render/composition.
+- Give each control a persistent accessible label; placeholders are not labels.
+- Associate field errors with the corresponding controls and expose them in a way assistive technology can perceive. Provide a form-level message for submission/network failures when appropriate.
+- Preserve user input when a recoverable error occurs, and do not show success until the outcome is confirmed.
+- Prevent accidental duplicate submission when the operation is not safe to repeat; do not treat a disabled button as server-side idempotency.
+- Use project-owned localized copy and existing pending/error states.
 
-## controller.ts
+## Example: an established React Hook Form + Zod project
+
+Use this pattern only when those packages and conventions already exist and the actual contract calls for the shown schema. The sample copy is illustrative.
 
 ```ts
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 
+// Replace with rules and user-facing copy from the approved contract/product.
 const formSchema = z.object({
-  email: z.string().email("Enter a valid email address"),
-  password: z.string().min(8, "Password must be at least 8 characters"),
+  email: z.string(),
 });
 
 type FormValues = z.infer<typeof formSchema>;
 
-export const useController = () => {
+export const useFormController = () => {
   const {
     register,
     handleSubmit,
@@ -32,51 +40,12 @@ export const useController = () => {
   } = useForm<FormValues>({ resolver: zodResolver(formSchema) });
 
   const onSubmit = handleSubmit(async (values) => {
-    // Add real submit behavior here (API call, server action, etc.).
-    // Map backend field-level errors into the relevant form fields
-    // if the request can return them.
+    // Call the project's existing mutation/action. Map known field errors safely;
+    // show a generic approved message for unexpected server/network failures.
   });
 
   return { register, errors, isSubmitting, onSubmit };
 };
 ```
 
-## index.tsx
-
-```tsx
-"use client";
-
-import { useController } from "./controller";
-
-const LoginForm = () => {
-  const { register, errors, isSubmitting, onSubmit } = useController();
-
-  return (
-    <form onSubmit={onSubmit}>
-      <label htmlFor="email">Email</label>
-      <input id="email" type="email" {...register("email")} />
-      {errors.email && <span role="alert">{errors.email.message}</span>}
-
-      <label htmlFor="password">Password</label>
-      <input id="password" type="password" {...register("password")} />
-      {errors.password && <span role="alert">{errors.password.message}</span>}
-
-      <button type="submit" disabled={isSubmitting}>
-        {isSubmitting ? "Submitting..." : "Log in"}
-      </button>
-    </form>
-  );
-};
-
-export default LoginForm;
-```
-
-## Conventions specific to forms
-
-- Schema lives in `controller.ts` next to the hook that uses it. Only hoist it to a shared `schemas/` file when the same schema is genuinely reused by another component (not defensively).
-- Export the inferred type (`export type FormValues = z.infer<typeof formSchema>`) only if something outside `controller.ts` needs it — same "don't export by default" rule as `Props` (see `references/component-authoring-reference.md`).
-- Every input needs an associated `<label htmlFor>` — no placeholder-only labeling.
-- Render field errors next to their field, `role="alert"`, driven by `formState.errors.<field>`, not a single top-level error blob — this is what lets a screen reader announce the specific failing field.
-- Disable the submit control while `isSubmitting`; don't hand-roll a separate `isLoading` state next to it — React Hook Form already tracks this.
-- If the same submission handler needs to surface a server-side/network error (not a per-field validation error), track that separately (e.g. from the controller's async submit) and render it as a form-level alert above the fields — don't force it into `formState.errors`, which is reserved for schema/field validation.
-- Testing: query fields with `getByLabelText`, submit with `user.click(getByRole('button', { name: /submit/i }))`, and assert on the rendered error text — not on `formState` internals (test behavior, not implementation details).
+Render the fields using the project's existing input/error components where available. Test with the project's runner and user-facing queries. If the controller is mocked in a component test, keep separate integration coverage for the real request boundary when the flow's risk warrants it.

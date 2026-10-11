@@ -14,44 +14,13 @@ Before starting a merge, run `git status` and confirm no merge, rebase, cherry-p
 
 Use a task branch by default. Before making a code commit while currently on the repository's configured production branch (often `main` or `master`) or configured integration branch (often `develop`), stop and ask the user for explicit confirmation. If the user approves, a commit on that current branch is allowed; do not require checking out a new task branch. This confirmation does not override repository branch protection, authorization requirements, or separate push/merge policies. Prefer PR/MR for protected branches, and never bypass branch protection.
 
-Allowed branch patterns:
-
-```text
-feature/*     — new capabilities or behavior
-bugfix/*      — non-production defects
-hotfix/*      — urgent production fixes
-release/*     — release stabilization
-chore/*       — repository maintenance, config, non-behavioral updates, build tooling, dependency updates
-docs/*        — documentation-only changes
-ci/*          — CI pipeline and automation changes
-```
-
-Note: there is no `build/*` branch prefix. Commits with the `build` type (build tooling, dependency updates) belong on `chore/*` branches. Branch prefixes map to scope of work, not to commit types one-to-one.
+Common branch-name examples include `feature/*`, `bugfix/*`, `hotfix/*`, `release/*`, `chore/*`, `docs/*`, and `ci/*`. They illustrate GitFlow roles; follow the repository's actual naming policy and do not introduce or prohibit a prefix solely because it is absent from this list.
 
 Treat the repository's configured production and integration branches as sensitive workflow branches and use a task branch by default. If already on the configured production or integration branch (often `main`/`master` and `develop`, respectively), ask for explicit user confirmation before a code commit; once approved, stay on the current branch if that is what the user wants. Do not force a checkout solely to satisfy the default.
 
-## One task equals one branch
+## Keep branch scope reviewable
 
-Each branch should cover one business objective or one bug.
-
-Good examples:
-
-```text
-feature/user-authentication
-feature/payment-webhook
-bugfix/order-status-sync
-hotfix/payment-timeout
-chore/update-editorconfig
-docs/update-deployment-guide
-ci/add-integration-test-job
-```
-
-Bad examples:
-
-```text
-feature/multiple-changes
-feature/misc
-```
+When the repository workflow uses task branches, prefer one independently reviewable objective per branch. Avoid unrelated changes, but do not split tightly coupled work mechanically. Follow the repository's naming and branch-scope conventions.
 
 ## Keep changes small and reviewable
 
@@ -82,8 +51,8 @@ Do not use:
 
 To update a local base/release branch from its authoritative remote, use `git fetch <fetch-remote>` followed by `git merge --ff-only <fetch-remote>/<branch>`. If it cannot fast-forward, stop and inspect the divergence rather than creating an incidental merge commit. To synchronize a task or hotfix branch with its correct base, use `git fetch <fetch-remote>` followed by an ordinary merge:
 
-- For `feature/*`, `bugfix/*`, `chore/*`, `docs/*`, `ci/*`: merge from `<fetch-remote>/<integration-branch>`
-- For `hotfix/*`: merge from `<fetch-remote>/<production-branch>`
+- For ordinary task branches: merge from `<fetch-remote>/<integration-branch>`.
+- For hotfix-role branches: merge from `<fetch-remote>/<production-branch>`.
 
 If local work appears lost, use `git reflog` to recover commits before considering any reset.
 

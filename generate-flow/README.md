@@ -38,15 +38,16 @@ Source và file output phải nằm trong project root; không đọc `.env`, kh
 
 ## Khi nào nên dùng
 
-- Cần hiểu một feature trước khi sửa đổi
-- Onboarding engineer mới vào một flow đang có
-- Chuẩn bị test case dựa trên các nhánh quyết định và terminal thực tế
-- Tài liệu hóa một feature sau khi refactor lớn
+- User asks to trace/map a feature and create a maintained flow document
+- Tạo tài liệu onboarding cho flow hiện có
+- Tạo test-design documentation dựa trên các nhánh và terminal đã xác nhận trong code
+- Ghi lại thay đổi flow sau refactor khi user yêu cầu tài liệu hóa
 
 ## Khi nào nên bỏ qua
 
 - Debug lỗi mà không cần tạo tài liệu
 - Đang implement hoặc thay đổi hành vi code
+- Hỏi chung cách code hoạt động nhưng không yêu cầu flow document
 - Thiết kế kiến trúc spanning các service không có source trong directory tree này
 
 ## Cấu trúc file

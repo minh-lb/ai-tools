@@ -2,27 +2,23 @@
 
 uses(Tests\TestCase::class, Illuminate\Foundation\Testing\RefreshDatabase::class);
 
-beforeEach(function (): void {
-    // Required: Request::authorize() returns $this->user() !== null by default.
-    $this->actingAs(\App\Models\User::factory()->create());
-});
-
-test('{name} returns created response for valid payload', function (): void {
+test('{name} returns the approved response for a valid request', function (): void {
+    // Authenticate/authorize according to this endpoint's actual access policy.
     $response = $this->postJson('{api_route}', [
-        // Add fields matching {Name}DTO rules.
+        // Add a valid payload matching the request contract.
     ]);
 
-    $response
-        ->assertCreated()
-        ->assertJsonStructure(['success', 'code', 'message', 'data'])
-        ->assertJsonPath('success', true)
-        ->assertJsonPath('code', '{MODULE}.{ACTION}_SUCCESS');
+    $response->assertStatus({success_status});
+    // Assert only response fields defined by the existing API contract.
+    // Add persistence/event assertions when those effects are part of this request.
 });
 
-test('{name} rejects missing required fields', function (): void {
-    $response = $this->postJson('{api_route}', []);
+test('{name} rejects invalid input according to the request contract', function (): void {
+    // Authenticate as needed so this assertion tests validation, not an auth failure.
+    $response = $this->postJson('{api_route}', [
+        // Omit or invalidate a field that the approved contract requires.
+    ]);
 
-    $response
-        ->assertUnprocessable()
-        ->assertJsonPath('success', false);
+    $response->assertStatus({validation_status});
+    // Assert the project's actual validation-error response shape.
 });

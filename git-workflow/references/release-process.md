@@ -17,21 +17,7 @@ git push <push-remote> release/v1.5.0
 
 ## Tag format
 
-Use semantic versioning with a `v` prefix:
-
-```text
-v<major>.<minor>.<patch>
-```
-
-Examples:
-
-```text
-v1.5.0   — planned release
-v1.5.1   — hotfix patch on top of a release
-v2.0.0   — breaking or major milestone
-```
-
-Do not use formats like `release-1.5.0` or `1.5.0` without the `v` prefix unless the repository already follows a different convention.
+Follow the repository's existing version and tag convention. Semantic versioning with a `v` prefix is one common pattern, not a requirement; do not rename tags or introduce a new scheme without an explicit project decision.
 
 ## What is allowed on a release branch
 

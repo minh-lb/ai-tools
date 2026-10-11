@@ -17,13 +17,13 @@ Use this skill for any of these task types. The host may auto-load it based on i
 
 - **Commit**: commit, amend, validate or review a commit message, prepare a squash message, split staged changes
 - **Branch**: create, name, sync, or validate a branch
-- **PR / merge**: open a PR, prepare a squash title, choose a merge mode, review merge readiness
+- **PR / merge**: open a PR/MR, follow local title/merge conventions, review merge readiness
 - **Release**: cut, stabilize, finalize, or roll back a release
 - **Conflict**: resolve a merge conflict
 - **Worktree**: create, list, or remove a worktree
 
 For commit tasks, load `references/commit-convention.md` before acting.
-For PR/MR creation or title tasks, load `references/merge-strategy.md` and use `templates/pull-request-template.md` for the description. Before creating, ask the description language, default the title to English, and show a complete preview for user approval. Prefer MCP when an appropriate tool is available; otherwise use authenticated `gh` or `glab`. Load `references/commit-convention.md` when preparing a squash commit message.
+For PR/MR creation or title tasks, load `references/merge-strategy.md` and use the repository's PR/MR template when one exists. Follow the user's language preference and local title convention; show a complete preview and obtain approval before external creation or an unapproved push. Prefer a suitable authenticated MCP tool; otherwise use an authenticated `gh` or `glab` with explicit source and target projects. Load `references/commit-convention.md` when preparing a squash message.
 
 ## When Not To Use
 
@@ -50,20 +50,15 @@ This skill covers Git workflow mechanics only. The following topics are outside 
 
 ## Output Rules
 
-These rules apply to every Git action taken under this skill:
+These rules apply to Git actions under this GitFlow-oriented skill; first confirm the repository actually uses this workflow.
 
-1. Never treat `git commit` as a raw shell action. Always validate branch suitability, staged diff scope, and commit intent first.
-2. Reject vague commit messages such as `fix: bug fix`, `chore: update`, `wip`, or messages missing scope. This workflow requires `<type>(<scope>): <summary>`.
-3. `scope` is mandatory for normal commits. Choose a stable subsystem, domain, or tooling boundary from the diff.
-4. If staged changes span unrelated scopes or intents, stop and split into multiple commits instead of using a vague or catch-all scope.
-5. Before committing, verify the commit message matches the real intent of the diff and that no debug artifacts, secrets, or unintended files are staged.
-6. Never add any `Co-authored-by` or co-author attribution line — not in the body, not in the footer, not in squash messages.
-7. Use a task branch by default. Before making a code commit on the repository's production branch (commonly `main` or `master`) or integration branch (commonly `develop`), ask the user for explicit confirmation. If approved, committing on the current branch is allowed; do not force a checkout to a new task branch. Confirmation does not bypass branch protection or separate push/merge policies. For release/hotfix integration merges, also follow the branch/release references and repository policy.
-8. Never use `git push --force`, `git push -f`, or `git push --force-with-lease`. Keep remote history forward-moving.
-9. Before any push, enumerate all effective destinations with `git remote get-url --push --all <push-remote>` and require exactly one approved destination. If the command fails, returns no destination, or returns multiple destinations, stop; recheck the same destination immediately before pushing. This applies to direct pushes and PR/MR source-branch preparation — see `references/principles.md`.
-10. Never use `git rebase`, `git rebase -i`, `git rebase --continue`, `git rebase --abort`, or `git reset --hard`. Use merge-based updates instead.
-11. If the task is a merge continuation and Git provides a merge commit template, keep the merge flow consistent with `references/merge-strategy.md` instead of forcing a normal conventional summary line. If the merge had actual conflicts, append a `Conflicts resolved in:` list (file + how it was resolved) to the commit body — see `references/conflict-resolution.md`.
-12. Never run `git clean -f`/`-fd`/`-fx`, `git checkout -- <path>`, or `git restore <path>` (without `--staged`) on uncommitted or untracked work without explicit user approval. Never use `git worktree remove --force` to discard a dirty worktree, even with approval; preserve the changes and remove it normally once clean. Consider `--force` only for a confirmed-clean worktree if Git still requires it, after checking `git status` and getting explicit user confirmation (see `references/principles.md`).
+1. Before committing, inspect branch suitability, staged diff scope, and intent. Follow the repository's message format and history; do not impose a scope, syntax, or length rule the project does not use.
+2. Split unrelated staged work only when staging intent is clear; otherwise ask before changing the staged set.
+3. Use a task branch by default. Before creating a code commit on the repository's verified production or integration branch, ask for explicit confirmation. Confirmation does not bypass branch protection or separate push/merge policies.
+4. Never force-push. Before any push, enumerate effective destinations with `git remote get-url --push --all <push-remote>` and require exactly one approved destination; stop on failure, none, or multiple. Recheck immediately before pushing. This also applies to source-branch preparation for PR/MR creation; see `references/principles.md`.
+5. Follow this skill's merge-based update policy and do not run history-rewriting operations or `git reset --hard`. If the user's requested operation conflicts with repository policy, stop and clarify.
+6. For merge continuations, use the repository's merge-message convention. When actual conflicts were resolved, record the affected files and resolution in the commit body if the project requires it; see `references/conflict-resolution.md`.
+7. Do not discard uncommitted/untracked work with `git clean`, `git checkout -- <path>`, `git restore <path>` (without `--staged`), or forced worktree removal without the required explicit approval and safety checks. Never use `git worktree remove --force` to discard a dirty worktree.
 
 ## Commit Task Contract
 
@@ -77,8 +72,8 @@ When asked to commit, follow this order exactly:
    - Otherwise → infer from the user's request. When intent is unclear, ask before staging.
 4. Inspect the final staged diff.
 5. Decide whether the staged work is one logical commit or must be split.
-6. Choose the correct `type` and `scope` from the actual diff — not from the user's shorthand wording alone.
-7. Draft the final commit message in the required format and validate it against the staged intent.
+6. Follow the repository's documented type/message convention; do not invent a scope if none is required.
+7. Draft the final commit message and validate it against the staged intent.
 8. Run relevant project checks (tests, linter) when feasible, or explicitly state which checks were skipped.
 9. Execute `git commit` with the validated message.
 
@@ -92,9 +87,9 @@ Load only the references needed for the current task. Always start with `purpose
 |------|-----------|
 | Understand scope and assumptions | [purpose.md](references/purpose.md) |
 | Baseline rules (always apply) | [principles.md](references/principles.md) |
-| Commit message, type, scope, split | [commit-convention.md](references/commit-convention.md) |
+| Commit message, intent, and split | [commit-convention.md](references/commit-convention.md) |
 | Branch create, name, sync, hotfix flow | [branch-strategy.md](references/branch-strategy.md) |
-| PR readiness, squash title, merge mode | [merge-strategy.md](references/merge-strategy.md) |
+| PR readiness, title, and merge mode | [merge-strategy.md](references/merge-strategy.md) |
 | Parallel work, worktree isolation | [worktree-usage.md](references/worktree-usage.md) |
 | Merge conflict resolution | [conflict-resolution.md](references/conflict-resolution.md) |
 | Release cut, stabilize, finalize, rollback | [release-process.md](references/release-process.md) |

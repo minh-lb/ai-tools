@@ -14,15 +14,7 @@ git merge --ff-only <fetch-remote>/develop
 git checkout -b feature/new-feature
 ```
 
-Use:
-
-- `feature/*` for new capabilities
-- `bugfix/*` for non-production defects
-- `hotfix/*` for urgent production fixes
-- `release/*` for release stabilization
-- `chore/*` for maintenance and non-behavioral updates
-- `docs/*` for documentation-only changes
-- `ci/*` for CI pipeline and automation changes
+Use the repository's branch naming and role conventions. Common examples are `feature/*` for new capabilities, `bugfix/*` for non-production defects, `hotfix/*` for production fixes, `release/*` for stabilization, and `chore/*` / `docs/*` / `ci/*` for maintenance. Treat these prefixes as examples unless the repository requires them.
 
 ## Keep branches up to date
 

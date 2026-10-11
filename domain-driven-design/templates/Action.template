@@ -14,14 +14,15 @@ class {Action}Action
     public function execute(
         string $id,
         // Add one parameter per domain primitive or Value Object needed for the operation.
-        // CREATE flow: remove $id and generate it inside the action via Str::uuid()->toString().
+        // Adapt for a create flow: use the project's approved ID generator or an injected
+        // boundary; keep Laravel/framework APIs out of the domain layer.
     ): {Entity} {
-        // CREATE flow: $entity = new {Entity}(id: \Illuminate\Support\Str::uuid()->toString(), ...primitives);
-        // UPDATE/DELETE flow: $entity = $this->repository->find($id);
+        // Adapt creation/loading to the real operation and its domain invariants.
         $entity = $this->repository->find($id);
 
         // Core business rules and state transitions live here.
-        // Record domain events on the Entity when cross-module side effects are required.
+        // If the operation produces a domain event, return it using the project's
+        // established immutable result/outcome convention; do not mutate shared entity state.
 
         $this->repository->save($entity);
 

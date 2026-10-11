@@ -1,159 +1,65 @@
-# CC Team
+# Team Mini
 
-Skill boot một agent team gồm Claude Code (Leader) và Codex (Worker). Một lần gọi — team tự chạy toàn bộ workflow đến khi xong, không cần can thiệp thủ công từng bước.
+Boot a coordinated Claude Code/Codex team and wait for the user to provide a task. Booting alone does not start work. Use this only when the user explicitly asks for team coordination; ordinary complex coding tasks do not automatically require a team.
 
----
-
-## Cách invoke
+## Usage
 
 ```text
 /team-mini
+→ Team ready. Send the task when ready.
+
+<task and relevant requirements>
 ```
 
-Boot team trước. Sau khi team báo sẵn sàng, mới cung cấp task:
+The host's actual tools determine which roles can start. The skill must report unavailable Codex, team, messaging, or review capabilities accurately and must not claim a persistent team or independent review that did not run.
 
-```text
-/team-mini
-→ CC Team booted. Provide your task to begin.
+## Roles
 
-Thêm JWT authentication vào API. Dùng access token 15 phút + refresh token 7 ngày.
-```
-
----
-
-## Team được tạo ra gồm gì
-
-| Agent | Tạo bằng | Vai trò | Khi nào |
-|---|---|---|---|
-| **Leader** | `TeamCreate` (Claude agent) | Đọc spec, plan, chia slice, review diff | Luôn luôn — tạo khi boot |
-| **Reviewer** | `TeamCreate` (Claude agent) | Review độc lập, đánh giá kết quả Codex | Chỉ khi risk Medium/High — tạo khi nhận task |
-| **Coder** | Codex (`/codex:rescue`) | Implement, fix bug, chạy validation | On-demand — Leader invoke mỗi slice |
-| **Review lanes** | Codex (`/codex:review`, `/codex:adversarial-review`) | Review code tự động | On-demand — Leader invoke khi điều kiện thỏa |
-
----
+| Role | Responsibility |
+|---|---|
+| Leader | Coordinates scope, acceptance, handoffs, integration, and final review; does not implement while a Coder is assigned. |
+| Coder | Implements one bounded assignment, uses Codex only if an adapter is confirmed available/authorized, otherwise reports or uses a safe agreed fallback. |
+| Independent reviewer | Optional review pass through an available authorized tool; not a persistent team member by default. |
 
 ## Workflow
 
-```
-Phase 1 — Boot
-/team-mini
-    ↓
-TeamCreate → Leader agent
-    ↓
-"CC Team booted. Provide your task."
-    ↓
-[chờ user cung cấp task]
-
-Phase 2 — Execute (sau khi user gửi task)
-    ↓
-Leader classify risk → tạo Reviewer nếu Medium/High
-    ↓
-Kickoff gate: trình plan cho user
-  (High risk → chờ approval; Low/Medium → tự chạy)
-    ↓
-Loop mỗi slice — tự động, không dừng hỏi:
-  → /codex:rescue → inspect diff → verify checklist
-  → nếu fail: retry 1 lần → nếu fail tiếp: escalate user
-  → nếu cần review: /codex:review hoặc /codex:adversarial-review
-    ↓
-Final diff review bởi Leader
-    ↓
-Report kết quả cho user
+```text
+Boot → report actual capabilities → wait for task
+  → clarify material unknowns and identify acceptance evidence
+  → plan bounded work when useful; pause at required consent gates
+  → implement and validate through available authorized tools
+  → inspect the diff; request independent review only when available and useful
+  → report exact changes, checks, and remaining risk
 ```
 
----
+Continue routine slices without unnecessary interruptions, but pause when requirements conflict, a material design choice is unresolved, validation cannot establish safety, or an external/destructive/irreversible action needs approval. No task automatically authorizes a commit, push, PR/MR, deployment, or other external side effect.
 
-## Khi nào review lane được kích hoạt tự động
-
-**`/codex:review`** — khi:
-- thay đổi span nhiều file
-- cần independent bug/regression pass
-- user yêu cầu review
-
-**`/codex:adversarial-review`** — khi:
-- auth, permissions, secrets
-- tiền, billing, quotas, destructive actions
-- migration, data integrity, rollback
-- deployment, external side effects
-- cycle trước bất ổn hoặc không khớp spec
-
----
-
-## Khi nào team dừng và hỏi user
-
-Team **không tự quyết** khi gặp:
-
-- Spec quá mơ hồ để chia slice an toàn
-- Thay đổi destructive / irreversible chưa được approve
-- Codex không thể validate path nguy hiểm
-- Review liên tục thấy vấn đề design, không phải implementation
-- Command surface không available và không có fallback an toàn
-
----
-
-## Ví dụ sử dụng
-
-> Luôn boot trước (`/team-mini`), task gửi sau khi team báo sẵn sàng.
-
-### Feature mới
+## Examples
 
 ```text
 /team-mini
-→ CC Team booted. Provide your task to begin.
 
-Thêm JWT authentication vào API. Dùng access token 15 phút + refresh token 7 ngày.
-Xem spec tại docs/auth-spec.md.
+Please coordinate a small team to review and implement the checkout retry fix. Preserve the API contract, run the relevant tests, and do not commit or push.
 ```
-
-### Bug fix phức tạp
 
 ```text
 /team-mini
-→ CC Team booted. Provide your task to begin.
 
-Fix race condition trong StockService::deduct() — inventory đang về âm khi flash sale.
+Coordinate a migration plan for the invoice data. Do not run the migration or change production data; show the plan and risks first.
 ```
 
-### Refactor đa file
+Use the requested project/model/tools only when available and permitted. Do not copy example constraints into real work.
 
-```text
-/team-mini
-→ CC Team booted. Provide your task to begin.
+## When not to use
 
-Refactor module thanh toán để tách PaymentService thành PaymentGateway + PaymentProcessor.
-Giữ nguyên interface hiện tại, không breaking change.
-```
+- The user has not requested multi-agent coordination.
+- A small task is better handled directly.
+- The required team/subagent capability is unavailable; explain this and ask whether single-agent work is acceptable.
 
-### Migration
+## Files
 
-```text
-/team-mini
-→ CC Team booted. Provide your task to begin.
-
-Viết và chạy migration thêm soft delete cho bảng invoices.
-Đảm bảo backward compatible với các query hiện có.
-```
-
----
-
-## Không dùng skill này khi
-
-- Task đơn giản, một file, chỉ cần Claude làm trực tiếp
-- Bạn muốn kiểm soát từng bước thủ công — dùng `agent-team` thay thế
-- Codex CLI chưa được cài hoặc `/codex:rescue` không available
-
----
-
-## Cấu trúc file
-
-```
-team-mini/
-├── SKILL.md               # Boot sequence và runtime config
-├── README.md              # File này
-├── agents/
-│   └── openai.yaml        # Interface definition
-└── references/
-    ├── leader.md          # System prompt cho Leader agent
-    ├── coder.md           # Codex context — pass vào mỗi /codex:rescue
-    └── reviewer.md        # Context cho review lanes
-```
+- `SKILL.md` — activation, boot, workflow, and safety boundaries.
+- `references/leader.md` — coordinator responsibilities and handoff process.
+- `references/coder.md` — bounded implementation and capability fallback.
+- `references/reviewer.md` — optional independent review contract; load only when used.
+- `agents/openai.yaml` — discovery metadata.

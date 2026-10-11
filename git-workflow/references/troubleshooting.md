@@ -104,13 +104,13 @@ git reset HEAD <file>
 
 ## Golden Rules
 
-1. One task equals one branch.
-2. One branch should usually map to one worktree.
-3. Sync branches forward with merge; do not use rebase.
-4. Keep commits small and named clearly.
+1. Keep branch scope reviewable and follow the repository's branch model.
+2. Use a separate worktree when it materially helps isolate parallel work; do not require one per branch.
+3. Follow the repository's permitted synchronization strategy; this GitFlow workflow uses merge-based updates.
+4. Keep commits focused and understandable using the repository's message convention.
 5. Never commit secrets.
-6. Always review AI-generated code critically.
-7. Run tests before opening a PR.
-8. Keep history clean and intentional.
-9. Prefer squash merge unless there is a clear reason not to.
-10. Remove unused worktrees; do not delete branches unless an explicit archival policy requires it.
+6. Review AI-generated changes critically.
+7. Run relevant, safe checks before opening a PR.
+8. Keep history traceable and intentional.
+9. Follow the repository's configured merge policy; preserve ancestry when release/hotfix verification requires it.
+10. Remove unused worktrees safely; do not delete branches unless repository policy and user intent support it.

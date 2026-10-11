@@ -1,30 +1,31 @@
 <?php declare(strict_types=1);
 
-use Illuminate\Cache\ArrayStore;
-use Illuminate\Cache\Repository as CacheRepository;
 use Modules\{Module}\Application\DTOs\{Name}DTO;
 use Modules\{Module}\Application\EventHandlers\{EventName}Handler;
 use Modules\{Module}\Application\UseCases\{Name}UseCase;
 use Modules\{SourceModule}\Domain\Events\{EventName};
 
-uses(Tests\TestCase::class); // ensures Mockery teardown after each test
+uses(Tests\TestCase::class);
 
-test('{event} handler processes event on first delivery', function (): void {
-    $event = new {EventName}(entityId: 'test-uuid');
-    $cache = new CacheRepository(new ArrayStore());
+test('{event_name} maps the stable event to the application flow', function (): void {
     $useCase = Mockery::mock({Name}UseCase::class);
-    $useCase->shouldReceive('handle')->once()->with(Mockery::type({Name}DTO::class));
+    $useCase->shouldReceive('handle')
+        ->once()
+        ->with(Mockery::on(
+            fn ({Name}DTO $dto): bool => $dto->id === 'entity-123',
+        ));
 
-    (new {EventName}Handler($useCase, $cache))->handle($event);
+    $handler = new {EventName}Handler($useCase);
+    $handler->handle(new {EventName}(
+        eventId: 'event-123',
+        occurredAt: new DateTimeImmutable('2025-01-01T00:00:00+00:00'),
+        entityId: 'entity-123',
+    ));
 });
 
-test('{event} handler skips duplicate delivery of same event', function (): void {
-    $event = new {EventName}(entityId: 'test-uuid');
-    $cache = new CacheRepository(new ArrayStore());
-    $useCase = Mockery::mock({Name}UseCase::class);
-    $useCase->shouldReceive('handle')->once(); // called once despite two deliveries
-
-    $handler = new {EventName}Handler($useCase, $cache);
-    $handler->handle($event);
-    $handler->handle($event); // same eventId → idempotency guard blocks second call
-});
+// If processing needs idempotency, add tests against the actual durable mechanism:
+// - successful first delivery is processed once;
+// - redelivery after success does not repeat the protected side effect;
+// - a failed attempt remains retryable and is not falsely marked complete;
+// - concurrent deliveries cannot both perform a non-idempotent effect.
+// Do not substitute a cache-only unit mock for database/transport guarantees.

@@ -1,9 +1,9 @@
 ---
 title: "<Feature name> — E2E Test Cases"
 type: testcase
-feature_id: "<Stable feature ID>"
-display_language: "" # en | vi
-status: draft # draft | review | approved
+feature_id: "<Existing feature ID if available>"
+display_language: "<User/project language>"
+status: draft # Use the repository's testcase lifecycle if established.
 updated: YYYY-MM-DD
 sources: [] # approved specs, AC, versioned designs/contracts, BR/E/EC
 ---
@@ -25,7 +25,7 @@ sources: [] # approved specs, AC, versioned designs/contracts, BR/E/EC
 ## E2E scenarios
 <!-- Use structured lists, not a Markdown testcase table. One user/business goal per deterministic case. Use separate Preconditions and Test data fields. Make User actions executable without guessing: start with an approved URL/route or app deep link, specify navigation targets, control labels, exact values, submit actions, and resulting screens/URLs. Include sign-in steps when auth is in scope; otherwise state the authenticated session in Preconditions. Do not invent routes or controls, and never put credentials/session tokens in this file. -->
 
-### TC-001 — <User goal / scenario>
+### <case-id> — <User goal / scenario>
 - **Preconditions:** <actor/session, permissions, required initial state, setup>
 - **Test data:** <concrete inputs, fixture IDs, approved credential-store reference if needed; never the secret itself>
 - **User actions:**
@@ -46,7 +46,7 @@ sources: [] # approved specs, AC, versioned designs/contracts, BR/E/EC
 ## Exploratory charters (optional; separate from deterministic pass/fail cases)
 <!-- A charter has an observation goal, not an expected result. Never assign it a pass/fail result. -->
 
-### XC-001 — <Charter objective>
+### <charter-id> — <Charter objective>
 - **Observation focus:** <...>
 - **Scope, data and setup:** <...>
 - **Timebox / safety / cleanup:** <...>
@@ -55,16 +55,16 @@ sources: [] # approved specs, AC, versioned designs/contracts, BR/E/EC
 ## Exploratory run notes (optional; include only after charter execution)
 <!-- Record observations and follow-ups, not pass/fail. Convert findings into defects or deterministic E2E cases with approved oracles. -->
 
-### Run notes — XC-001
+### Run notes — <charter-id>
 - **Date / tester / environment:** <...>
 - **Timebox:** <...>
 - **Observations / anomalies / evidence:** <...>
 - **Follow-up defects or E2E case IDs:** <...>
 
 ## Execution records (optional; deterministic E2E cases only)
-### Run <run-ID> — TC-001
+### Run <run-ID> — <case-id>
 - **Date / tester:** <...>
 - **Build / environment:** <...>
-- **Result:** <not-run | passed | failed | blocked | not-applicable | inconclusive>
+- **Result:** <Use the repository's approved execution-result values>
 - **Actual result / redacted evidence:** <...>
 - **Defect / follow-up:** <...>

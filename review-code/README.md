@@ -1,6 +1,6 @@
 # `@review-code` — Hướng dẫn sử dụng
 
-`@review-code` là skill code review cho **backend và browser-based web frontend**. Skill chỉ chạy khi bạn gọi rõ ràng; không tự kích hoạt khi bạn chỉ yêu cầu sửa lỗi hoặc viết code.
+`@review-code` là skill code review cho **backend và browser-based web frontend**. Skill dùng khi bạn yêu cầu review code/PR/diff hoặc audit codebase (qua `/review-code` hoặc mô tả tự nhiên nếu host hỗ trợ auto-loading); không tự kích hoạt chỉ vì bạn yêu cầu sửa lỗi hoặc viết code.
 
 Phạm vi frontend gồm web app đa trang, SPA, SSR/SSG và các mô hình hybrid; áp dụng cho React, Vue, Angular và framework web tương tự. Bao gồm responsive web UI, forms, routing, client state, accessibility, browser security và performance. **Native mobile/desktop UI không nằm trong phạm vi hiện tại.**
 

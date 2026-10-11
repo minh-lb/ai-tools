@@ -6,13 +6,11 @@ use DateTimeImmutable;
 
 final class {EventName}
 {
-    public readonly string $eventId;
-    public readonly DateTimeImmutable $occurredAt;
-
     public function __construct(
+        // Stable for this logical event across serialization, retries, and redelivery.
+        // Generate once at the producer boundary and preserve it when reconstructing the event.
+        public readonly string $eventId,
+        public readonly DateTimeImmutable $occurredAt,
         public readonly string $entityId,
-    ) {
-        $this->eventId = bin2hex(random_bytes(16));
-        $this->occurredAt = new DateTimeImmutable();
-    }
+    ) {}
 }

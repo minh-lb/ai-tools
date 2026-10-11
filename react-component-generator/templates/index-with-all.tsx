@@ -9,12 +9,9 @@ import { useController } from "./controller";
 import styles from "./style.module.css";
 
 const ComponentName = () => {
-  // Replace _controller with actual destructured values: const { value, handleAction } = useController();
-  const _controller = useController();
+  const { value } = useController();
 
-  return (
-    <div className={styles.container}>ComponentName</div>
-  );
+  return <div className={styles.container}>{value}</div>;
 };
 
 export default ComponentName;

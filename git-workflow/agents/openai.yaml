@@ -1,4 +1,4 @@
 interface:
   display_name: "Git Workflow"
-  short_description: "Enforce GitFlow conventions — auto-activates on commit, branch, PR, merge, release, conflict, or worktree tasks"
-  default_prompt: "Use $git-workflow to inspect the current Git state, load the right workflow reference, and enforce the repository commit and branch conventions before taking action."
+  short_description: "Handle GitFlow-oriented Git tasks using verified repository policy"
+  default_prompt: "Use $git-workflow only after confirming the repository uses GitFlow-style branch roles. Inspect current Git state, follow the repository's message/branch/PR conventions, and preserve safety gates before external actions."

@@ -1,74 +1,46 @@
 ---
 name: react-component-generator
-description: Use when the user asks to create or refactor a small-to-medium React component or UI block, for this repository's `components/**` layout.
+description: Create, refactor, or improve a React component or UI block. Use when the requested work is component-level; inspect the target repository and follow its placement, styling, state, testing, and accessibility conventions rather than imposing a new stack.
 metadata:
   author: Minh Luu
 ---
 
 # React Component Generator
 
-Generate component files that match current repository conventions.
-
-## Decision Autonomy
-
-- Make autonomous decisions by default while executing this skill.
-- Ask the user only when required context is missing and assumptions could cause incorrect or risky changes.
-
-## References
-
-Load each only when its trigger condition applies — don't front-load all of them.
-
-| File | Load when | For |
-|---|---|---|
-| `references/component-authoring-reference.md` | naming/import/testing conventions needed | naming, props/controller shape, imports, testing conventions + quick examples |
-| `references/props-controller-pattern.md` | component has both props and a controller | the mandatory props-forwarding wiring for this combination — not just for complex cases |
-| `references/props-design.md` | component has ~5+ props, you're considering grouping props into an object, or the prop list exceeds ~7 | prop-count review signals, grouping/composition/union-type guidance, required pre-finish checks |
-| `references/form-component-pattern.md` | component collects user input and needs validation + submission | React Hook Form + Zod wiring in `controller.ts`, field-error rendering, testing conventions for forms |
-| `references/server-client-boundary-pattern.md` | RSC-enabled repo AND the component needs both server-side data fetching and client-side interactivity | splitting into a Server Component (data) + sibling Client Component (interactivity), instead of one file with `'use client'` |
-| `references/component-delivery-checklist.md` | final self-check / delivery reporting | self-check gates beyond this file's own workflow |
-| `agents/openai.yaml` | provider-specific, not loaded by default | OpenAI agent adapter config |
+Build or refactor a component that meets the requested behavior and fits the target repository. Templates and references are examples; adapt them to the codebase rather than treating their file layout or libraries as mandatory.
 
 ## Scope
 
-Use this skill for component-level create/refactor tasks.
-Do not use for route architecture or repo-wide setup work.
+Use for component-level React work. Do not use it to redesign route architecture, bootstrap a repository, or add a UI framework. If the repository's component architecture is unclear and the choice would materially affect other code, ask before expanding scope.
 
-## Cross-Skill Rules
+## References
 
-- Server/client boundary: applies only in repos that use React Server Components (Next.js App Router or another RSC-compiling framework — see the `app/`/`next.config.*`/existing-directive detection in step 1). In those repos, default a new file to Server Component; add `'use client'` only when the file needs state, effects, refs, browser APIs, or event handlers. In non-RSC repos (Vite, CRA, plain SPA), never add `'use client'` — it's a no-op string literal there, not a real directive, and its presence would be misleading. If the component needs both server-side data fetching and client-side interactivity, don't put `'use client'` on the whole file — see `references/server-client-boundary-pattern.md` for the split.
-- Follow this skill's `index.tsx`/`controller.ts`/`style.module.css` layout and the local React/TypeScript conventions in `references/component-authoring-reference.md`: avoid `React.FC` and `IProps`, handle loading/errors explicitly, and use an Error Boundary when a hook can throw during render. Match the target repo's established conventions when they differ.
-- For performance-sensitive components, investigate measured bottlenecks and the target repo's established patterns before adding memoization, dynamic imports, or other optimizations; preserve this skill's file layout.
+Load only the reference that answers a current question:
 
-## Execution workflow
+| File | Load when |
+|---|---|
+| `references/component-authoring-reference.md` | Local React/TypeScript, naming, import, state, or test conventions need clarification. |
+| `references/props-design.md` | The component API is difficult to understand, combines unrelated concerns, or repeats correlated prop groups. |
+| `references/props-controller-pattern.md` | The repository uses a controller hook and this component has both props and controller logic. |
+| `references/form-component-pattern.md` | A form needs validation/submission guidance; adapt to the installed form stack and approved field rules. |
+| `references/server-client-boundary-pattern.md` | An RSC-enabled component needs both server-only data access and client interaction. |
+| `references/component-delivery-checklist.md` | Final self-check or delivery reporting needs more detail. |
 
-1. Collect minimal input:
-- component name and responsibility (infer when safe).
-- environment facts that change codegen decisions: React major version (`package.json`), whether the React Compiler is enabled (`babel-plugin-react-compiler` dependency or `experimental.reactCompiler`/framework config), the test runner (Vitest vs Jest, from `package.json`/`vitest.config.*`/`jest.config.*`), whether the repo uses React Server Components (Next.js `app/` directory, `next.config.*`, or `'use client'`/`'use server'` already present in nearby files) — this decides whether the Server/Client boundary rule below applies at all — and the repo's actual styling approach (Tailwind config, `styled-components`/`emotion`/`@vanilla-extract` in `package.json`, or existing `*.module.css` files in nearby components) — this decides the primitive/styling gate in step 4. Infer from repo files; don't ask the user unless genuinely ambiguous.
+## Workflow
 
-2. Resolve folder:
-- place every component under `components/**` (new folder: `components/<kebab-case-name>/`). Do not place components under `containers/**`.
+1. **Inspect the local pattern.** Read project instructions and a nearby component. Check the supported React version, rendering model (including whether RSC is actually used), styling approach, test runner, and installed component/form/testing packages. Infer from repository files; do not ask about facts available locally.
+2. **Clarify only material behavior.** Identify the component's responsibility, inputs, user actions, owned states, error/recovery behavior, accessibility needs, and data boundaries. Use stated product/API rules; do not invent validation limits, user-facing messages, or authorization behavior.
+3. **Choose placement and files from the repository.** Preserve a component's current location in a refactor unless a move is requested. For a new component, match neighboring components. A folder such as `components/<name>/index.tsx` is only a fallback when no project convention is evident. Use the supplied `index.tsx`, `controller.ts`, CSS-module, and test templates only when they fit the target structure; do not force those filenames or create unused files.
+4. **Keep the design proportional.** Keep a component cohesive and its public API understandable. Derive values where appropriate; group props only when they form a meaningful unit. Split by responsibility, ownership, or rendering boundary when that improves comprehension or reuse—not by an arbitrary prop or line count. A controller/custom hook is optional and should follow established project practice; do not move every hook or calculation into a separate file by default.
+5. **Respect rendering and styling boundaries.** In an RSC project, add `'use client'` only to a module that needs client capabilities. Keep server-only access and secrets out of the client module graph. Split server data access from client interaction when necessary to preserve that boundary, while avoiding components created solely to satisfy a template. Use the existing styling system. If none exists, prefer an available native/minimal approach; do not add Tailwind, CSS-in-JS, or another styling dependency without a user/project decision.
+6. **Handle forms safely.** Use the project's installed form and schema libraries when they fit. If none exists, use the repository's established native approach or ask before adding dependencies. Derive client validation and messages from approved requirements/contracts; retain server-side validation and authorization. Label controls, associate errors, preserve user input on recoverable errors, and represent pending/success/failure states accurately.
+7. **Test with the existing setup.** Use the repository's runner and match nearby test patterns. Cover relevant visible behavior, interactions, accessible controls, and owned loading/error/empty states. Do not install test packages or bootstrap a new test stack without approval. If the project has no applicable test setup, report that gap and ask whether adding one is in scope rather than generating a test that cannot run.
+8. **Verify and report.** Run targeted checks that are safe and available; inspect the final diff, imports, placeholders, and behavior. State exact commands/results and any unverified browser or assistive-technology behavior. Do not commit unless asked.
 
-3. Decide files and choose the matching template:
-- No controller, no CSS module → `templates/index.tsx`
-- No controller, WITH CSS module → `templates/index.tsx` + `templates/style.module.css`
-- With controller, no CSS module → `templates/index-with-controller.tsx` + `templates/controller.ts`
-- With controller AND CSS module → `templates/index-with-all.tsx` + `templates/controller.ts` + `templates/style.module.css`
-- Always create/update a test file for new components, named `index.test.tsx` by default — but if nearby components already use `index.spec.tsx`, match that suffix instead.
-- Add `controller.ts` only when the component uses hooks (`useState`, `useEffect`, `useContext`, `useQuery`, `useMutation`, or any custom hook). Omit for purely presentational components.
-- Add `style.module.css` only when step 4's styling gate resolves to CSS Modules.
-- If the repo's detected styling approach is CSS-in-JS (`styled-components`, `emotion`, `@vanilla-extract`) instead of Tailwind/CSS Modules: this skill has no template for it. Skip `templates/style.module.css` entirely and author the style file(s) by hand, following the exact pattern of 1-2 nearby components (file naming, styled-component structure, import placement).
-- If the component has both props and a controller, start from the controller template above and add the `Props` type + forwarding wiring per `references/props-controller-pattern.md` — neither controller template includes props by default.
+## Cross-cutting safeguards
 
-4. Apply primitive/styling gate:
-- Match the repo's actual styling approach detected in step 1. If the repo already has an established approach (Tailwind, `styled-components`, `emotion`, CSS Modules, etc.), use that — do not override it.
-- `templates/style.module.css` only applies to the Tailwind/CSS-Modules case above; CSS-in-JS repos don't use it (see step 3).
-- Only when the repo has no established styling approach yet (greenfield component, no prior signal), default to Tailwind CSS first, CSS Module only when Tailwind is insufficient.
-
-5. Split when too large (one component per file; consider splitting at >~200-300 lines or when render logic is complex):
-- Small sub-component used only by this component → keep inline in `index.tsx`.
-- Sub-component too large/complex to stay inline (whether private or reused) → extract to its own sibling component: a new `components/<kebab-case-name>/` folder with its own `index.tsx` (and `controller.ts`/`style.module.css` if it needs them) — re-run this workflow for it. Don't nest it inside the parent's folder and don't use a flat `PascalCase.tsx` file.
-- Complex non-trivial logic inside the render → extract to a custom hook in `controller.ts` (or a dedicated hook file if reused elsewhere), not left inline in JSX.
-
-6. Generate and validate:
-- Use templates where applicable.
-- Ensure no placeholders remain and behavior tests cover owned states/interactions.
+- Follow repository conventions where they do not weaken explicit requirements or safety.
+- Use semantic controls, accessible names/labels, keyboard behavior, and visible/recoverable feedback appropriate to the interaction.
+- Keep client-side checks as usability aids; enforce authorization and data integrity at the trusted server boundary.
+- Handle asynchronous failures and stale results without implying an unconfirmed success.
+- Do not optimize with memoization, dynamic imports, or other complexity without a measured or codebase-backed reason.

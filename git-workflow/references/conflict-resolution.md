@@ -153,7 +153,7 @@ Stop and ask the user before resolving the conflict when any of these conditions
 - Schema or API contracts are in conflict and the correct resolution is not obvious from the diff alone
 - The conflict touches authentication, authorization, or financial calculation logic
 - Resolving correctly requires understanding of an ongoing feature or incident not visible in the diff
-- The conflict spans an unusually large number of files relative to the branch's stated scope (e.g. 15+) — this usually means the branch diverged for too long or grew past one task; flag it instead of pushing through resolution alone
+- The conflict affects a broad or unclear set of files relative to the task, suggesting the scope or branch divergence needs human review
 
 To detect whether an incident may be in progress, check: does the branch name or any recent commit message reference a support ticket, incident label, on-call mention, or hotfix keyword? If yes, treat it as a potential live incident and escalate regardless of whether the conflict itself looks resolvable.
 

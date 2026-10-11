@@ -1,10 +1,8 @@
 # Props + Controller Pattern
 
-Use this reference only when a component needs both props and separated controller logic. Do not copy names or fields verbatim; replace them with the real component API.
+Use this reference only when the target repository already uses a controller hook or the requested component benefits from one. Do not introduce the pattern solely to satisfy a template. Replace sample names, fields, and error copy with the real component contract and project conventions.
 
-Follow `references/component-authoring-reference.md` for the underlying React/TS conventions (no `React.FC`, no `IProps` Hungarian-prefix naming, guard-clause early returns for loading/error, `count > 0 && ...` instead of bare `count && ...`). This pattern adds the controller-forwarding wiring on top.
-
-Note on the `component-authoring-reference.md` "more than 4 props → `(props: Props)`" rule: it doesn't apply here regardless of prop count — the props-controller pattern always forwards the whole, un-destructured `props` object to `useController(props)` (see `index.tsx` below), so there's no destructuring decision to make in the first place.
+The example intentionally forwards the complete props object to `useController(props)`. That is a pattern choice, not a prop-count rule; destructuring or narrower arguments may be clearer in another repository.
 
 ## index.tsx
 
@@ -23,12 +21,10 @@ export type Props = {
 // props object is forwarded to useController(props) unchanged, so keeping the
 // `props` identifier here avoids reconstructing an object one line later.
 const ComponentName = (props: Props) => {
-  const { derivedValue, isLoading, error, handleAction } = useController(props);
+  const { derivedValue, isLoading, errorMessage, handleAction } = useController(props);
 
-  // Show a user-friendly message, not the raw error — error.message may contain
-  // internal/network details. Log the real error where it's caught (or via an
-  // error-tracking call) if it needs to be inspected later.
-  if (error) return <span role="alert">Something went wrong. Please try again.</span>;
+  // errorMessage is mapped to approved, user-safe copy in the controller/localization layer.
+  if (errorMessage) return <span role="alert">{errorMessage}</span>;
 
   return (
     <button onClick={handleAction} disabled={isLoading}>
@@ -48,22 +44,24 @@ import type { Props } from ".";
 
 export const useController = (props: Props) => {
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<Error | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const derivedValue = props.value.toUpperCase();
 
   const handleAction = async () => {
     setIsLoading(true);
-    setError(null);
+    setErrorMessage(null);
     try {
       // Add real async behavior here.
     } catch (err) {
-      setError(err instanceof Error ? err : new Error("Action failed"));
+      // Map the error through the repository's approved user-facing messages.
+      // Keep raw details in the existing safe logging/telemetry path, if appropriate.
+      setErrorMessage(/* approved localized message */);
     } finally {
       setIsLoading(false);
     }
   };
 
-  return { derivedValue, isLoading, error, handleAction };
+  return { derivedValue, isLoading, errorMessage, handleAction };
 };
 ```

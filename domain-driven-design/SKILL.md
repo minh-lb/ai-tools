@@ -1,55 +1,38 @@
 ---
 name: domain-driven-design
-description: Laravel backend module design using DDD layers, Actions, DTOs, repositories, and events.
+description: Design or implement a Laravel module when the user requests Domain-Driven Design or the target codebase already uses that approach. Use for bounded-context modeling, domain behavior, repositories, application flows, and domain events; do not impose DDD layers on ordinary Laravel CRUD work.
 metadata:
   author: Minh Luu
 ---
 
-# Domain Driven Design
+# Domain-Driven Design for Laravel
 
-Use for Laravel backend modules only.
-This skill is self-contained. Do not assume project-local Laravel docs, response wrappers, or
-shared base classes exist unless you can see them in the target codebase.
+Use this skill only when the user requests DDD or the target Laravel codebase already has a DDD/module architecture. Before scaffolding, inspect the existing directory structure, namespaces, dependencies, framework version, validation, response, event, persistence, and test conventions. If the project does not use DDD and the user has not asked to introduce it, follow the current architecture or ask before creating new layers.
+
+Templates are optional starting points, not a required architecture. This skill is self-contained; do not assume project-local Laravel docs, response wrappers, or shared base classes exist unless verified in the target codebase.
 
 ## Workflow
 
-1. Extract business behavior, trigger, state transition, and side effects.
-2. Identify bounded context/module.
-3. Generate only the needed slice for the requested flow.
-   - DTO selected: also generate `BaseDTO` and `Rules` support classes unless the target codebase already has compatible versions.
-   - HTTP interface selected: also generate `Request`, `Resource`, and `ApiResponse` unless the target codebase already has a compatible version at `Modules/Shared/Support/Http/ApiResponse.php`.
-   - Cross-module event consumer selected: also apply an idempotency guard in the handler.
-4. Keep same-module flow through UseCase -> Action. Cross-module side effects travel through Domain Events only.
-5. Token-safe load order — load only what the current scenario needs:
-   - Command (create/update/delete): `architecture.md` → `domain.md` + `application.md` + `infrastructure.md` + `interfaces.md` → `cross-cutting.md` if events are involved → relevant templates only.
-   - Query (list/find by criteria): `architecture.md` → `domain.md` + `infrastructure.md` + `interfaces.md` → relevant templates only.
-   - Event consumer: `architecture.md` → `application.md` + `cross-cutting.md` → `EventHandler.template` + `DomainEvent.template`.
-6. Replace every template placeholder with compile-safe, domain-specific code and explicit persistence/resource mappings.
-7. Validate file set and generate tests by layer. Test guidance in each layer's Testing section; test templates in `references/architecture.md`. Confirm against `references/verification.md`.
+1. Extract the requested business behavior, trigger, state change, data invariants, side effects, and acceptance evidence.
+2. Identify the module/bounded context and the existing project conventions. Keep the change within the requested slice.
+3. Generate only components needed for that behavior. Do not add shared base classes, validation attributes, response envelopes, service providers, repositories, events, or tests solely because a template catalog contains them.
+   - Use the project's request/schema validation approach. A custom DTO validation attribute/reflection layer is optional only when already established or requested.
+   - Use the existing HTTP response/resource contract. Do not introduce a new response wrapper or envelope by default.
+   - For event consumers, inspect delivery guarantees and side effects. Add idempotency where duplicate delivery can cause incorrect effects; use a design whose completion marker cannot permanently suppress a failed retry.
+4. Keep domain invariants independent of HTTP and persistence details. Let the application layer coordinate the operation using the project's established ports/use cases/actions and transaction boundaries. Avoid direct access to another module's internals. Prefer events for decoupled side effects; use an explicit stable contract for synchronous interactions when the business flow and project architecture require one.
+5. Load `references/architecture.md` first, then only layer guidance and templates relevant to the requested slice. Load `cross-cutting.md` when module boundaries, events, or shared concerns are involved. Use `verification.md` for the final review.
+6. Adapt templates completely: replace placeholders with real types, fields, mappings, and project-approved behavior. Remove unused files and example conventions.
+7. Validate generated behavior with the project's supported checks and tests for the changed layers. Do not claim checks ran unless they did; do not commit unless asked.
 
-## DDD-Specific Rules
+## Design guidance
 
-- Domain Actions accept primitives, Value Objects, or Domain objects; never Application DTOs.
-- Application DTOs are transport-neutral; build from arrays, not HTTP Request objects.
-- Controllers stay thin: validate request, build DTO, call one UseCase, return `ApiResponse::success()` with Resource-shaped data.
-- A UseCase orchestrates one Action and may dispatch Domain Events released by returned Entities. Do not call repositories from the UseCase.
-- Cross-module communication uses Domain Events only. Module A must not call Module B Action or Repository directly.
-- Domain code must not import Eloquent models, facades, HTTP objects, or concrete infrastructure.
-- Prefer Value Objects over primitives for domain concepts with invariants (e.g., Email, Money, Status). Use `templates/ValueObject.template`.
-- Every DTO constructor property must have a `#[Rules([...])]` attribute. Required properties use `'required'`; optional properties use `'nullable'` or `'sometimes'`. DTOs without `#[Rules]` on every property are invalid. (see `templates/DTO.template` and `templates/RulesAttribute.template`)
-
-## References
-
-- `references/architecture.md`: paths, layer index, and template catalog.
-- `references/domain.md`: Domain layer constraints.
-- `references/application.md`: Application layer constraints.
-- `references/infrastructure.md`: Infrastructure layer constraints.
-- `references/interfaces.md`: Interfaces layer constraints.
-- `references/cross-cutting.md`: event flow, imports, anti-patterns.
-- `references/verification.md`: file-set checks and validation checklist.
+- Keep business invariants in the domain owner; keep HTTP, framework, and persistence concerns at their existing boundaries.
+- Use entities, value objects, domain services, repository abstractions, application services, and events only when they clarify a real invariant, ownership boundary, or side effect.
+- DTOs should represent the application boundary and remain independent of the HTTP request object. Validation may belong in a FormRequest, schema, validator, or existing DTO convention; do not mandate a custom attribute system.
+- An application flow may coordinate the number of domain operations needed for the use case. Do not impose a universal “one Action only” rule.
+- Preserve project-defined response shapes, status codes, authorization policies, deletion/retention rules, transactions, and event delivery semantics.
+- Give each test the appropriate layer and isolation. Follow the target project's Pest/PHPUnit, mocking, database, and coverage practices rather than assuming a runner.
 
 ## Layout
 
-`Modules/{Module}/Domain`, `Application`, `Infrastructure`, `Interfaces`.
-Shared reusable support may live under `Modules/Shared/`.
-Never place module domain code under `app/`.
+The `Modules/{Module}/{Domain,Application,Infrastructure,Interfaces}` paths in `references/architecture.md` are an example layout used by the templates. Follow the target repository's actual module paths and registration conventions. Never move existing code into this layout unless the task requests that change.

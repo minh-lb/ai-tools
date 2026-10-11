@@ -4,20 +4,15 @@ use Modules\{Module}\Application\DTOs\{Name}DTO;
 
 uses(Tests\TestCase::class);
 
-test('{name} dto maps from array correctly', function (): void {
+test('{name} dto maps validated application input correctly', function (): void {
     $dto = {Name}DTO::fromArray([
-        'id' => 'test-uuid',
-        // Add all DTO fields.
+        'id' => 'entity-123',
+        // Add all fields with values allowed by the application contract.
     ]);
 
-    expect($dto->id)->toBe('test-uuid');
-    // Assert all other properties.
+    expect($dto->id)->toBe('entity-123');
+    // Assert other fields and nullable values according to the contract.
 });
 
-test('{name} dto exposes validation rules for every constructor property', function (): void {
-    $rules = {Name}DTO::rules();
-
-    expect($rules)->toHaveKey('id');
-    expect($rules['id'])->toContain('required');
-    // Assert rules for all other properties.
-});
+// Test validation at the actual boundary (FormRequest/schema/validator), not here,
+// unless the target project intentionally owns validation in this DTO.

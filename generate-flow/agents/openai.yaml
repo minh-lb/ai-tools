@@ -17,4 +17,4 @@ interface:
     10. Stop when the flow is maintainable and testable; do not reverse-engineer unrelated code.
 
 policy:
-  allow_implicit_invocation: false
+  allow_implicit_invocation: true

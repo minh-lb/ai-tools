@@ -8,12 +8,9 @@
 import { useController } from "./controller";
 
 const ComponentName = () => {
-  // Replace _controller with actual destructured values: const { value, handleAction } = useController();
-  const _controller = useController();
+  const { value } = useController();
 
-  return (
-    <div>ComponentName</div>
-  );
+  return <div>{value}</div>;
 };
 
 export default ComponentName;

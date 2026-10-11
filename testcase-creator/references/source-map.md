@@ -6,7 +6,7 @@ This skill produces **one E2E user-journey case set**, not separate frontend and
 
 Each case entry in the template's E2E scenarios list contains:
 
-- `ID`: short stable `TC-001`, scoped to this feature file. When referenced outside the file, pair it with the feature ID or suite path.
+- `ID`: a short stable identifier following the repository's convention. If none exists, use a concise suite-local example such as `TC-001`; when referenced outside the file, pair it with the feature ID or suite path.
 - `User goal / scenario`: one independently verifiable end-to-end objective.
 - `Preconditions`: actor/permissions, required starting state, and setup needed before user actions.
 - `Test data`: concrete input values and fixture records, separately from preconditions.

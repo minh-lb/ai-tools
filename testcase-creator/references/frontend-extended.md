@@ -1,6 +1,6 @@
 # Frontend — Library Gaps and Rare Scenarios
 
-These are proposed extensions, not part of the 87 common component checks. Add them to a feature suite only when the surface exists and expected behavior is specified.
+These are proposed extensions to the common component prompts. Add them to a feature suite only when the surface exists and expected behavior is specified.
 
 - **Accessibility:** Tab/Shift+Tab, visible/ordered focus, Enter/Space/Escape, modal focus trap/return, accessible labels/names, errors announced by screen readers, contrast, 200% zoom, disabled state; test without a mouse. When accessibility conformance is required, derive cases from the approved [WCAG version, success criterion, and conformance level](https://www.w3.org/TR/WCAG22/) rather than copying every criterion. Record relevant browser/assistive-technology setup; a selected checklist or automated scan is not proof of full accessibility.
 - **Responsive & compatibility:** desktop/tablet/mobile; breakpoint boundaries ±1; portrait/landscape; long text; zoom; approved Chrome/Edge/Safari versions and operating systems; overflow/scroll, sticky elements, touch targets. Define a browser/device matrix; do not invent resolutions or thresholds.

@@ -9,20 +9,20 @@ Agent có thể tự chọn skill dựa trên mô tả và tác vụ, nhưng vi�
 ## Skill này làm được gì
 
 ### 1. Commit đúng chuẩn
-- Validate và tự soạn commit message theo format `<type>(<scope>): <summary>` (feat/fix/refactor/test/docs/ci/build/perf/style/revert/chore).
-- Từ chối message mơ hồ (`fix: bug fix`, `chore: update`, `wip`).
+- Validate và soạn commit message theo convention đã xác nhận trong repo, staged diff, và lịch sử commit.
+- Không áp đặt scope, syntax, hay độ dài nếu repository không yêu cầu; message phải mô tả đúng outcome.
 - Tự phát hiện khi staged diff gộp nhiều thay đổi không liên quan và đề xuất tách thành nhiều commit.
-- Kiểm tra trước khi commit: không debug code sót lại (`console.log`, `dd()`, `var_dump()`...), không secret/`.env`, không co-author attribution (kể cả AI).
+- Kiểm tra trước khi commit: không debug code sót lại (`console.log`, `dd()`, `var_dump()`...), không secret/`.env`; không thêm attribution trừ khi user/repo yêu cầu.
 
 ### 2. Branch đúng quy ước
-- Tạo/đặt tên branch theo `feature/*`, `bugfix/*`, `hotfix/*`, `release/*`, `chore/*`, `docs/*`, `ci/*`.
+- Tạo/đặt tên branch theo convention đã xác nhận trong repo; các prefix như `feature/*`, `bugfix/*`, `hotfix/*`, `release/*`, `chore/*`, `docs/*`, `ci/*` là ví dụ phổ biến, không mặc định bắt buộc.
 - Xác định đúng vai trò branch và remote trước khi thao tác (integration branch thực tế, thường là `develop`, cho task branch; production branch thực tế cho hotfix). Cập nhật local base/release branch bằng `fetch` + `merge --ff-only`; đồng bộ task/hotfix branch bằng `fetch` + merge thường. Workflow này không dùng rebase.
 
 ### 3. PR và merge
 - Soạn PR title/squash message đúng convention.
-- Chọn đúng merge mode: squash cho task branch, merge thường (giữ nguyên lịch sử) cho `release/*` và `hotfix/*`.
+- Chọn merge mode theo repository settings/policy; preserve release/hotfix ancestry khi quy trình hoặc verification phụ thuộc source tip là ancestor.
 - Checklist review trước khi mở PR (test pass, không còn conflict, migration an toàn...).
-- **Tạo PR/MR có kiểm soát:** hỏi người dùng muốn mô tả bằng tiếng Anh hay tiếng Việt (title mặc định tiếng Anh), điền template đầy đủ, rồi hiển thị preview gồm source owner/project, fetch/base remote, source push remote và push target hiệu lực (nếu khác), tip SHA, target project/branch, push dự kiến, title và toàn bộ description. Trước preview, liệt kê mọi push destination hiệu lực bằng `git remote get-url --push --all <push-remote>`; nếu có nhiều hơn một destination, dừng và yêu cầu cấu hình/chọn đúng một đích được duyệt. Xác minh branch/SHA trên cùng endpoint đó và kiểm tra lại endpoint ngay trước khi push; không chia sẻ hoặc ghi log URL thô có credentials. Chỉ tạo sau khi người dùng duyệt rõ ràng; mọi thay đổi sau duyệt phải được preview và duyệt lại. Ưu tiên MCP đã xác thực phù hợp với nền tảng, chỉ rõ source và target project; nếu không có thì dùng `gh`/`glab` đã cài và đăng nhập, nhưng phải bind đúng source/target. Chỉ push source branch khi thiếu remote ref và user đã duyệt push trong preview; SHA không khớp hoặc lỗi network/auth thì dừng, không force-push. Sau khi tạo, xác minh URL, branch, title, trạng thái và nội dung. Dùng PR/MR cho protected branch theo chính sách repo; không bypass branch protection.
+- **Tạo PR/MR có kiểm soát:** follow user's known language and local title convention; use the repository template when applicable, then show a complete preview including source owner/project, fetch/base remote, source push remote and approved push target, tip SHA, target project/branch, planned push, title, and full description. Trước preview, liệt kê mọi push destination hiệu lực bằng `git remote get-url --push --all <push-remote>`; nếu có nhiều hơn một destination, dừng và yêu cầu cấu hình/chọn đúng một đích được duyệt. Xác minh branch/SHA trên cùng endpoint đó và kiểm tra lại endpoint ngay trước khi push; không chia sẻ hoặc ghi log URL thô có credentials. Chỉ tạo sau khi người dùng duyệt rõ ràng; mọi thay đổi sau duyệt phải được preview và duyệt lại. Ưu tiên MCP đã xác thực phù hợp với nền tảng, chỉ rõ source và target project; nếu không có thì dùng `gh`/`glab` đã cài và đăng nhập, nhưng phải bind đúng source/target. Chỉ push source branch khi thiếu remote ref và user đã duyệt push trong preview; SHA không khớp hoặc lỗi network/auth thì dừng, không force-push. Sau khi tạo, xác minh URL, branch, title, trạng thái và nội dung. Dùng PR/MR cho protected branch theo chính sách repo; không bypass branch protection.
 
 ### 4. Resolve conflict — có kèm quy trình đảm bảo không mất code
 Đây là phần được đầu tư kỹ nhất trong skill:
@@ -32,7 +32,7 @@ Agent có thể tự chọn skill dựa trên mô tả và tác vụ, nhưng vi�
 - Sau khi resolve, verify bằng `git diff HEAD` và `git diff MERGE_HEAD` để đảm bảo không âm thầm làm mất phần đóng góp của bên nào.
 - Xử lý riêng conflict xóa/đổi tên file (`deleted by us/them`, `both added`) và lockfile (`package-lock.json`...) — không dùng `--ours`/`--theirs` cho lockfile mà regenerate lại.
 - Ghi lại danh sách file bị conflict và cách resolve vào **body của merge commit**.
-- Có tiêu chí rõ ràng để dừng lại hỏi người dùng: conflict đụng vào business logic, auth, tính toán tài chính, hoặc lan rộng bất thường (15+ file).
+- Dừng và hỏi khi conflict ảnh hưởng business logic, authorization, financial behavior, phạm vi file rộng/không rõ, hoặc buộc phải chọn giữa các ý định khác nhau.
 
 ### 5. Release và hotfix
 - Cắt, ổn định hoá, finalize, rollback nhánh `release/*` theo đúng thứ tự (merge vào production branch thực tế → tag → merge lại vào integration branch thực tế, thường là `develop`; không được bỏ bước nào).

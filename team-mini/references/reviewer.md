@@ -3,16 +3,16 @@ name: reviewer
 description: Optional Codex review-lane guide covering standard review and adversarial review handoffs.
 ---
 
-# Codex Review Lanes
+# Optional Independent Review Lanes
 
 ## Role
 
-This reference defines the optional independent review passes that Leader may request after a rescue slice completes.
+This reference defines the optional independent review handoff after an implementation slice. It is not a requirement to use Codex or a separate reviewer.
 
-There is no persistent Reviewer agent in this architecture. Review happens when Leader sends a review-lane request to Coder, who invokes Codex via the `Agent` tool. Two lane types exist:
+There is no persistent Reviewer agent in the default team. A review may be requested only when an independent tool is actually available, authorized, and appropriate. If the host provides Codex review lanes, a Coder can relay the request through the documented adapter; do not assume `Agent`, `codex:review`, or `codex:adversarial-review` exists. Useful review intents include:
 
-- **standard review** (`codex:review`) — correctness, regressions, test gaps
-- **adversarial review** (`codex:adversarial-review`) — security, destructive actions, data integrity
+- **Standard review** — correctness, regressions, and important test gaps.
+- **Adversarial review** — security, destructive effects, data integrity, and recovery.
 
 ## Review Input Contract
 

@@ -10,9 +10,6 @@ interface {Entity}Repository
 
     public function save({Entity} $entity): void;
 
-    public function delete(string $id): void;
-
-    // Add query methods here for read-only operations (list, search, paginate).
-    // Example: public function findAll(): array;
-    // Example: public function findByCriteria(array $criteria, int $perPage): LengthAwarePaginator;
+    // Add only query or lifecycle operations required by the business behavior.
+    // Define deletion/archival semantics explicitly; do not assume permanent delete.
 }

@@ -1,34 +1,20 @@
 # Interfaces Layer
 
-Contains: Controllers, Requests, Resources, Listeners.
+Use the interfaces layer for HTTP, CLI, messaging, or other external entry points when the target architecture separates them from application/domain behavior.
 
-## Responsibilities
+## HTTP responsibilities
 
-- `Controller`: FormRequest validation -> `DTO::fromArray($request->validated())` -> UseCase call -> Resource-backed `JsonResponse`.
-- `Request`: FormRequest may call `Application/DTOs/*DTO::rules()` for validation. Controller passes `$request->validated()` to `DTO::fromArray()`.
-- `Resource`: shapes API output.
+- Validate and authorize at the correct request boundary using the project's established FormRequest, policy, middleware, schema, or equivalent.
+- Pass only validated, appropriately mapped input to the application flow.
+- Shape output with the existing Resource/serializer/response contract. Do not create an `ApiResponse` envelope merely because a template exists.
+- Keep status codes, error bodies, localization, and compatibility aligned with the approved API contract and neighboring endpoints.
 
-## Routes
+The sample `Request`, `Resource`, `Controller`, and `ApiResponse` templates are optional. A public endpoint may intentionally allow unauthenticated access; a private endpoint should use the project's actual policy/resource check rather than assuming authentication alone is sufficient.
 
-Register module routes in `Modules/{Module}/routes/api.php` and boot them from the module ServiceProvider:
+## Routes and middleware
 
-```php
-public function boot(): void
-{
-    $this->loadRoutesFrom(__DIR__ . '/../../routes/api.php');
-}
-```
-
-Each single-action Controller maps to one route. Group routes under a module-specific prefix and apply shared middleware (auth, throttle) at the group level.
+Register routes using the repository's actual Laravel/module convention. Apply the approved authentication, authorization, throttling, and other middleware at the correct boundary. Do not assume a module service provider or a particular route-file path exists.
 
 ## Testing
 
-- Controller feature tests: POST valid payload → `assertCreated()`, assert `ApiResponse` JSON shape (`success`, `code`, `data`).
-- Controller feature tests: POST invalid/missing payload → `assertUnprocessable()`, assert `success: false`.
-- Request validation: no separate unit test needed — `{Name}DTO::rules()` is the single source of truth, covered by DTO unit test and Controller feature test.
-- Use `Event::fake()` in feature tests to assert domain events are dispatched without side effects.
-
-## Constraints
-
-- No business rules, direct repository calls, or Eloquent queries.
-- Use `ApiResponse::success()` / `ApiResponse::problem()` from `Modules\Shared\Support\Http\ApiResponse` for all JSON responses. Generate from `templates/ApiResponse.template` if not already present in the target codebase.
+Use feature tests that match the actual endpoint contract. Cover authorized behavior, relevant unauthenticated/unauthorized cases, validation, response shape/status, and important persisted or emitted effects. Derive exact status codes and response fields from the project contract; do not copy the template's sample envelope or status.

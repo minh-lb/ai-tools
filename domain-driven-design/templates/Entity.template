@@ -4,27 +4,11 @@ namespace Modules\{Module}\Domain\Entities;
 
 class {Entity}
 {
-    /** @var list<object> */
-    private array $recordedEvents = [];
-
     public function __construct(
         public readonly string $id,
     ) {}
 
-    // Add domain behaviors and invariant checks here.
-    // Call recordEvent() from domain behaviors when cross-module side effects are required.
-
-    /** @return list<object> */
-    public function releaseEvents(): array
-    {
-        $events = $this->recordedEvents;
-        $this->recordedEvents = [];
-
-        return $events;
-    }
-
-    protected function recordEvent(object $event): void
-    {
-        $this->recordedEvents[] = $event;
-    }
+    // Add only state and domain behavior needed by the actual invariant.
+    // Prefer transitions that return a new entity/state rather than mutating a
+    // shared instance. Keep framework and persistence concerns out of this class.
 }

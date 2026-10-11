@@ -1,4 +1,4 @@
 interface:
   display_name: "Domain Driven Design"
-  short_description: "Scaffold Laravel DDD/DOD/EDA modules"
-  default_prompt: "Use $domain-driven-design to scaffold a Laravel Orders module where the UseCase only calls a Domain Action and cross-domain communication happens through events."
+  short_description: "Model or implement a requested DDD-oriented Laravel slice"
+  default_prompt: "Use $domain-driven-design only when the user requests DDD or the target Laravel project already uses it. Inspect the repository's architecture and conventions first; generate only the requested components and do not impose a sample module, one-action rule, response wrapper, validation scheme, or event design."

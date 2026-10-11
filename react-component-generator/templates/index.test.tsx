@@ -1,6 +1,7 @@
-// Substitution required: replace "ComponentName" and update props to match the generated component.
-// Requires: @testing-library/react, @testing-library/user-event v14+ (npm i -D @testing-library/user-event)
-// Test runner: detect Vitest vs Jest from the repo (package.json/vitest.config.*/jest.config.*) before using this template.
+// Starter only: use when the repository already has these test libraries/configuration.
+// Never add test dependencies or bootstrap a runner just to use this file without approval.
+// Adapt the component, props, and assertions to its real accessible behavior.
+// Detect Vitest vs Jest from the repository before using this template.
 // - Vitest: use vi.fn() / vi.mock(); if `globals: true` is not set, add: import { describe, it, expect, vi } from "vitest";
 // - Jest: replace every `vi.fn()` below with `jest.fn()` and `vi.mock()` with `jest.mock()` — no extra import needed, Jest globals are ambient.
 // If the component has a controller.ts that calls useQuery/useMutation, mock the controller module directly
@@ -13,7 +14,7 @@ import ComponentName from "./index";
 describe("ComponentName", () => {
   it("renders required content", () => {
     render(<ComponentName label="Test value" />);
-    expect(screen.getByText("Test value")).toBeInTheDocument();
+    expect(screen.getByText("Test value")).toBeTruthy();
   });
 
   it("calls onConfirm when the action is triggered", async () => {

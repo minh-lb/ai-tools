@@ -2,7 +2,7 @@
 
 ## Focus
 
-Review whether the in-scope code or proposed change creates avoidable latency, throughput limits, resource waste, or scale-sensitive behavior in realistic production workloads—including whether it remains stable and correct when data volume grows significantly beyond the current baseline.
+Review whether the in-scope code or change creates avoidable latency, throughput limits, resource waste, or scale-sensitive behavior in realistic production workloads. Use known data/traffic bounds and representative peak conditions; do not invent a scale target.
 
 ## Inspect
 
@@ -34,7 +34,7 @@ Review whether the in-scope code or proposed change creates avoidable latency, t
 - Can concurrent requests exhaust a connection pool or shared resource?
 - Do chained I/O calls each carry their own timeout, or can the total exceed the caller's deadline?
 - Is a large dataset collected into memory where a cursor, generator, or stream would suffice?
-- What is the realistic upper bound of the data volume this path will process? Has the code been evaluated at 10×, 100× that baseline?
+- What are the enforceable input and traffic bounds, and has behavior been checked against the largest realistic or expected peak workload?
 - Does the algorithm have a complexity cliff — a point where O(n²) or worse behavior first appears at large n?
 - If processing a large batch fails midway, is partial progress recoverable or does the whole operation need to restart?
 - Is there any back-pressure mechanism to prevent a fast producer from overwhelming a slow consumer or downstream?
@@ -82,34 +82,22 @@ Frontend performance red flags:
 
 ## Large-Data Stability Checklist
 
-When a path processes collections, exports, batch jobs, or aggregations, verify each item. If a check cannot be confirmed by static analysis alone, mark it **[Cannot verify statically]** and state what runtime test or EXPLAIN output would confirm it.
+When a path processes collections, exports, batch work, or aggregations, check only the safeguards relevant to its real bounds and failure modes. If static inspection cannot establish a property, mark it **[Cannot verify statically]** and state what representative load test, query plan, or runtime evidence would confirm it.
 
-| Check | Pass condition |
-|-------|---------------|
-| Complexity bound | O(n log n) or better for unbounded n; O(n²) only if n is provably small and capped |
-| Memory bound | Dataset not loaded fully into memory; cursor, stream, or chunked iteration used |
-| Memory estimate | Approximate peak memory at 100k, 1M, 10M rows is known and within service limits |
-| Pagination strategy | Keyset/cursor-based, not OFFSET-based |
-| Lock duration | Batch writes are chunked; no single transaction holds locks over the full dataset |
-| Query timeout | Statement timeout is set for long-running queries; caller handles timeout gracefully |
-| Partial failure recovery | Checkpointing or idempotent resume; no full restart required on failure |
-| Back-pressure | Producer rate bounded by consumer throughput; no unbounded queue growth |
-| Recursion safety | Depth limit enforced; iterative alternative used where depth is data-driven |
-| Payload cap | Response or export size bounded; large results chunked or streamed |
-| Regex / scan safety | Input length capped before applying expensive pattern or full-text scan |
+| Check | Review question |
+|---|---|
+| Complexity | Is algorithmic growth appropriate for the enforceable input bound and expected workload? |
+| Memory | Is memory bounded or measured for realistic workloads; should the path stream or process chunks? |
+| Pagination | Does pagination remain appropriate as the dataset and requested page grow? |
+| Lock duration | Are batches and transactions bounded in a way compatible with integrity requirements? |
+| Query timeout | Are long-running operations bounded consistently with caller deadlines and recovery behavior? |
+| Partial failure | Can incomplete work be retried or resumed without data loss or duplication? |
+| Back-pressure | Can a producer overwhelm the consumer or create unbounded queues/buffers? |
+| Recursion | Can data-driven depth, cycles, or input growth cause stack/resource exhaustion? |
+| Payload | Can unbounded results exceed memory, network, or client limits? |
+| Regex/scanning | Can untrusted or large input make matching/search disproportionately expensive? |
 
-If the code does not pass a check and the path is reachable with large data, raise a finding scoped to the specific failure mode.
-
-### Memory estimation heuristic
-
-Use this to approximate peak memory when the code loads a collection:
-
-- A typical database row with mixed fields: ~1–5 KB in application memory after deserialization
-- 100k rows: ~100 MB–500 MB
-- 1M rows: ~1 GB–5 GB
-- If the service memory limit is less than the estimate, loading the full collection risks OOM
-
-If the code loads an unbounded query result into memory and the row count is not explicitly capped, flag it as a finding and include the estimate in the Why field.
+Raise a finding only when repository evidence supports a reachable failure under realistic conditions; do not require every checklist mechanism on every path.
 
 ## Evidence
 
