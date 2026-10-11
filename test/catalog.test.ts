@@ -395,17 +395,28 @@ test("loadSelectionCatalog includes curated local skills in installer choices", 
   assert.deepEqual(
     catalog.skills.map((skill) => skill.id),
     [
+      "coding-rule",
       "domain-driven-design",
       "generate-flow",
       "git-workflow",
       "react-component-generator",
-      "refine-antd",
       "review-code",
       "task-creator",
       "team-mini",
-      "team-sp",
       "testcase-creator"
     ]
+  );
+
+  assert.deepEqual(
+    catalog.skills.find((skill) => skill.id === "coding-rule"),
+    {
+      id: "coding-rule",
+      label: "Coding Rule",
+      description: "Language- and framework-agnostic coding guidance for implementing, editing, debugging, and refactoring software, including application code, APIs, databases, UI, security, infrastructure as code, containers, and shell scripts.",
+      sourceBranch: "agent-skills",
+      sourcePath: "coding-rule",
+      targets: undefined
+    }
   );
 
   assert.deepEqual(
@@ -457,30 +468,6 @@ test("loadSelectionCatalog includes curated local skills in installer choices", 
   );
 
   assert.deepEqual(
-    catalog.skills.find((skill) => skill.id === "team-sp"),
-    {
-      id: "team-sp",
-      label: "Team SP",
-      description: "Superpowers-native agent team — Planner (brainstorming + writing-plans), Leader (executing-plans), Coder (Codex + verification). Best for complex or ambiguous tasks.",
-      sourceBranch: "agent-skills",
-      sourcePath: "team-sp",
-      targets: undefined
-    }
-  );
-
-  assert.deepEqual(
-    catalog.skills.find((skill) => skill.id === "refine-antd"),
-    {
-      id: "refine-antd",
-      label: "Refine + Ant Design",
-      description: "Guides building and modifying admin panels, dashboards, and internal CRUD tools with the Refine framework and Ant Design.",
-      sourceBranch: "agent-skills",
-      sourcePath: "refine-antd",
-      targets: undefined
-    }
-  );
-
-  assert.deepEqual(
     catalog.skills.find((skill) => skill.id === "review-code"),
     {
       id: "review-code",
@@ -521,7 +508,7 @@ test("loadSelectionCatalog includes curated local skills in installer choices", 
     {
       id: "react-component-generator",
       label: "React Component Generator",
-      description: "Create or refactor repo-aligned React components under components/**, with index.tsx, controller.ts, and style.module.css conventions.",
+      description: "Create or refactor repo-aligned React components under components/** with index.tsx, controller.ts, and style.module.css conventions; keep client directives conditional on framework needs and make test examples compatible with the project’s test runner.",
       sourceBranch: "agent-skills",
       sourcePath: "react-component-generator",
       targets: undefined
