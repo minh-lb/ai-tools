@@ -1,12 +1,16 @@
 ---
 name: review-code
-description: Review application code, a repository/module, or a concrete diff for correctness, security, compatibility, operational, testing, and UI risks. Use when the user asks for a code/PR review, review of a specific change, or a scoped codebase audit; do not trigger for implementation or debugging unless review is requested.
+description: Use only when explicitly invoked with `@review-code` or `/review-code`; never auto-load for generic review requests. Reviews backend and browser frontend code/diffs for correctness, security, compatibility, operations, testing, and UI risks.
 metadata:
   author: Minh Luu
 argument-hint: codebase | git-diff <base>...<head>
 ---
 
 # Review Code
+
+## Invocation policy
+
+Load and use this skill only after an explicit user invocation, such as `@review-code`, `/review-code`, or a direct request to use the `review-code` skill. Do not auto-load it merely because the user asks in natural language to review code, a PR, or a diff. If not explicitly invoked, continue without this skill; do not silently activate it.
 
 Perform an evidence-backed review of backend services/APIs and browser-based frontend code. Native mobile and desktop UI are outside this skill's scope; identify them as exclusions in mixed reviews. Be respectful and direct: report realistic failure modes, not personal style, speculative concerns, or unrelated refactors.
 
