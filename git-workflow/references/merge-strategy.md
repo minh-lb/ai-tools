@@ -5,7 +5,7 @@ Follow the target repository's contribution guide, branch protections, merge set
 ## Choose the target and merge mode
 
 - Verify the actual source/target project and branch roles; do not assume names such as `origin`, `develop`, or `main` identify them correctly.
-- Follow the repository's PR/MR title, language, template, review, and merge-mode conventions. Do not invent a ticket ID, require a scope/prefix, or impose an English title or length limit.
+- Determine the title from the repository's contribution guide, existing PR/MR history, and any required issue or ticket reference; follow its format and language. If no convention is documented, use this fallback template: `[ticket ID] <short description>`. This format requires a real ticket ID; never fabricate or omit it. If no ticket ID is available, ask the user how to proceed before drafting the title. Keep the description concise and specific, and follow the repository or user's language convention. Do not invent a scope or add another prefix.
 - Prefer the repository's configured merge mode. Preserve release/hotfix ancestry when the release workflow and verification depend on the source tip being an ancestor. Do not squash/rebase-and-merge where it would break that guarantee.
 - Never bypass protected-branch reviews, status checks, or access policy. If local guidance conflicts with the hosting settings, stop and ask.
 
@@ -13,7 +13,65 @@ Follow the target repository's contribution guide, branch protections, merge set
 
 Before creating a PR/MR, inspect the complete branch diff and commit history relevant to the target, confirm intended files are committed, and run applicable checks when available. Check for conflicts, secrets, debug artifacts, migration/compatibility impact, and required documentation. Report skipped checks accurately.
 
-Prepare the description from `templates/pull-request-template.md` when it applies. Fill relevant sections with evidence, remove irrelevant placeholders instead of inventing content, and state test status truthfully. Include task links only when available or required by the repository.
+Prepare the description from `templates/pull-request-template.md` when it applies. Follow the target repository's required structure if it differs. Write the description in the user's requested language; ask if it is unclear. Keep section headings in English, including when the body is localized, unless the repository explicitly requires otherwise. Apply these item-level rules:
+
+- **Summary:** Use a short bullet list rather than a paragraph. Include the current situation/problem, the desired outcome, and why it matters (combine items when clearer). Use one clear idea per bullet, natural language, and avoid implementation details.
+- **Changes:** Focus on what changed in the code: the functions, modules, interfaces, rules, or logic paths modified, and how related callers, API consumers, or dependent modules are affected. Include relevant implementation constraints or compatibility details. Do not repeat the current-versus-desired behavior already explained in Summary. For a refactor with no behavior change, say so and summarize the internal code change. State no related impact only after checking; do not guess. Keep bullets concise and reviewer-focused, not a file-by-file narration unless paths help reviewers.
+- **Verification:** Give exact checks run and their result (for example, `npm test` — passed). Distinguish automated tests from manual checks. State important checks not run and why; never imply success without evidence.
+- **Risk and rollout:** Include only when there is a material risk or rollout concern. Describe the affected area, mitigation or monitoring, and rollback consideration. Do not claim “no risk”; state concrete facts such as “No schema changes.”
+- **Related work:** Link only verified issue/ticket IDs and URLs. Do not invent IDs or links; omit the section when there is nothing relevant and it is not required.
+
+Write in clear, natural language for a reviewer who may not know the implementation details: use complete, direct sentences; explain necessary technical terms; expand uncommon abbreviations; and prefer familiar words over jargon. Keep bullets consistent, specific, and focused on helping the reviewer understand the change. Avoid vague claims (“improved things”), unsubstantiated benefits, duplicated information between sections, and unrelated implementation details. Remove unused sections/placeholders rather than leaving template instructions in the submitted description.
+
+### Bilingual PR/MR example
+
+Illustrative example only. All sample data below—including the ticket, code change, verification command/result, rollout statement, and issue link—is fictional; it does not claim that any check was run in this repository. Before creating a real PR/MR, replace it with the actual ticket and change details, exact verification command/results observed for the current repository, and verified rollout facts/issue link. Never copy an unverified claim. The title format is `[ticket ID] <short description>`; follow repository title conventions. For this bilingual example, the title and section headings stay in English while the description body is localized. If the user requests both languages, show both complete versions in the preview.
+
+**English**
+
+Title: `[APP-123] Retry failed password reset emails`
+
+```markdown
+## Summary
+- **Actual:** A temporary mail-provider error can prevent a password reset email from being delivered, forcing the user to request another one.
+- **Expect:** Retry delivery automatically so the user does not have to restart the flow.
+
+## Changes
+- Add a bounded retry mechanism to the password reset email delivery function for temporary provider errors.
+- Leave the password reset endpoint's response handling unchanged.
+
+## Verification
+- Example only (fictional; not run in this repository): `npm test -- password-reset-email` — passed (covers retry behavior and the existing endpoint response). Replace this line with the exact check and observed result before creating a real PR/MR.
+
+## Risk and rollout
+- No schema changes. Monitor email delivery failures after rollout.
+
+## Related work
+- [APP-123](https://example.invalid/issues/APP-123)
+```
+
+**Vietnamese**
+
+Title: `[APP-123] Retry failed password reset emails`
+
+```markdown
+## Summary
+- **Actual:** Lỗi tạm thời từ nhà cung cấp email có thể khiến thư đặt lại mật khẩu không được gửi; người dùng phải gửi yêu cầu lại.
+- **Expect:** Hệ thống tự thử gửi lại thư để người dùng không phải bắt đầu lại quy trình.
+
+## Changes
+- Bổ sung cơ chế thử lại có giới hạn trong hàm gửi thư đặt lại mật khẩu khi nhà cung cấp trả về lỗi tạm thời.
+- Không thay đổi cách xử lý phản hồi của endpoint yêu cầu đặt lại mật khẩu.
+
+## Verification
+- Chỉ là ví dụ giả định, chưa chạy trong repo này: `npm test -- password-reset-email` — passed (kiểm tra logic thử gửi lại và phản hồi hiện tại của endpoint). Trước khi tạo MR thật, thay bằng lệnh kiểm tra và kết quả thực tế.
+
+## Risk and rollout
+- Không thay đổi cấu trúc cơ sở dữ liệu. Sau khi phát hành, theo dõi các trường hợp gửi thư thất bại.
+
+## Related work
+- [APP-123](https://example.invalid/issues/APP-123)
+```
 
 ## Preview and approval
 
