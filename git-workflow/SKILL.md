@@ -1,6 +1,6 @@
 ---
 name: git-workflow
-description: Use when performing GitFlow-style repository tasks involving commits, branch changes, merges, pushes, PR/MRs, releases, hotfixes, reverts, conflicts, or worktrees.
+description: Load before every Git operation, including read-only checks and PR/MR tasks; require user permission to commit or push.
 metadata:
   author: Minh Luu
 ---
@@ -9,12 +9,13 @@ metadata:
 
 Use this skill to keep Git history clean, collaboration predictable, and AI-assisted changes safe to review.
 
-This skill is written for GitFlow-style repositories. Do not apply it verbatim to trunk-based repositories or repos that release directly from their production branch (commonly `main` or `master`).
+Load this skill before Git operations in every repository. Its loading and authorization gates apply regardless of branching model. Its branch, merge, and release recipes assume GitFlow; do not apply those recipes verbatim to trunk-based repositories or repos that release directly from their production branch.
 
 ## When To Use
 
-Use this skill for any of these task types. The host may auto-load it based on its description, but activation depends on the agent environment; if it was not loaded, invoke/load it explicitly:
+Before each Git action, confirm this skill and its baseline references are loaded in the current context. If absent (including after context compaction), read them before executing. This includes read-only commands (`status`, `diff`, `log`, `show`, remote inspection), write commands, and Git operations through scripts, IDEs, MCP, `gh`, or `glab`. Do not assume keyword matching guarantees activation. Host instructions must enforce this preflight; skill metadata alone cannot guarantee loading.
 
+- **Inspection**: inspect working tree, staged changes, history, refs, or remotes
 - **Commit**: commit, amend, validate or review a commit message, prepare a squash message, split staged changes
 - **Branch**: create, name, sync, or validate a branch
 - **PR / merge**: open a PR/MR, follow local title/merge conventions, review merge readiness, and prepare its description
@@ -27,8 +28,7 @@ For PR/MR creation, title, or description preparation/update tasks, load `refere
 
 ## When Not To Use
 
-- The repository is trunk-based or releases directly from its production branch (commonly `main` or `master`)
-- The task is code editing with no Git workflow decision
+- The task is code editing with no Git operation or workflow decision
 - The user wants a generic Git explanation unrelated to this workflow
 
 Adapt the rules first if the repo uses different branch roles or a non-GitFlow release model.
@@ -50,8 +50,9 @@ This skill covers Git workflow mechanics only. The following topics are outside 
 
 ## Output Rules
 
-These rules apply to Git actions under this GitFlow-oriented skill; first confirm the repository actually uses this workflow.
+Loading and authorization gates apply to all Git actions. Confirm the branching model before applying GitFlow-specific recipes.
 
+0. Never create a commit or push without explicit user permission for that action and scope. “Review”, “fix”, “prepare a commit”, “create a PR/MR”, or release/conflict work is not implicit commit/push permission. Commit permission does not authorize push; PR/MR approval authorizes push only when the exact push is explicitly included. This covers all branches, tags, amendments, auto-committing merges/reverts/cherry-picks, continuation commands, and tools that commit or push indirectly. Stop and ask when scope is unclear; do not run a command that can auto-commit without commit permission.
 1. Before committing, inspect branch suitability, staged diff scope, and intent. Follow the repository's message format and history; do not impose a scope, syntax, or length rule the project does not use.
 2. Split unrelated staged work only when staging intent is clear; otherwise ask before changing the staged set.
 3. Use a task branch by default. Before creating a code commit on the repository's verified production or integration branch, ask for explicit confirmation. Confirmation does not bypass branch protection or separate push/merge policies.
@@ -62,7 +63,9 @@ These rules apply to Git actions under this GitFlow-oriented skill; first confir
 
 ## Commit Task Contract
 
-When asked to commit, follow this order exactly:
+Only an explicit request to execute a commit (not just draft/review its message) authorizes committing, limited to the requested scope. Without it, inspect or prepare a proposal and stop before committing. Never push as follow-up without separate permission.
+
+When authorized to commit, follow this order exactly:
 
 1. Read `references/purpose.md`, `references/principles.md`, and `references/commit-convention.md`.
 2. Run `git status` to inspect both staged and unstaged changes.
@@ -75,7 +78,7 @@ When asked to commit, follow this order exactly:
 6. Follow the repository's documented type/message convention; do not invent a scope if none is required.
 7. Draft the final commit message and validate it against the staged intent.
 8. Run relevant project checks (tests, linter) when feasible, or explicitly state which checks were skipped.
-9. Execute `git commit` with the validated message.
+9. Confirm explicit commit permission still covers the final staged scope and branch; ask again if it changed or is unclear. Execute `git commit` with the validated message. Stop here unless a push is separately authorized.
 
 If any earlier step fails, stop. Explain the blocking reason and the smallest corrective action needed.
 

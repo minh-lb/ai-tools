@@ -1,4 +1,4 @@
 interface:
   display_name: "Git Workflow"
-  short_description: "Handle GitFlow-oriented Git tasks using verified repository policy"
-  default_prompt: "Use $git-workflow only after confirming the repository uses GitFlow-style branch roles. Inspect current Git state, follow the repository's message/branch/PR conventions, and preserve safety gates before external actions."
+  short_description: "Load before Git actions; gate commits, pushes, and clear PR/MRs"
+  default_prompt: "Load $git-workflow before every Git action, including read-only inspection. Require explicit user permission for commits and pushes separately, including indirect operations. Adapt GitFlow recipes to verified repository policy. Prepare complete, natural-language PR/MR descriptions from the full branch diff, preview for approval, and verify after submission."

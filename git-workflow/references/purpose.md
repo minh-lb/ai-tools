@@ -2,7 +2,7 @@
 
 Use this skill to keep Git history clean, collaboration predictable, and AI-assisted changes safe to review.
 
-This workflow assumes a GitFlow-style repository with:
+Load this skill before every Git operation, including read-only inspection. Loading and explicit commit/push permission gates apply to every branching model. The branch, merge, and release recipes assume a GitFlow-style repository with:
 
 - a configured production branch, commonly `main` or `master`
 - an integration branch, commonly `develop`

@@ -55,7 +55,7 @@ When a merge conflict appears:
    ```
    If either of these is empty, the resolution is identical to one side in full — confirm that's actually correct for a genuine content conflict (it sometimes is, e.g. a full rewrite that supersedes the other side), rather than assuming it's fine by default.
 7. Stage each resolved file: `git add <file>`
-8. Before running `git merge --continue`, verify `git status` reports a merge in progress and `git rev-parse -q --verify MERGE_HEAD` succeeds. If either check fails, or status identifies a rebase, cherry-pick, revert, or unclear operation, stop—do not run `git merge --continue` or substitute another operation's continue command. Inspect the current branch, ensure every conflict is resolved and staged, review the staged diff, and run relevant checks. If the current branch is the configured production or integration branch, obtain explicit user confirmation for this specific merge commit; until confirmation is received, do not run the continue command. Keep Git's default summary line (`Merge branch '<x>' into <y>`), then append a `Conflicts resolved in:` list naming each conflicted file and briefly how it was resolved. Use the prepared merge message and editor:
+8. Before running `git merge --continue`, verify `git status` reports a merge in progress and `git rev-parse -q --verify MERGE_HEAD` succeeds. If either check fails, or status identifies a rebase, cherry-pick, revert, or unclear operation, stop—do not run `git merge --continue` or substitute another operation's continue command. Inspect the current branch, ensure every conflict is resolved and staged, review the staged diff, and run relevant checks. On every branch, require explicit user permission for this specific merge commit before running the continue command; a conflict-resolution request alone is not commit permission. On the configured production or integration branch, also obtain sensitive-branch confirmation. Keep Git's default summary line (`Merge branch '<x>' into <y>`), then append a `Conflicts resolved in:` list naming each conflicted file and briefly how it was resolved. Use the prepared merge message and editor:
    ```bash
    git rev-parse -q --verify MERGE_HEAD
    git status
@@ -143,7 +143,7 @@ When you suspect a semantic conflict:
 
 1. Run the full test suite immediately after merge.
 2. If tests fail, trace the failure to the merged diff, not to unrelated areas.
-3. Fix the semantic issue as a follow-up commit on the same branch — do not amend the merge commit.
+3. Fix the semantic issue on the same branch and propose a follow-up commit — execute it only with explicit commit permission; do not amend the merge commit.
 
 ## When to escalate
 

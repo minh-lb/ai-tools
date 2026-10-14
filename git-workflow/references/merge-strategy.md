@@ -21,6 +21,18 @@ Prepare the description from `templates/pull-request-template.md` when it applie
 - **Risk and rollout:** Include only when there is a material risk or rollout concern. Describe the affected area, mitigation or monitoring, and rollback consideration. Do not claim “no risk”; state concrete facts such as “No schema changes.”
 - **Related work:** Link only verified issue/ticket IDs and URLs. Do not invent IDs or links; omit the section when there is nothing relevant and it is not required.
 
+### Completeness gate
+
+Before previewing and again before submission, compare the full target-relative branch diff and relevant commit history against the description. Cover every material change, not just the latest commit. The description must explain:
+
+- Where the change applies, the previous situation, intended outcome, and motivation.
+- What changed and its effect on users, callers, APIs, data, configuration, and dependent modules where relevant; explicitly identify behavior-preserving refactors.
+- Evidence from automated/manual verification, including exact checks, observed results, skipped checks and reasons, and known failures or limitations.
+- Material compatibility/breaking changes, dependencies, migrations, deployment/configuration requirements, risks, mitigations, and rollback steps when applicable. If these are unknown, state that and what needs confirmation; do not silently omit them or guess.
+- Verified related tickets/issues and supporting documentation/screenshots when useful or required; never fabricate evidence.
+
+Place these details under the repository's required headings or the sections above; do not add empty boilerplate for inapplicable items. Concise does not mean incomplete. Use natural, complete sentences rather than raw diff dumps, unexplained file lists, shorthand fragments, or generic claims. Remove placeholders and template comments before submitting. If missing information materially blocks review or rollout, ask before creating the PR/MR.
+
 Write in clear, natural language for a reviewer who may not know the implementation details: use complete, direct sentences; explain necessary technical terms; expand uncommon abbreviations; and prefer familiar words over jargon. Keep bullets consistent, specific, and focused on helping the reviewer understand the change. Avoid vague claims (“improved things”), unsubstantiated benefits, duplicated information between sections, and unrelated implementation details. Remove unused sections/placeholders rather than leaving template instructions in the submitted description.
 
 ### Bilingual PR/MR example
@@ -77,7 +89,9 @@ Title: `[APP-123] Retry failed password reset emails`
 
 ## Preview and approval
 
-Before an external create action or a push not already approved by the user, show a complete preview and wait for explicit approval. Include:
+A request to create a PR/MR does not authorize committing or pushing. If changes are uncommitted, propose the required commit and ask for commit permission; if publication is needed, ask for push permission for the exact source branch/SHA/destination. Never let a hosting tool auto-commit or auto-push without that permission.
+
+Before an external create/update action or a push not already approved by the user, show a complete preview and wait for explicit approval. Obtain separate approval for any required commit; PR/MR approval includes push permission only if the user explicitly approves the push plan. Include:
 
 - Source project/owner and branch, plus its local tip SHA.
 - Fetch/base remote, source push remote, and the single effective push destination (redact credentials).

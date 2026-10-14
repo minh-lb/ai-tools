@@ -1,8 +1,10 @@
 # Git Workflow
 
-Skill dành cho repository theo GitFlow: nhánh production (thường là `main` hoặc `master`), nhánh tích hợp (thường là `develop`), cùng `release/*` và `hotfix/*`. Dùng cho tác vụ GitFlow như commit, branch, merge, PR/MR, conflict, release, hotfix và worktree.
+Nạp skill trước **mọi thao tác Git**, kể cả `status`, `diff`, `log`, kiểm tra remote và thao tác qua script, IDE, MCP, `gh`/`glab`. Trước mỗi thao tác, xác nhận `SKILL.md` cùng `references/purpose.md` và `references/principles.md` còn trong context; đọc lại nếu chưa nạp hoặc đã mất sau compaction.
 
-Agent có thể tự chọn skill dựa trên mô tả và tác vụ, nhưng việc tự kích hoạt phụ thuộc môi trường agent. Nếu skill chưa được nạp, hãy gọi rõ `git-workflow`; không giả định từ khóa như "commit" luôn kích hoạt skill.
+Quy tắc nạp và quyền commit/push áp dụng cho mọi repository. Các hướng dẫn branch/merge/release dành cho GitFlow: production (thường là `main`/`master`), integration (thường là `develop`), `release/*`, `hotfix/*`; phải điều chỉnh theo mô hình thực tế.
+
+Metadata không bảo đảm host tự nạp skill. Cần quy tắc trong `AGENTS.md`/hướng dẫn tương đương của host trỏ tới skill đã cài. Skill không tự cài quy tắc vào host; khi sử dụng hoặc cài sang repo/host khác, phải cấu hình tương ứng.
 
 ---
 
@@ -19,6 +21,8 @@ Agent có thể tự chọn skill dựa trên mô tả và tác vụ, nhưng vi�
 - Xác định đúng vai trò branch và remote trước khi thao tác (integration branch thực tế, thường là `develop`, cho task branch; production branch thực tế cho hotfix). Cập nhật local base/release branch bằng `fetch` + `merge --ff-only`; đồng bộ task/hotfix branch bằng `fetch` + merge thường. Workflow này không dùng rebase.
 
 ### 3. PR và merge
+- Description phải đầy đủ theo toàn bộ diff và lịch sử branch so với target: bối cảnh, vấn đề/mục tiêu/lý do, thay đổi và tác động, kiểm chứng thực tế, kiểm tra chưa chạy và lý do, giới hạn đã biết, rủi ro/triển khai/rollback khi liên quan, liên kết đã xác minh. Nêu rõ breaking change, migration, cấu hình và dependency nếu có; không đoán thông tin chưa kiểm chứng.
+- Viết câu tự nhiên, rõ ràng, dễ đọc; tránh chỉ liệt kê tên file, chép diff, thuật ngữ không giải thích hoặc claim chung chung. Theo template của repo, bỏ placeholder/comment và mục không áp dụng; ngắn gọn nhưng không thiếu thông tin.
 - Soạn PR title/squash message đúng convention.
 - Chọn merge mode theo repository settings/policy; preserve release/hotfix ancestry khi quy trình hoặc verification phụ thuộc source tip là ancestor.
 - Checklist review trước khi mở PR (test pass, không còn conflict, migration an toàn...).
@@ -43,6 +47,8 @@ Agent có thể tự chọn skill dựa trên mô tả và tác vụ, nhưng vi�
 - Kiểm tra `git status` trước khi remove; nếu worktree còn thay đổi, bảo toàn chúng và chỉ remove bình thường sau khi sạch. Không dùng `--force` để discard worktree bẩn; chỉ cân nhắc `--force` với worktree sạch nếu Git vẫn yêu cầu và người dùng xác nhận.
 
 ### 7. Nguyên tắc an toàn — không làm mất code
+**Không tự ý commit hoặc push trên bất kỳ nhánh nào.** Chỉ thực thi khi user cho phép rõ hành động và phạm vi. Yêu cầu review, sửa code, chuẩn bị commit message, tạo PR/MR, resolve conflict hay release không ngầm cho phép commit/push. “Commit” không cho phép push; “push” không cho phép tạo thêm commit. Nếu phạm vi thay đổi hoặc quyền chưa rõ, dừng hỏi. Quy tắc bao gồm amend, lệnh merge/revert/cherry-pick/continue tự tạo commit, push tag và tool tự push. Duyệt PR/MR chỉ bao gồm push nếu user duyệt rõ kế hoạch push cụ thể; ví dụ lệnh không phải là quyền thực thi.
+
 Dùng task branch làm mặc định. Nếu đang ở production branch (thường là `main`/`master`) hoặc integration branch (thường là `develop`) đã xác minh của repo, hỏi xác nhận rõ ràng trước khi tạo code commit; sau khi được duyệt có thể commit ngay trên nhánh hiện tại, không bắt buộc checkout nhánh mới. Việc duyệt commit không thay thế quyền push/merge hay bỏ qua branch protection. Trước mọi push, kể cả push trực tiếp trong release/hotfix, xác minh chỉ có đúng một effective destination được duyệt bằng quy tắc trong `references/principles.md`; nếu có nhiều đích thì dừng.
 
 Xuyên suốt mọi tác vụ trên, skill cấm tuyệt đối các lệnh có thể làm mất code không thể phục hồi:
@@ -157,9 +163,6 @@ Dùng git-workflow để revert một squash-merge commit đã push lên integra
 
 ---
 
-## Khi nào KHÔNG dùng skill này
+## Giới hạn áp dụng
 
-- Repository không có integration branch (thường tên `develop`) và release trực tiếp từ production branch (thường `main`/`master`)
-- Repository dùng trunk-based development, không có nhánh release
-
-Nếu repo dùng vai trò nhánh khác hoặc mô hình release không phải GitFlow, cần điều chỉnh lại quy tắc trước khi áp dụng nguyên văn.
+Không cần nạp khi chỉ sửa code và không thao tác Git. Với repository trunk-based hoặc release trực tiếp từ production, vẫn nạp skill và giữ các gate an toàn/quyền; không áp dụng nguyên văn recipe GitFlow. Xác minh mô hình thực tế rồi điều chỉnh hướng dẫn branch/merge/release.
