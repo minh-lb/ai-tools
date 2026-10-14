@@ -1,6 +1,10 @@
 ## Summary
 
-<!-- Use a short bullet list, not a paragraph. Include the current situation/problem, the desired outcome, and why it matters (combine items when clearer). Use one clear idea per bullet, natural language, and no implementation details. -->
+- **Context:** <affected screen/flow/component/process and any relevant setting or data precondition, if applicable>
+- **Actual:** <current situation/problem>
+- **Expect:** <desired outcome and why it matters>
+
+<!-- Keep Context specific to locating and understanding the affected area; include only relevant settings/data conditions, not unrelated workflow details. Keep Actual and Expect focused on current behavior and desired outcome. Use natural language and avoid implementation details. -->
 
 ## Changes
 

@@ -17,13 +17,13 @@ Use this skill for any of these task types. The host may auto-load it based on i
 
 - **Commit**: commit, amend, validate or review a commit message, prepare a squash message, split staged changes
 - **Branch**: create, name, sync, or validate a branch
-- **PR / merge**: open a PR/MR, follow local title/merge conventions, review merge readiness
+- **PR / merge**: open a PR/MR, follow local title/merge conventions, review merge readiness, and prepare its description
 - **Release**: cut, stabilize, finalize, or roll back a release
 - **Conflict**: resolve a merge conflict
 - **Worktree**: create, list, or remove a worktree
 
 For commit tasks, load `references/commit-convention.md` before acting.
-For PR/MR creation or title tasks, load `references/merge-strategy.md` and use the repository's PR/MR template when one exists. Determine the title from the repository's contribution guide, existing PR/MR history, and any required issue or ticket reference; preserve the established format and language. If no title convention is documented, use the fallback template `[ticket ID] <short description>`. This fallback format requires a real ticket ID; never fabricate or omit it. If no ticket ID is available, ask the user how to proceed before drafting the title. Include the proposed title in the complete preview and obtain approval before external creation or an unapproved push. Follow the user's language preference for the description; if it is unclear from the request or context, ask before drafting the preview. Prefer a suitable authenticated MCP tool; otherwise use an authenticated `gh` or `glab` with explicit source and target projects. Load `references/commit-convention.md` when preparing a squash message.
+For PR/MR creation, title, or description preparation/update tasks, load `references/merge-strategy.md` and use the repository's PR/MR template when one exists. For the description Summary, include a concise **Context** bullet before **Actual** and **Expect**, naming the affected screen/flow/component/process and any relevant setting or data precondition when applicable; keep it focused on reviewer orientation and avoid unrelated workflow detail or repeating Actual/Expect. Determine the title from the repository's contribution guide, existing PR/MR history, and any required issue or ticket reference; preserve the established format and language. If no title convention is documented, use the fallback template `[ticket ID] <short description>`. This fallback format requires a real ticket ID; never fabricate or omit it. If no ticket ID is available, ask the user how to proceed before drafting the title. Include the proposed title in the complete preview and obtain approval before external creation or an unapproved push. Follow the user's language preference for the description; if it is unclear from the request or context, ask before drafting the preview. Prefer a suitable authenticated MCP tool; otherwise use an authenticated `gh` or `glab` with explicit source and target projects. Load `references/commit-convention.md` when preparing a squash message.
 
 ## When Not To Use
 

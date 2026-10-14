@@ -15,7 +15,7 @@ Before creating a PR/MR, inspect the complete branch diff and commit history rel
 
 Prepare the description from `templates/pull-request-template.md` when it applies. Follow the target repository's required structure if it differs. Write the description in the user's requested language; ask if it is unclear. Keep section headings in English, including when the body is localized, unless the repository explicitly requires otherwise. Apply these item-level rules:
 
-- **Summary:** Use a short bullet list rather than a paragraph. Include the current situation/problem, the desired outcome, and why it matters (combine items when clearer). Use one clear idea per bullet, natural language, and avoid implementation details.
+- **Summary:** Use a short bullet list rather than a paragraph. Add a **Context** bullet before **Actual** and **Expect** to identify the affected screen, flow, component, or process and any relevant setting or data precondition when applicable, helping a reviewer locate and understand the change. Keep it specific to the affected area; omit unrelated workflow details and do not repeat the problem or outcome there. Then include the current situation/problem (**Actual**), desired outcome (**Expect**), and why it matters (combine items when clearer). Use one clear idea per bullet, natural language, and avoid implementation details.
 - **Changes:** Focus on what changed in the code: the functions, modules, interfaces, rules, or logic paths modified, and how related callers, API consumers, or dependent modules are affected. Include relevant implementation constraints or compatibility details. Do not repeat the current-versus-desired behavior already explained in Summary. For a refactor with no behavior change, say so and summarize the internal code change. State no related impact only after checking; do not guess. Keep bullets concise and reviewer-focused, not a file-by-file narration unless paths help reviewers.
 - **Verification:** Give exact checks run and their result (for example, `npm test` — passed). Distinguish automated tests from manual checks. State important checks not run and why; never imply success without evidence.
 - **Risk and rollout:** Include only when there is a material risk or rollout concern. Describe the affected area, mitigation or monitoring, and rollback consideration. Do not claim “no risk”; state concrete facts such as “No schema changes.”
@@ -33,6 +33,7 @@ Title: `[APP-123] Retry failed password reset emails`
 
 ```markdown
 ## Summary
+- **Context:** In the password-reset flow, the user requests a reset email from the sign-in page.
 - **Actual:** A temporary mail-provider error can prevent a password reset email from being delivered, forcing the user to request another one.
 - **Expect:** Retry delivery automatically so the user does not have to restart the flow.
 
@@ -56,6 +57,7 @@ Title: `[APP-123] Retry failed password reset emails`
 
 ```markdown
 ## Summary
+- **Context:** Trong luồng đặt lại mật khẩu, người dùng yêu cầu gửi email đặt lại mật khẩu từ màn hình đăng nhập.
 - **Actual:** Lỗi tạm thời từ nhà cung cấp email có thể khiến thư đặt lại mật khẩu không được gửi; người dùng phải gửi yêu cầu lại.
 - **Expect:** Hệ thống tự thử gửi lại thư để người dùng không phải bắt đầu lại quy trình.
 
