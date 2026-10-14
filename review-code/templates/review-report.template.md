@@ -30,18 +30,22 @@
 
 ## Findings
 
-<!-- Sort by severity descending and repeat this block for each finding. If no issues were found, replace the block with an explicit no-findings statement and state what was covered. -->
+<!-- Sort by severity descending. Keep findings concise: one short description, evidence/trigger and impact, then an actionable fix. If none, state that explicitly and briefly say what was covered. -->
 
 - [{{CORR | SEC | PERF | ARCH | DB | API | UI | A11Y | TEST | MAINT | OBS | CONC | INFRA | COMPAT}}] {{Critical | High | Medium | Low}} — {{short description}}.
 
   Path: {{repository-verified path/to/file.ext:line-or-range}}
 
-  Why: {{trigger condition, evidence, impact, and affected actor/system}}
+  Why: {{brief evidence, trigger, and concrete impact}}
 
-  Fix: {{practical remediation direction}}
+  Fix: {{concise, actionable remediation}}
+
+## Kết luận
+
+**Disposition:** {{Ready | Changes requested | Needs verification}} — {{one-sentence reason}}
 
 ## Summary
 
 1. **Phạm vi/revision:** {{reviewed code, revision or diff source, and material exclusions}}
-2. **Rủi ro/giả định:** {{main risks, open questions, confidence limits, and any aggregate risk}}
+2. **Rủi ro/giả định:** {{main risks, open questions, confidence limits, and residual risk}}
 3. **Checks:** {{exact checks/commands and results; state what was not run and why}}

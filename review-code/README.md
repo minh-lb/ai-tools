@@ -90,7 +90,7 @@ Hai reviewer phải dùng cùng snapshot/ref và phạm vi; lượt frontend t�
 
 ## Kết quả và report
 
-Mỗi report có đủ 14 dòng checklist, findings theo severity và summary về scope/revision, assumptions, checks đã chạy và residual risks:
+Mỗi report có disposition (`Ready`, `Changes requested` hoặc `Needs verification`), đủ 14 dòng checklist, findings theo severity và summary ngắn về scope/revision, assumptions, checks đã chạy và residual risks. `Ready` không đồng nghĩa review tĩnh chứng minh production readiness:
 
 `CORR`, `SEC`, `PERF`, `ARCH`, `DB`, `API`, `UI`, `A11Y`, `TEST`, `MAINT`, `OBS`, `CONC`, `INFRA`, `COMPAT`.
 

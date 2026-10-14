@@ -1,6 +1,6 @@
 ---
 name: review-code
-description: Use only when explicitly invoked with `@review-code` or `/review-code`; never auto-load for generic review requests. Reviews backend and browser frontend code/diffs for correctness, security, compatibility, operations, testing, and UI risks.
+description: Invoke only with `@review-code` or `/review-code`. Review backend and browser frontend code or diffs.
 metadata:
   author: Minh Luu
 argument-hint: codebase | git-diff <base>...<head>
@@ -12,7 +12,7 @@ argument-hint: codebase | git-diff <base>...<head>
 
 Load and use this skill only after an explicit user invocation, such as `@review-code`, `/review-code`, or a direct request to use the `review-code` skill. Do not auto-load it merely because the user asks in natural language to review code, a PR, or a diff. If not explicitly invoked, continue without this skill; do not silently activate it.
 
-Perform an evidence-backed review of backend services/APIs and browser-based frontend code. Native mobile and desktop UI are outside this skill's scope; identify them as exclusions in mixed reviews. Be respectful and direct: report realistic failure modes, not personal style, speculative concerns, or unrelated refactors.
+Perform an evidence-backed review of backend services/APIs and browser-based frontend code. Native mobile and desktop UI are outside this skill's scope; identify them as exclusions in mixed reviews. Apply relevant project conventions, contracts, and stack-specific guidance; do not force generic rules where the repository has a justified standard. No checklist guarantees every domain-specific risk, so state material scope limits. Be direct: report realistic failure modes, not personal style or unrelated refactors.
 
 ## Mode and scope
 
@@ -46,6 +46,8 @@ Always read:
 - [Review Process](references/review-process.md)
 - [Severity Model](references/severity-model.md)
 
+Load only applicable dimension references. Do not load the report template or example until preparing the report; the example is optional.
+
 For codebase review, consider all dimensions and load the relevant references across the declared scope. For diff review, check every dimension, then load only references that match materially changed surfaces; never skip the applicability check. Correctness, Architecture, and Testing are usually relevant. Browser UI changes require explicit UI and Accessibility evaluation.
 
 | Code | Dimension | Load when the scope/change includes |
@@ -67,7 +69,7 @@ For codebase review, consider all dimensions and load the relevant references ac
 
 ## Review report contract
 
-Write descriptive report content in Vietnamese; keep technical terms, codes, field labels, library names, file paths, and protocol names in English. Use [the report template](templates/review-report.template.md); consult [the example](examples/review-report.example.md) only when needed. The skill and applicable references override example/template wording. Remove instructions and placeholders, and never copy sample paths, findings, or test results as facts.
+Write the report in concise, plain Vietnamese; keep technical terms, codes, field labels, library names, paths, and protocol names in English. Prefer short sentences and explain only evidence, impact, and actionable fixes. Load [the report template](templates/review-report.template.md) when writing the report; consult [the example](examples/review-report.example.md) only if needed. This skill and applicable references override the template/example. Remove placeholders and never copy sample facts.
 
 ### Checklist
 
@@ -108,9 +110,9 @@ List findings in descending severity. A location may appear under multiple dimen
 
 `Why` covers evidence; `Fix` gives remediation. Use verified source coordinates from the reviewed revision. For a missing-test finding, cite the implementation whose behavior lacks coverage; do not invent a line for absent code. In `git-diff` mode, report issues introduced or materially worsened by the change. In `codebase` mode, report material defects within declared scope. Keep unrelated pre-existing issues out of diff findings.
 
-### Summary
+### Summary and disposition
 
-State the reviewed scope and revision/diff source, material exclusions or assumptions, checks actually run and their results, unrun checks and verification gaps, and residual risk. Explicitly state when no findings were found. Never imply an unrun check passed.
+State a concise disposition: **Ready** (no material findings and adequate verification for scope), **Changes requested** (one or more material findings), or **Needs verification** (review/check limits prevent a reliable readiness call). A clean static review alone is not proof of release readiness. Then state the reviewed scope and revision/diff source, material exclusions or assumptions, checks actually run and their results, unrun checks and verification gaps, and residual risk. Explicitly state when no findings were found. Never imply an unrun check passed.
 
 ## Mandatory report artifact
 
