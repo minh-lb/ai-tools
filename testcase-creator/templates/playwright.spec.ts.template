@@ -1,0 +1,23 @@
+// Copy and rename this starter to the project's Playwright spec extension.
+// Test case: ../testcases/<id_short_description>.md
+// Replace every placeholder with approved testcase and target-project evidence.
+// Follow the target project's Playwright imports, fixtures, and config when available.
+import { expect, test } from "@playwright/test";
+
+test.describe("<Feature name>", () => {
+  test("[TC-001] <User goal>", async ({ page }) => {
+    await test.step("1. <Open the approved route and verify the start screen>", async () => {
+      await page.goto("<approved-route>");
+      await expect(page.getByRole("heading", { name: "<approved heading>" })).toBeVisible();
+    });
+
+    await test.step("2. <Perform the testcase action with exact data>", async () => {
+      await page.getByLabel("<approved field label>").fill("<test data>");
+      await page.getByRole("button", { name: "<approved button label>" }).click();
+    });
+
+    await test.step("3. <Verify the approved outcome>", async () => {
+      await expect(page.getByText("<approved visible result>")).toBeVisible();
+    });
+  });
+});

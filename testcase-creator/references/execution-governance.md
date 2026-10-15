@@ -21,4 +21,4 @@ For each deterministic run, link to the feature ID or suite path plus its short 
 
 ## Types and layers
 
-Tag an E2E case as applicable: functional, validation, accessibility/usability, compatibility, localization, regression, or a specified NFR. The test level is end-to-end. Link component/unit, API/contract, authorization-bypass, database-invariant, and security-probe cases to their dedicated suites rather than duplicating them here. State automation suitability only when automation planning is in scope or project convention requires it.
+Tag an E2E case as applicable: functional, validation, accessibility/usability, compatibility, localization, regression, or a specified NFR. The test level is end-to-end. Pair each deterministic case with its linked Playwright test per the skill output contract. Link component/unit, API/contract, authorization-bypass, database-invariant, and security-probe cases to their dedicated suites rather than duplicating them here.
