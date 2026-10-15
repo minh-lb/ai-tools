@@ -2,10 +2,10 @@
 
 ## Source priority
 
-1. The user's latest request, scope, and corrections.
-2. Files, tickets, schemas, API specifications, code, or tests directly inspected.
-3. Supplied project conventions, ADRs, and standards.
-4. Explicitly labeled assumptions, only when missing information does not prevent a useful draft.
+- **Requested outcome / constraints:** use the user's request and applicable approved project contracts/decisions. Code describes the current implementation, not necessarily the desired behavior.
+- **Current behavior:** cite inspected code, schemas, logs, or observed checks. A ticket is evidence of a report, not proof that the reported behavior was reproduced; a test definition is not a passing test result.
+- **Conflicts:** identify the conflicting sources and the affected requirement; do not silently choose a winner or overwrite an approved contract. Ask for a decision only if it blocks useful work; otherwise mark the draft conditional.
+- **Assumptions:** use explicit, reversible drafting assumptions only when they do not decide a core business rule or unsafe action.
 
 ## Classify claims
 

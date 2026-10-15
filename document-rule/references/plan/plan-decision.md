@@ -23,14 +23,14 @@ These signals are **heuristics**, not hard thresholds: changing permissions in o
 
 ## A bug-fix Specification is different from an Implementation Plan
 
-- A bug may need a Specification independently of whether it needs a Plan. If the user requests a Spec, or materially important desired behavior/scope/interface contract/non-regression conditions are unclear, write a brief bug-fix Spec that defines **WHAT**, the cause (verified or explicitly unknown), and acceptance criteria; record open questions rather than guessing.
+- A bug may need behavior alignment independently of a Plan. If a Spec is requested, write a brief bug-fix Spec defining **WHAT**, the cause (verified or explicitly unknown), and acceptance criteria. If only a fix is requested but material behavior/scope/contract conditions are unclear, ask the blocking question or state a concise conditional baseline inline; do not add a Spec file unless requested or required by project policy.
 - For a small, local bug with clear desired behavior and direct verification, do not create a Spec or Plan file by default; fix and test appropriately.
 - A bug-fix Spec should describe the cause, but it does not automatically replace a full RCA or prescribe implementation. State a cause only when supported by evidence; create an Implementation Plan only when requested or required by the repository/project.
 
 ## Important boundaries
 
 - Do **not** equate "the task needs implementation steps" with "the task needs an exported Implementation Plan file."
-- Do **not** write a full Specification before fixing a small bug unless requested or needed to settle an unclear business rule.
+- Do **not** add a full Specification before fixing a small bug unless requested or required by project policy. Settle unclear business rules with focused clarification rather than an unrequested file.
 - If the user only asks to **fix a bug**, the default deliverable is the requested code/change and suitable verification evidence, **not** a Specification plus Plan.
 - If the user asks for a **Specification + Plan**, provide both in that order; do not omit the Plan because the task is small. You may offer a shorter Plan if the user permits it.
 - If the user asks only for a **Plan**, write only the Plan; do not implement code or create a full Specification automatically.

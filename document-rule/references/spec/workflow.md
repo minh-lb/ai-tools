@@ -5,13 +5,13 @@
 - **Feature/SRS:** observable expectations for a feature or system.
 - **BLS:** business rules, decisions, states, and side effects.
 - **API Specification:** interface contract; do not turn it into implementation details.
-- **Bug-fix Specification:** current versus desired behavior, fix scope, and acceptance/non-regression criteria; create only when requested or when material behavior must be aligned.
+- **Bug-fix Specification:** current versus desired behavior, fix scope, and acceptance/non-regression criteria; create when requested or required by project policy. For a fix-only request with unclear behavior, clarify first without adding a file.
 
 ## Bug-fix Specification
 
 A bug may need a Specification. This document defines **the behavior to fix**; it is not a root-cause analysis (RCA) report or an Implementation Plan.
 
-- Write one when the user requests a Spec, or when current/desired behavior, an interface contract, impact scope, or non-regression conditions must be agreed before a change.
+- Write one when a Spec is requested or required by project policy. If only a fix is requested and material behavior/contract/scope must be agreed first, clarify the blocking decision or state a concise conditional baseline inline; do not silently add a Spec file.
 - For a small, local bug with clear desired behavior and direct verification, do not create a Spec file by default; see the [Plan/Spec decision](../plan/plan-decision.md).
 - Put current behavior and desired behavior in **separate sections**; do not combine them in one table/section. Include evidence/reproduction status for current behavior and the source for desired behavior.
 - State the **bug cause** separately as well. Describe a verified causal relationship with evidence; if unknown, say `Unknown` and list any hypothesis separately.

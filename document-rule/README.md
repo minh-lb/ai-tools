@@ -18,7 +18,7 @@ Skill áp dụng các nguyên tắc về độ chính xác, rõ ràng, cấu tr�
 ## Cách dùng
 
 1. Cài toàn bộ thư mục `document-rule/` vào folder skills được runtime hỗ trợ, ví dụ `.agents/skills/document-rule/` trong dự án dùng Codex.
-2. AI đọc `SKILL.md`, dùng `references/plan/plan-decision.md` để quyết định có cần Plan; chỉ mở reference/template/example liên quan theo router, không tự động đọc cả thư mục. Khi tạo tài liệu ra file, nếu prompt chưa chọn ngôn ngữ thì skill hỏi `Vietnamese` hoặc `English` trước khi ghi.
+2. AI đọc `SKILL.md`, chỉ mở reference theo router; không preload toàn bộ thư mục, README hay examples. Chỉ mở template khi tạo tài liệu và một example đúng ngôn ngữ khi cần làm rõ mẫu; chỉ đọc Plan decision khi cần quyết định có tạo Plan. Khi sửa/review/export nội dung có sẵn, giữ nguyên ngôn ngữ từng file và các cặp EN/VI, không hỏi lại. Chỉ hỏi `Vietnamese` hoặc `English` trước khi tạo tài liệu mới ra file nếu yêu cầu/ngữ cảnh đã xác nhận chưa chọn ngôn ngữ.
 3. Template là khung chọn lọc, không phải bộ mục bắt buộc. Với Plan, Goal phải nêu outcome cụ thể, scope/constraint chính và tín hiệu thành công có thể kiểm chứng; tránh mô tả chung chung. Trước khi bàn giao, bỏ placeholders không cần thiết và review theo góc nhìn independent reader: người có chuyên môn phù hợp nhưng không phải tác giả có thể thực hiện đúng, biết khi nào hoàn thành và kiểm tra kết quả hay không. Với fix bug đơn giản, thực hiện và kiểm chứng trực tiếp thay vì viết Plan file.
 
 Ví dụ prompt:
@@ -103,14 +103,27 @@ Discovery/activation vẫn tùy runtime; không đảm bảo mọi yêu cầu đ
 
 ## Kiểm thử hành vi tối thiểu
 
-1. `Spec only` → không tự sinh Plan.
-2. `Spec + Plan` → Spec trước, Plan trace FR/BR/NFR/AC.
-3. `Plan only` khi chưa đọc repo → không bịa module/test command.
-4. `Chỉ in Acceptance Criteria` → không intro, conclusion hay mục khác.
-5. `Raw JSON only` → parseable JSON không fence.
-6. `Tạo file` → link chỉ khi tồn tại file thật.
-7. `Review only` → findings, không tự rewrite.
-8. `Review-and-fix` được yêu cầu → sửa findings cần xử lý trong scope, chạy checks phù hợp, review lại đến khi không còn finding cần xử lý theo quality bar; nêu blocker/finding hoãn, disposition, không khẳng định production readiness từ review tài liệu.
-9. Yêu cầu/cần đặc tả sửa lỗi → dùng mẫu riêng; mô tả hiện trạng và hành vi mong muốn ở hai mục riêng, nêu nguyên nhân đã xác minh hoặc ghi chưa xác định, kèm bằng chứng/câu hỏi còn mở và tiêu chí chấp nhận; không tự sinh RCA đầy đủ hay Plan.
+Dùng các scenario độc lập dưới đây khi thay đổi skill. Đối chiếu **output và tool trace thực tế** với kỳ vọng; đọc quy tắc hoặc kiểm tra link không chứng minh model đã tuân thủ. Nếu chưa chạy với agent, ghi `Chưa kiểm thử hành vi` thay vì `Passed`.
+
+| Scenario / prompt | Kỳ vọng quan sát được |
+|---|---|
+| `Viết Spec bằng tiếng Việt, chỉ inline` | Có Spec, không tự sinh Plan hoặc hỏi ngôn ngữ |
+| `Spec + Plan` | Spec trước; Plan trace FR/BR/NFR/AC |
+| `Plan only`, repo chưa được cung cấp | Không bịa module/test command; nêu việc cần inspect |
+| `Chỉ in Acceptance Criteria` từ source có sẵn | Trích nguyên văn section; không intro, paraphrase hay mục khác |
+| `Raw JSON only` | JSON parse được; không fence hay metadata ngoài schema |
+| `Tạo file` | Chỉ link file đã tạo và kiểm tra thực tế |
+| `Review only` | Findings có evidence/location; không sửa source |
+| `Review và tự fix đến khi sạch` | Sửa → check → review lại toàn scope; không lặp vô ích hoặc gọi sạch khi còn finding bắt buộc |
+| `Review/fix` gặp bằng chứng thiếu hoặc thao tác bị từ chối | Nêu blocker, dừng nhánh bị chặn; không thử lệnh tương đương để vượt chặn |
+| `Đặc tả sửa lỗi` | Hiện trạng, mong muốn, cause tách riêng; cause có evidence hoặc Unknown; AC rõ; không tự sinh RCA/Plan |
+| `Sửa skill/tài liệu này, giữ ngôn ngữ hiện tại` | Không hỏi ngôn ngữ; giữ từng file và EN/VI đồng bộ |
+| `Tạo Spec mới ra file`, chưa chọn ngôn ngữ | Hỏi Vietnamese/English rồi chờ; không ghi trước |
+| `Sửa file có schema riêng` / file không frontmatter | Giữ schema hiện có; không ép schema mặc định |
+| `Đổi requirement trong tài liệu approved` theo schema mặc định | Chuyển draft trừ khi revision mới được user duyệt; giữ ID/created |
+| `Viết ADR` / `Fix typo nhỏ` | ADR không thành runbook; typo không tự sinh Spec/Plan |
+| `Chỉ sửa một AC` | Chỉ đọc source/reference cần thiết; không preload toàn skill; không cắt điều kiện để tiết kiệm token |
+
+Kiểm tra tĩnh bổ sung: links nội bộ tồn tại; frontmatter hợp lệ theo schema áp dụng; không trùng document ID; template giữ placeholder rõ, output thực không còn placeholder bắt buộc; JSON examples parse được; index và các cặp EN/VI đồng bộ. Không dùng kiểm tra tĩnh để suy ra production readiness.
 
 **Lưu ý:** domain trong các ví dụ là hệ thống giả định; không áp dụng trực tiếp API/status/business rules vào sản phẩm thật.

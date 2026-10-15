@@ -38,7 +38,7 @@ tags: [document-rule, spec, bug-fix, vi]
 
 > Đây là proposal; không xem là approved requirements cho đến khi xác nhận contract.
 
-- `BR-001`: Nếu contract xác nhận filter áp dụng xuyên các trang, mọi trang MUST chỉ chứa record khớp filter đó.
+- `BR-001`: Nếu contract xác nhận filter áp dụng xuyên các trang, mọi trang PHẢI chỉ chứa record khớp filter đó.
 - `AC-001`: Given có record khớp và không khớp trên nhiều trang, when lấy trang tiếp theo với cùng owner filter, then mọi record trả về đều khớp filter.
 - `AC-002` (nếu được xác nhận): Given search không có owner filter, when pagination tiếp tục, then giữ nguyên behavior không filter hiện tại.
 

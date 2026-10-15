@@ -39,7 +39,7 @@ tags: [document-rule, plan, migration, vi]
 
 ### MIG-03 — Rollout code
 
-1. Deploy writer dùng `cancelledAt` theo cancel-order Specification.  
+1. Deploy writer dùng `cancelledAt` theo [cancel-order Specification](../spec/order-cancellation-spec.vi.md).\
    **Verify:** integration tests và runtime error checks. **Planned**.
 
 ### MIG-04 — Cleanup (optional)

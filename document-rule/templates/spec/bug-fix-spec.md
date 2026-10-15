@@ -31,7 +31,8 @@ tags: []
 ## Bug Cause
 
 - Cause: <causal description or `Unknown`>
-- Evidence/status: <verified + source; or hypothesis + how to check; or evidence to collect>
+- Evidence/status: <source supporting the verified cause, or evidence still needed>
+- Hypothesis (if any): <unverified explanation and how to check; never state it as the cause>
 
 ## Required Behavior and Acceptance Criteria
 

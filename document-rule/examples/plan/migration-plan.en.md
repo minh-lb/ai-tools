@@ -39,7 +39,7 @@ tags: [document-rule, plan, migration, en]
 
 ### MIG-03 — Roll out code
 
-1. Deploy a writer that uses `cancelledAt` according to the cancel-order Specification.  
+1. Deploy a writer that uses `cancelledAt` according to the [cancel-order Specification](../spec/order-cancellation-spec.en.md).\
    **Verify:** integration tests and runtime error checks. **Planned**.
 
 ### MIG-04 — Cleanup (optional)

@@ -11,7 +11,7 @@
 ## Formats
 
 - Markdown: use a clear heading hierarchy, lists, tables, fenced code, and valid relative links.
-- When creating a Markdown document file, add YAML frontmatter with **root-level properties** at the top of the file. Do not wrap them in a nested `properties:` key. Follow the user's requested schema or an existing file's schema instead of replacing it. Every Markdown document template must also show this frontmatter block with valid, clearly marked placeholders for project-specific values and `status: draft`. Default properties:
+- For a new Markdown document file with no user/project schema, use the default **root-level YAML frontmatter** below; never nest it under `properties:`. User/project schemas and format constraints take precedence over these defaults. Existing files retain their schema, including absence of frontmatter; do not retrofit metadata during an unrelated edit. Markdown document templates shipped with this skill show the default block with clearly marked placeholders and `status: draft`:
 
   ```yaml
   ---
@@ -25,7 +25,11 @@
   ---
   ```
 
-  `id`, `title`, `type`, `created`, and `updated` are required by default. Follow an explicit user/project ID schema when one exists; otherwise, use a task/ticket ID as the document `id` when available and unique within the repository/vault. If no task/ticket ID is available or it would collide, generate a UUID. Keep the chosen ID stable across renames and edits. Use ISO `YYYY-MM-DD` dates; `created` is the creation date and `updated` is the date of the latest content change. `status` and `tags` are optional unless the requested/existing schema requires them. If the frontmatter `status` property is present, its value MUST be exactly `draft` or `approved`: use `draft` by default and use `approved` only after the user explicitly approves the document. Never infer approval or use another value. This restriction applies to the document's frontmatter status; domain states and decision statuses in the body (for example, an ADR decision status) follow their own contract. Use `[]` when there are no applicable tags. Do not copy placeholder values as real metadata. For an existing document, preserve its schema and update existing metadata without breaking compatibility. Do not add frontmatter to inline output, raw JSON/YAML, or Markdown when the user explicitly requests no metadata.
+  - Required by default: `id`, `title`, `type`, `created`, `updated`. Optional: `status`, `tags`.
+  - Use a unique task/ticket ID when available; otherwise generate a UUID. Check for collisions within the target repository/vault when accessible, and disclose an unchecked uniqueness scope. Keep IDs stable across edits/renames; localized documents need distinct IDs under this default.
+  - Use actual ISO `YYYY-MM-DD` dates: preserve `created`; update `updated` on content changes. Quote/escape YAML strings when needed. Never publish placeholder values as real metadata.
+  - Under this default schema, `status` is only `draft` or `approved`; new documents use `draft`. Approval applies to a specific revision: a substantive edit returns it to `draft` unless the user explicitly approves the revised content. A formatting-only edit does not invalidate approval. A user/project schema may define different statuses; preserve those semantics rather than imposing this enum.
+  - Domain/ADR decision statuses in the body are separate from document approval. Use `tags: []` when there are no tags. Do not add frontmatter to inline output, raw JSON/YAML, or Markdown explicitly requested without metadata.
 - JSON: follow the exact schema/keys, ensure it parses, and omit comments/trailing commas.
 - YAML: use valid indentation, types, and escaping.
 - DOCX/PDF: when supported by the runtime, verify structure and render if possible.

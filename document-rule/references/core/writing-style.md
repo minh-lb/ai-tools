@@ -31,7 +31,7 @@ For reference/decision documents that do not direct execution, provide the relev
 
 ## Localization and terminology
 
-When translating/localizing, preserve specialized industry/domain terms in their canonical original form. Do not translate technical terms, acronyms, product/API names, or code identifiers. Translate the surrounding prose while retaining the source's intended meaning and terminology.
+Preserve each existing file's language unless translation is requested; keep EN/VI pairs semantically aligned when shared rules change. Preserve established domain terms, acronyms, product/API names, and code identifiers. Translate surrounding prose, including normative wording (`MUST` → `PHẢI`, `MUST NOT` → `KHÔNG ĐƯỢC`, `SHOULD` → `NÊN`, `MAY` → `CÓ THỂ`); do not turn ordinary prose into unnecessary mixed-language jargon.
 
 ## Editing rules
 

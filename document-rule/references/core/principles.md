@@ -24,7 +24,7 @@ If the user requests only one document, do not create related documents automati
 
 ## Normative language and IDs
 
-- `MUST`: required; `MUST NOT`: prohibited; `SHOULD`: recommended unless a specific reason applies; `MAY`: optional.
+- English: `MUST` = required; `MUST NOT` = prohibited; `SHOULD` = recommended unless a specific reason applies; `MAY` = optional. Vietnamese equivalents: `PHẢI`, `KHÔNG ĐƯỢC`, `NÊN`, `CÓ THỂ`. Use the document's language consistently; normative words are prose, not code identifiers.
 - Use stable IDs (`FR-`, `BR-`, `NFR-`, `AC-`, `IMP-`) when traceability or cross-references are useful; do not force IDs into every document. Do not change an ID between versions when its meaning is unchanged.
 - Do not add irrelevant sections or meaningless placeholders.
 - Match detail to risk and complexity; do not require every document to include rollback, API, database, or procedural-workflow structure.

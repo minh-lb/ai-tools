@@ -16,7 +16,7 @@ tags: [document-rule, plan, en]
 
 ## Goal and Coverage
 
-**Goal:** Enable an authenticated order owner to cancel only their `PENDING` order through `POST /orders/{orderId}/cancel`, atomically persisting `CANCELLED` and server-generated `cancelledAt`; reject unauthorized, missing, non-owned, or non-cancellable orders without mutation, and allow exactly one successful transition under concurrency.
+**Goal:** Enable an authenticated order owner to cancel only their `PENDING` order through `POST /orders/{orderId}/cancel`, atomically persisting `CANCELLED` and server-generated `cancelledAt`; reject unauthorized, missing, non-owned, or non-cancellable orders without mutation, and, for two authorized concurrent requests that complete without unrelated infrastructure failure, allow exactly one successful transition.
 
 **Coverage:** `FR-001`, `FR-002`, `BR-001…BR-004`, `NFR-001`, and `AC-001…AC-004` from the fictional Specification.
 

@@ -16,7 +16,7 @@ tags: [document-rule, plan, vi]
 
 ## Goal và Coverage
 
-**Goal:** Cho phép order owner đã authentication chỉ hủy order `PENDING` của chính họ qua `POST /orders/{orderId}/cancel`, đồng thời persist `CANCELLED` và `cancelledAt` từ server atomically; từ chối caller chưa được phép, order không tồn tại/không thuộc caller/không thể hủy mà không mutation; khi concurrency chỉ có đúng một transition thành công.
+**Goal:** Cho phép order owner đã authentication chỉ hủy order `PENDING` của chính họ qua `POST /orders/{orderId}/cancel`, đồng thời persist `CANCELLED` và `cancelledAt` từ server atomically; từ chối caller chưa được phép, order không tồn tại/không thuộc caller/không thể hủy mà không mutation; với hai requests đã authorization chạy đồng thời và hoàn tất không có infrastructure failure khác, chỉ có đúng một transition thành công.
 
 **Coverage:** `FR-001`, `FR-002`, `BR-001…BR-004`, `NFR-001` và `AC-001…AC-004` của Specification giả định.
 
