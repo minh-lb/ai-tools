@@ -9,6 +9,13 @@
       "sourcePath": "coding-rule"
     },
     {
+      "id": "document-rule",
+      "label": "Document Rule",
+      "description": "Write, edit, review, display, and export software technical documents with AMM-inspired precision and verifiability, without creating unrequested Specs or Plans.",
+      "sourceBranch": "agent-skills",
+      "sourcePath": "document-rule"
+    },
+    {
       "id": "domain-driven-design",
       "label": "Domain Driven Design",
       "description": "Laravel backend module design using DDD layers, Actions, DTOs, repositories, and events.",

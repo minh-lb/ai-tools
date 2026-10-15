@@ -316,6 +316,13 @@ test("resolveSelectionItems supports direct branch folders without a manifest", 
         description: "Folder: git-workflow",
         sourceBranch: "agent-skills",
         sourcePath: "git-workflow"
+      },
+      {
+        id: "document-rule",
+        label: "Document Rule",
+        description: "Technical document authoring and review",
+        sourceBranch: "agent-skills",
+        sourcePath: "document-rule"
       }
     ],
     groups: []
@@ -352,7 +359,7 @@ test("resolveSelectionItems supports direct branch folders without a manifest", 
       github: client.config
     },
     selectionCatalog,
-    selectedSkillIds: ["git-workflow"],
+    selectedSkillIds: ["git-workflow", "document-rule"],
     selectedGroupIds: []
   });
 
@@ -373,6 +380,18 @@ test("resolveSelectionItems supports direct branch folders without a manifest", 
         pi: {
           type: "directory"
         }
+      }
+    },
+    {
+      id: "document-rule",
+      label: "Document Rule",
+      description: "Technical document authoring and review",
+      sourceBranch: "agent-skills",
+      sourcePath: "document-rule",
+      targets: {
+        codex: { type: "directory" },
+        claude: { type: "directory" },
+        pi: { type: "directory" }
       }
     }
   ]);
@@ -396,6 +415,7 @@ test("loadSelectionCatalog includes curated local skills in installer choices", 
     catalog.skills.map((skill) => skill.id),
     [
       "coding-rule",
+      "document-rule",
       "domain-driven-design",
       "generate-flow",
       "git-workflow",
@@ -415,6 +435,18 @@ test("loadSelectionCatalog includes curated local skills in installer choices", 
       description: "Language- and framework-agnostic coding guidance for implementing, editing, debugging, and refactoring software, including application code, APIs, databases, UI, security, infrastructure as code, containers, and shell scripts.",
       sourceBranch: "agent-skills",
       sourcePath: "coding-rule",
+      targets: undefined
+    }
+  );
+
+  assert.deepEqual(
+    catalog.skills.find((skill) => skill.id === "document-rule"),
+    {
+      id: "document-rule",
+      label: "Document Rule",
+      description: "Write, edit, review, display, and export software technical documents with AMM-inspired precision and verifiability, without creating unrequested Specs or Plans.",
+      sourceBranch: "agent-skills",
+      sourcePath: "document-rule",
       targets: undefined
     }
   );
