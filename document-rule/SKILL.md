@@ -6,6 +6,8 @@ description: >-
   runbooks, ADRs, designs, test plans, READMEs, and scoped/full exports.
   Apply AMM-inspired precision and verifiability without imposing aviation forms
   or creating unrequested documents. Support iterative review-and-fix.
+metadata:
+  author: Minh Luu
 ---
 
 # document-rule
