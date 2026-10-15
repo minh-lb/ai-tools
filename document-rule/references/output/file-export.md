@@ -1,21 +1,36 @@
-# Quy tắc xuất file / định dạng
+# File Export and Formatting Rules
 
-## Kiểm tra trước khi trả link
+## Before returning a link
 
-1. Có công cụ phù hợp định dạng user yêu cầu (Markdown, PDF, DOCX, v.v.) không?
-2. Đã **tạo thực tế** file đúng path, đúng extension và cấu trúc?
-3. Đã kiểm tra file không rỗng, sections/nội dung đủ, encoding tiếng Việt đúng?
-4. Nếu có link, đó có phải link của file đang tồn tại, không phải path suy đoán?
-5. Nếu user yêu cầu cả inline và file: output không tự thay một phần bằng phần kia.
+1. Is there a suitable tool for the requested format (Markdown, PDF, DOCX, etc.)?
+2. Was the file actually created at the right path, with the right extension and structure?
+3. Was it checked for non-empty content, required sections, and correct encoding?
+4. If providing a link, does it point to the existing file rather than a guessed path?
+5. If the user requested both inline content and a file, did you provide both rather than substituting one for the other?
 
-## Định dạng
+## Formats
 
-- Markdown: heading hierarchy, lists, tables, fenced code, relative links hợp lệ.
-- JSON: schema/keys đúng contract, parse được, không comments/trailing comma.
-- YAML: indentation, types, escaping chính xác.
-- DOCX/PDF: khi runtime hỗ trợ, kiểm tra cấu trúc và bản render nếu có thể.
-- Multiple files: tên ổn định, mục lục/điều hướng, kiểm tra link giữa các file.
+- Markdown: use a clear heading hierarchy, lists, tables, fenced code, and valid relative links.
+- When creating a Markdown document file, add YAML frontmatter with **root-level properties** at the top of the file. Do not wrap them in a nested `properties:` key. Follow the user's requested schema or an existing file's schema instead of replacing it. Every Markdown document template must also show this frontmatter block with valid, clearly marked placeholders for project-specific values and `status: draft`. Default properties:
 
-## Khi có giới hạn
+  ```yaml
+  ---
+  id: <stable unique identifier>
+  title: <document title>
+  type: <document type>
+  status: draft
+  created: YYYY-MM-DD
+  updated: YYYY-MM-DD
+  tags: []
+  ---
+  ```
 
-Nếu không thể tạo file, nói rõ giới hạn; không khẳng định hoàn thành. Nếu nội dung quá dài để hiển thị, có thể đưa file đầy đủ **khi tạo được file**, kèm mô tả rõ phần chat là preview chứ không phải toàn văn. Không tự đổi định dạng file không được user cho phép.
+  `id`, `title`, `type`, `created`, and `updated` are required by default. Follow an explicit user/project ID schema when one exists; otherwise, use a task/ticket ID as the document `id` when available and unique within the repository/vault. If no task/ticket ID is available or it would collide, generate a UUID. Keep the chosen ID stable across renames and edits. Use ISO `YYYY-MM-DD` dates; `created` is the creation date and `updated` is the date of the latest content change. `status` and `tags` are optional unless the requested/existing schema requires them. If the frontmatter `status` property is present, its value MUST be exactly `draft` or `approved`: use `draft` by default and use `approved` only after the user explicitly approves the document. Never infer approval or use another value. This restriction applies to the document's frontmatter status; domain states and decision statuses in the body (for example, an ADR decision status) follow their own contract. Use `[]` when there are no applicable tags. Do not copy placeholder values as real metadata. For an existing document, preserve its schema and update existing metadata without breaking compatibility. Do not add frontmatter to inline output, raw JSON/YAML, or Markdown when the user explicitly requests no metadata.
+- JSON: follow the exact schema/keys, ensure it parses, and omit comments/trailing commas.
+- YAML: use valid indentation, types, and escaping.
+- DOCX/PDF: when supported by the runtime, verify structure and render if possible.
+- Multiple files: use stable names and navigation; check links between files.
+
+## When capabilities are limited
+
+If the requested file cannot be created, state the limitation; do not claim completion. If the content is too long to display, provide the complete file **only if it was actually created**, and clearly label the chat output as a preview rather than the full text. Do not silently change the requested file format.

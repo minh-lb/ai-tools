@@ -1,12 +1,21 @@
+---
+id: "<unique-task-id-or-uuid>"
+title: "<Feature or release> — Test Plan"
+type: test-plan
+status: draft
+created: "YYYY-MM-DD"
+updated: "YYYY-MM-DD"
+tags: []
+---
 # <Feature / Release> — Test Plan
 
-## Scope & Baseline
+## Scope and Baseline
 
-<Spec/AC IDs, in/out-of-scope, assumptions.>
+<Specification/acceptance-criterion IDs, in/out of scope, assumptions.>
 
 ## Test Strategy
 
-<Unit/integration/e2e; environments, dependencies, datasets.>
+<Unit/integration/end-to-end; environments, dependencies, datasets.>
 
 ## Scenarios
 
@@ -25,4 +34,4 @@
 
 ## Known Risks / Gaps
 
-<Unknowns, owners if known; no invented Passed status.>
+<Unknowns, owners if known; do not invent Passed status.>

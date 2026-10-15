@@ -1,15 +1,24 @@
+---
+id: "<unique-task-id-or-uuid>"
+title: "<Small fix> — Implementation Plan"
+type: small-change-plan
+status: draft
+created: "YYYY-MM-DD"
+updated: "YYYY-MM-DD"
+tags: []
+---
 # <Small Fix> — Implementation Plan
 
-> **Status:** Proposed | **Baseline:** <request/bug/spec>
-> **Use only if:** user/project yêu cầu tài liệu Plan; sửa bug nhỏ thông thường **không cần tạo file này**.
+> **Document status:** `draft` | **Baseline:** <request/bug/spec>
+> **Use only if:** the user/project requires a Plan document; a routine small bug fix **does not need this file**.
 
 ## Goal
 
-<Observable expected behavior and relevant requirement IDs, if any.>
+<Describe the concrete expected behavior/state, who or what is affected, the key scope boundary, and how success is observed. Link request/requirement IDs when available. Avoid a generic “fix/improve X”; if wording or source behavior is unknown, state the condition and blocker.>
 
-## Preconditions / What to inspect
+## Preconditions / What to Inspect
 
-<Code path, repro, existing test; mark unknown if not inspected.>
+<Code path, reproduction, existing test; mark unknown if not inspected.>
 
 ## Steps
 
@@ -20,12 +29,12 @@
    **Expected:** <...>.  
    **Verify:** <...>.
 
-## Verification & Done
+## Verification and Done
 
-- [ ] Repro before change (if applicable).
-- [ ] Targeted test and regression test executed and result recorded.
+- [ ] Reproduction before change (if applicable).
+- [ ] Targeted test and regression test executed; result recorded.
 - [ ] No unintended contract change.
 
-## Risk / Recovery (nếu có)
+## Risk / Recovery (if any)
 
 <Stop/undo instructions, only when needed.>

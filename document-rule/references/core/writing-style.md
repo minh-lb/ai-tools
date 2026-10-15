@@ -1,23 +1,38 @@
-# Cách viết rõ ràng, dễ đọc, không lan man
+# Clear, Readable, Concise Writing
 
-## Viết từng đơn vị thông tin
+## Write each unit of information clearly
 
-- Câu: **chủ thể + điều kiện + hành động + kết quả**; tránh đại từ không rõ tham chiếu.
-- Đoạn: một ý chính; mở đầu bằng thông tin người đọc cần hành động/hiểu trước.
-- Heading: mô tả nội dung thực, không dùng nhãn chung như "Thông tin khác" khi có tên chính xác hơn.
-- Danh sách đánh số: thứ tự thao tác; bullet: tập hợp không có thứ tự; bảng: nhiều chiều cần đối chiếu.
-- Code/JSON/CLI: chỉ khi cần chính xác; giữ cú pháp, escaping và tên trường đúng nguồn.
-- Không lặp lại cùng business rule ở ba nơi; tham chiếu ID.
+- Sentence: **subject + condition + action + result**; avoid unclear pronouns.
+- Paragraph: one main idea; lead with what the reader needs to know or do.
+- Heading: describe the actual content; prefer a precise name over a generic label such as "Other information."
+- Numbered list: ordered steps. Bullets: unordered items. Tables: compare multiple dimensions.
+- Code/JSON/CLI: include only when precision requires it; preserve syntax, escaping, and field names from the source.
+- Do not repeat a business rule in three places; cross-reference its ID.
 
-## Viết thông số đo được
+## Make claims measurable
 
-| Mơ hồ | Có thể kiểm tra |
+| Vague | Verifiable |
 |---|---|
-| "xử lý lỗi hợp lý" | "trả mã lỗi E và không cập nhật bản ghi" |
-| "nhanh" | "p95 ≤ 300 ms trong tải đo được" **chỉ nếu giới hạn này đã được cung cấp** |
-| "hỗ trợ retry" | "retry cùng idempotency key không tạo hiệu ứng lặp" **chỉ nếu được yêu cầu** |
-| "test đầy đủ" | "kiểm tra AC-001 đến AC-004 với unit/integration tests" |
+| "handle errors appropriately" | "return error code E and do not update the record" |
+| "fast" | "p95 ≤ 300 ms under a measured load" **only if this limit was supplied** |
+| "support retries" | "retrying with the same idempotency key does not duplicate effects" **only if required** |
+| "test thoroughly" | "verify AC-001 through AC-004 with unit/integration tests" |
 
-## Quy tắc chỉnh sửa
+## Test with an independent reader
 
-Nếu người dùng yêu cầu rút gọn/chỉnh văn phong, giữ nguyên điều kiện, ngoại lệ, ngưỡng, trạng thái và acceptance. Không thêm feature, không tự sửa quyết định nghiệp vụ. Giảm chữ bằng loại bỏ lặp và lời bình, không bằng bỏ nhánh lỗi quan trọng.
+Identify the intended reader and the expertise the document assumes. Check that a qualified reader who did not author it can:
+
+1. Find the relevant task, decision, or requirement.
+2. Understand prerequisites, inputs, constraints, and expected results.
+3. Determine what completion means for this document's purpose.
+4. Verify the result using stated evidence, acceptance criteria, or checks.
+
+For reference/decision documents that do not direct execution, provide the relevant decision status, rationale, evidence, or acceptance signals rather than inventing operational steps.
+
+## Localization and terminology
+
+When translating/localizing, preserve specialized industry/domain terms in their canonical original form. Do not translate technical terms, acronyms, product/API names, or code identifiers. Translate the surrounding prose while retaining the source's intended meaning and terminology.
+
+## Editing rules
+
+When asked to shorten or polish prose, preserve conditions, exceptions, thresholds, statuses, and acceptance criteria. Do not add features or make business decisions. Reduce length by removing repetition and commentary, not important error branches.

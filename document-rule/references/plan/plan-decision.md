@@ -1,40 +1,46 @@
-# Quy tắc quyết định khi nào cần Implementation Plan
+# Decide When an Implementation Plan Is Needed
 
-> **Mặc định:** không tạo file Plan chỉ vì đang làm task code. Phân loại mức độ thay đổi trước; nếu task đơn giản, triển khai và kiểm chứng trực tiếp. Tách biệt **suy nghĩ/lập bước làm nội bộ** với **tạo tài liệu Plan**.
+> **Default:** do not create a Plan file just because a coding task is underway. Classify scope and risk first; for a simple task, implement and verify directly. Distinguish **internal reasoning/planning** from **creating a Plan document**.
 
-## Quy trình quyết định (đọc từ trên xuống)
+## Decision process (top to bottom)
 
-1. **Yêu cầu tường minh:** Nếu user yêu cầu viết/xuất/ghi file Plan, tạo Plan đúng phạm vi kể cả task nhỏ. Nếu user yêu cầu **không tạo Plan**, không tạo file. Tuân theo hướng dẫn repo/project có thẩm quyền nếu có và không xung đột chỉ dẫn cao hơn.
-2. **Không có yêu cầu Plan:** kiểm tra quy mô tác động, rủi ro và phụ thuộc sau khi đọc context/code cần thiết. Không quyết định chỉ từ tên task.
-3. **Task nhỏ, rủi ro thấp:** sửa thẳng, viết/chạy kiểm tra phù hợp, báo kết quả ngắn gọn. **Không tạo file Plan và không bắt user duyệt Plan.**
-4. **Task trung bình:** nếu cần, dùng checklist ngắn *trong quá trình làm việc hoặc câu trả lời*, **không tự tạo file** `plan.md`.
-5. **Task phức tạp/rủi ro cao:** nên lập thứ tự và phương án kiểm chứng/rollback **trước khi sửa**. Chỉ ghi thành **file Plan** khi user yêu cầu, repo/project quy định, hoặc đầu việc được giao thực chất là soạn tài liệu kế hoạch. Nếu chưa có quyền/chỉ dẫn tạo file, giữ ở dạng phân tích hoặc trao đổi cần thiết; không tự bổ sung deliverable.
-6. **Trong khi sửa:** nếu phát hiện tăng scope/rủi ro, đánh giá lại. Không vì lúc đầu có vẻ nhỏ mà bỏ qua kiểm chứng hay cảnh báo.
+1. **Explicit request:** If the user asks to write/export/create a Plan file, create one within the requested scope, even for a small task. If the user says **not** to create a Plan, do not create one. Follow authoritative repository/project instructions when they do not conflict with higher-priority instructions.
+2. **No Plan request:** after inspecting the necessary context/code, assess impact, risk, and dependencies. Do not decide from the task title alone.
+3. **Small, low-risk task:** make the change, run appropriate checks, and briefly report the result. **Do not create a Plan file or ask the user to approve a Plan.**
+4. **Medium task:** use a short checklist *during the work or in the response* if helpful; **do not create** `plan.md` automatically.
+5. **Complex/high-risk task:** establish sequence and verification/recovery before changes. Create a **Plan file** only when requested, required by the repository/project, or when the assigned deliverable is itself a planning document. Without authorization/instructions to create a file, keep it to necessary analysis or discussion; do not add a deliverable.
+6. **During implementation:** reassess if scope or risk grows. A task that looked small at first still requires appropriate verification and risk communication.
 
-## Phân loại thực hành
+## Practical classification
 
-| Mức | Tín hiệu điển hình | Cách làm mặc định (khi user không yêu cầu Plan) |
+| Level | Typical signals | Default approach (when no Plan was requested) |
 |---|---|---|
-| **Nhỏ / đơn giản** | Sửa typo, thông báo lỗi, điều kiện đơn lẻ, test nhỏ; phạm vi cục bộ thường 1–2 file; không đổi contract/schema, không migration; cách verify rõ | **Không tạo Spec hoặc Plan file.** Sửa trực tiếp + test phù hợp |
-| **Trung bình** | Thay đổi vài thành phần liên quan, có bước phụ thuộc nhưng không có rủi ro rollout đáng kể | Phác checklist ngắn nếu cần; không tạo file Plan mặc định |
-| **Lớn / rủi ro cao** | Nhiều module/service, thay đổi public API/schema/data, migration, auth/permission, concurrency, tương thích ngược, production rollout, nhiều giai đoạn hoặc có nguy cơ mất dữ liệu | Lập trình tự/verification/recovery trước; **file Plan chỉ khi được yêu cầu hoặc quy định** |
+| **Small / simple** | Typo, error message, isolated condition, small test; typically 1–2 local files; no contract/schema change or migration; clear verification | **No Specification or Plan file.** Make the change and run appropriate checks |
+| **Medium** | Several related components, dependent steps, but no significant rollout risk | Sketch a short checklist if helpful; no Plan file by default |
+| **Large / high risk** | Multiple modules/services, public API/schema/data changes, migration, auth/permissions, concurrency, backwards compatibility, production rollout, multiple phases, or risk of data loss | Establish sequence, verification, and recovery first; **create a Plan file only when requested or required** |
 
-Những dấu hiệu là **heuristic**, không phải ngưỡng cứng: 1 file sửa quyền truy cập có thể rủi ro cao; nhiều file rename máy móc có thể rủi ro thấp. Chú trọng **blast radius**, dữ liệu và hậu quả, không chỉ đếm file.
+These signals are **heuristics**, not hard thresholds: changing permissions in one file can be high risk; a mechanical rename across many files can be low risk. Focus on **blast radius**, data, and consequences—not file count alone.
 
-## Ranh giới quan trọng
+## A bug-fix Specification is different from an Implementation Plan
 
-- **Không đánh đồng** "task cần các bước thực hiện" với "task cần xuất một file Implementation Plan".
-- **Không tự viết full Spec** trước khi sửa một bug nhỏ, trừ khi user yêu cầu hoặc cần chốt business rule chưa rõ.
-- Nếu user chỉ yêu cầu **fix bug**, deliverables mặc định là code/thay đổi được yêu cầu và bằng chứng kiểm chứng phù hợp, **không phải** Spec + Plan.
-- Nếu user yêu cầu **Spec + Plan**, làm cả hai theo thứ tự Spec → Plan; không tự cắt Plan với lý do task nhỏ. Có thể đề xuất plan rút gọn nếu user cho phép.
-- Nếu user chỉ yêu cầu **Plan**, chỉ viết Plan, không tự triển khai code hoặc sinh Spec đầy đủ.
-- Nếu user yêu cầu **chỉ in đúng phần X** hoặc không giải thích, không thêm bảng đánh giá mức độ hay lý do bỏ Plan vào output.
+- A bug may need a Specification independently of whether it needs a Plan. If the user requests a Spec, or materially important desired behavior/scope/interface contract/non-regression conditions are unclear, write a brief bug-fix Spec that defines **WHAT**, the cause (verified or explicitly unknown), and acceptance criteria; record open questions rather than guessing.
+- For a small, local bug with clear desired behavior and direct verification, do not create a Spec or Plan file by default; fix and test appropriately.
+- A bug-fix Spec should describe the cause, but it does not automatically replace a full RCA or prescribe implementation. State a cause only when supported by evidence; create an Implementation Plan only when requested or required by the repository/project.
 
-## Ví dụ quyết định
+## Important boundaries
 
-- "Sửa lỗi thông báo validation không đúng trên màn hình login"; đổi cục bộ, không thay contract và test rõ → **sửa trực tiếp, không file Plan**.
-- "Sửa bug index trong phép tính, bổ sung unit test" → **không file Plan** nếu không phát hiện ảnh hưởng mở rộng.
-- "Chuyển schema order nhiều service và deploy không downtime" → **cần tính trước bước triển khai, migration, verify, recovery**; tạo file Plan khi được yêu cầu/quy định.
-- "Tạo Implementation Plan cho lỗi typo" → **có Plan** vì user yêu cầu rõ (dùng bản tối giản).
+- Do **not** equate "the task needs implementation steps" with "the task needs an exported Implementation Plan file."
+- Do **not** write a full Specification before fixing a small bug unless requested or needed to settle an unclear business rule.
+- If the user only asks to **fix a bug**, the default deliverable is the requested code/change and suitable verification evidence, **not** a Specification plus Plan.
+- If the user asks for a **Specification + Plan**, provide both in that order; do not omit the Plan because the task is small. You may offer a shorter Plan if the user permits it.
+- If the user asks only for a **Plan**, write only the Plan; do not implement code or create a full Specification automatically.
+- If the user asks to **print only section X** or requests no explanation, do not add a task-size assessment or rationale for omitting a Plan.
 
-Xem [workflow](workflow.md), [task breakdown](task-breakdown.md) khi **đã xác định cần viết Plan** và [ví dụ không cần file Plan](../../examples/plan/no-plan-required.md).
+## Decision examples
+
+- "Fix the incorrect validation message on the login screen"; local change, no contract change, clear test → **fix directly; no Plan file**.
+- "Fix the index bug in this calculation and add a unit test" → **no Plan file** unless inspection reveals broader impact.
+- "Migrate the order schema across services and deploy with no downtime" → **plan implementation, migration, verification, and recovery first**; create a Plan file when requested/required.
+- "Create an Implementation Plan for this typo fix" → **create a Plan** because the user explicitly requested it (keep it concise).
+
+See the [workflow](workflow.md) and [task breakdown](task-breakdown.md) once a Plan is needed, plus the [No Plan Required example](../../examples/plan/no-plan-required.en.md).

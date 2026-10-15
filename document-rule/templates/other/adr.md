@@ -1,16 +1,25 @@
+---
+id: "<unique-task-id-or-uuid>"
+title: "<Decision title>"
+type: adr
+status: draft
+created: "YYYY-MM-DD"
+updated: "YYYY-MM-DD"
+tags: []
+---
 # ADR-<ID>: <Decision Title>
 
-- Status: Proposed / Accepted / Superseded (only if confirmed)
-- Date: <actual date if known>
+- Decision status: Proposed / Accepted / Superseded (only when confirmed)
+- Date: <actual date, if known>
 - Scope: <...>
 
 ## Context
 
-<Problem, constraints, forces and evidence.>
+<Problem, constraints, forces, and evidence.>
 
 ## Decision
 
-<Exactly what is chosen and boundaries; do not pretend approved if pending.>
+<Exactly what is chosen and its boundaries; do not imply approval if pending.>
 
 ## Alternatives Considered
 
@@ -20,8 +29,8 @@
 
 ## Consequences
 
-<Benefits, costs, operational impact, future changes.>
+<Benefits, costs, operational impact, and future changes.>
 
-## Open Questions (nếu còn)
+## Open Questions (if any)
 
 <...>

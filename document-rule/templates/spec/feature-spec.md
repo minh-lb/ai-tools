@@ -1,9 +1,19 @@
+---
+id: "<unique-task-id-or-uuid>"
+title: "<Feature> — Feature Specification"
+type: feature-specification
+status: draft
+created: "YYYY-MM-DD"
+updated: "YYYY-MM-DD"
+tags: []
+---
 # <Feature> — Feature Specification
 
-> **Status:** Draft | **ID:** <SPEC-ID> | **Source:** <ticket/doc/user request>  
-> Xóa các hướng dẫn `<...>` và mục không áp dụng trước khi bàn giao; chưa biết thì ghi `Chưa xác định` kèm tác động.
+> **Document status:** `draft` | **ID:** <SPEC-ID> | **Source:** <ticket/doc/user request>
+>
+> Remove `<...>` instructions and inapplicable sections before delivery; mark unknowns as `Unknown` with their impact.
 
-## 1. Objective & Scope
+## 1. Objective and Scope
 
 - Objective: <observable business/system outcome>
 - In scope: <behavior>
@@ -23,7 +33,7 @@
 | FR-001 | When <condition>, system MUST <action> | <observable output> |
 | BR-001 | If <invalid case>, system MUST <response> | <no mutation / state> |
 
-## 4. Flows & Exceptions
+## 4. Flows and Exceptions
 
 ### Success flow
 1. <trigger and validation>
@@ -35,11 +45,11 @@
 |---|---|---|
 | <condition> | <error/status> | <change or no change> |
 
-## 5. Data / API Contract (nếu liên quan)
+## 5. Data / API Contract (if relevant)
 
 <Only validated or requested fields, types, error schema, compatibility.>
 
-## 6. NFR (nếu có căn cứ)
+## 6. NFRs (if supported by evidence)
 
 | ID | Constraint | How to verify |
 |---|---|---|
@@ -49,8 +59,8 @@
 
 | AC ID | Covers | Given / When / Then |
 |---|---|---|
-| AC-001 | FR-001 | Given <state>, When <action>, Then <result> |
+| AC-001 | FR-001 | Given <state>, when <action>, then <result> |
 
-## 8. Decisions / Open Questions (nếu còn)
+## 8. Decisions / Open Questions (if any)
 
 - <question + consequence>

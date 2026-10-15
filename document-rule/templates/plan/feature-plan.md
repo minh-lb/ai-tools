@@ -1,15 +1,26 @@
+---
+id: "<unique-task-id-or-uuid>"
+title: "<Feature> — Implementation Plan"
+type: implementation-plan
+status: draft
+created: "YYYY-MM-DD"
+updated: "YYYY-MM-DD"
+tags: []
+---
 # <Feature> — Implementation Plan
 
-> **Status:** Proposed | **Baseline Spec:** <ID/version> | **Repository inspection:** <Verified/Not inspected>
+> **Document status:** `draft` | **Baseline Spec:** <ID/version> | **Repository inspection:** <Verified/Not inspected>
 
-## 1. Goal & Requirement Coverage
+## 1. Goal and Requirement Coverage
 
-<Short outcome and FR/BR/NFR/AC IDs. No full Spec duplication.>
+**Goal:** <State the concrete end outcome: target actor/system + specific behavior/state/artifact + key scope/constraint + observable success signal. Trace it to the baseline IDs. Avoid “implement/improve X” without an end state; if a fact is unknown, state the condition and blocker instead of guessing.>
+
+**Coverage:** <FR/BR/NFR/AC IDs. Do not duplicate the full Specification.>
 
 ## 2. Baseline / Impact / Prerequisites
 
 - Confirmed code paths: <only if inspected>
-- Components to inspect: <if paths unknown>
+- Components to inspect: <if paths are unknown>
 - Potential impact: <API/domain/persistence/security/tests>
 - Dependencies/decisions: <...>
 - Risk warnings: <only when applicable>
@@ -41,18 +52,18 @@
 |---|---|---|
 | FR-001 / AC-001 | IMP-02 | <test/check> |
 
-## 5. Test & Rollout (nếu áp dụng)
+## 5. Test and Rollout (if applicable)
 
 - Test scenarios: <success/error/boundary>
-- CLI/environment: <only verified>
-- Rollout/stop/recovery: <if risk>
+- CLI/environment: <only if verified>
+- Rollout/stop/recovery: <if risk warrants it>
 
 ## 6. Definition of Done
 
-- [ ] Every in-scope Spec ID covered or exception stated.
-- [ ] Verification run and evidence recorded (not just planned).
-- [ ] Related contracts/docs updated.
+- [ ] Every in-scope Spec ID is covered or an exception is stated.
+- [ ] Verification was run and evidence recorded (not merely planned).
+- [ ] Related contracts/docs were updated.
 
-## 7. Open Questions / Blockers (nếu có)
+## 7. Open Questions / Blockers (if any)
 
 - <...>

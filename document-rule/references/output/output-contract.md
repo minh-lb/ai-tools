@@ -1,26 +1,28 @@
-# Output Contract — đúng nội dung user yêu cầu
+# Output Contract — Match the User's Request
 
-## Thuộc tính cần chốt (nội bộ trước khi viết)
+## Resolve these attributes before drafting
 
-- **Deliverables:** Spec? Plan? report? một section? file? bao nhiêu file?
-- **Scope:** nội dung bắt buộc/phải loại trừ; giới hạn nguồn và thời điểm.
-- **Mode:** viết mới, revise, review, summarize, print/display, export.
+- **Deliverables:** Specification? Plan? report? one section? file? How many files?
+- **Scope:** required/excluded content; source and time boundaries.
+- **Mode:** create, revise, review, summarize, print/display, or export.
 - **Format:** Markdown, JSON-only, YAML, Mermaid, plain text, DOCX/PDF/file.
-- **Language & depth:** theo user; giữ case chính xác cho code/schema/IDs.
+- **Language and depth:** follow the user's choice; preserve exact casing for code/schema/IDs.
 
-## Quy tắc bắt buộc
+## Mandatory rules
 
-1. Yêu cầu "viết/in/hiển thị" → xuất **nội dung thực tế**, không chỉ thông báo đã viết.
-2. Yêu cầu "chỉ in X" → **chỉ X**, không preamble, summary, conclusion hoặc phần khác.
-3. Yêu cầu "toàn bộ" → không tự cắt/ẩn bằng `...`, `[truncated]`, `[TODO]`; khi kênh không phù hợp, cung cấp file thực sự đầy đủ và **nói rõ** phần chat là excerpt.
-4. Yêu cầu đúng schema/heading/order → theo đúng, không thêm key/section ngoài contract.
-5. Yêu cầu Spec + Plan → Spec trước, Plan link requirement IDs; yêu cầu Plan đơn lẻ → chỉ Plan. Yêu cầu **fix bug/sửa code nhỏ** mà không yêu cầu tài liệu → **không tự xuất Spec/Plan file**; xem [plan-decision](../plan/plan-decision.md).
-6. Yêu cầu review → report findings, không tự rewrite; yêu cầu rewrite → trả bản rewrite, không tự review dài.
-7. Không in evidence giả, test result giả hoặc claim file đã tạo khi chưa có.
-8. Nếu yêu cầu cả nội dung và file → đáp ứng cả hai.
+1. A request to "write/print/display" requires the **actual content**, not merely a statement that it was written.
+2. A request to "print only X" means **only X**—no preamble, summary, conclusion, or extra section.
+3. A request for "the complete" document must not be cut off or hidden behind `...`, `[truncated]`, or `[TODO]`. If chat is unsuitable, create the complete file and state clearly that the chat output is an excerpt.
+4. Follow any requested schema/headings/order exactly; do not add keys/sections outside the contract.
+5. If Specification + Plan are requested, provide the Specification first and link the Plan to requirement IDs; if only a Plan is requested, provide only the Plan. For a **small fix** with no document request, do **not** create a Specification/Plan file automatically. If a bug-fix Specification is requested or needed to settle material behavior/scope/interface-contract questions, write a concise Spec stating the verified cause or explicitly marking it unknown, following [Plan decision](../plan/plan-decision.md) and the [Specification workflow](../spec/workflow.md); do not add a Plan automatically.
+6. For review-only, report findings without rewriting. For explicit review-and-fix/iteration requests, fix in-scope findings that require action, rerun appropriate checks, and review again until none remain under the requested quality bar; report deferred findings, blockers, and unverified points. A rewrite-only request does not imply a lengthy review.
+7. Do not fabricate evidence, test results, or claims that a file was created.
+8. If both content and a file are requested, provide both.
+9. For a Markdown document created as a file, use the YAML frontmatter properties in [file export rules](file-export.md), unless the user or an existing schema specifies otherwise. Use an available unique task/ticket ID for `id`; otherwise generate a UUID. Keep it stable and unique within the repository/vault. When frontmatter `status` is present, it MUST be exactly `draft` or `approved`; use `draft` unless the user explicitly approves the document. Domain states in the document body are separate. Do not add metadata to inline output or a plain format that does not permit frontmatter.
+10. Before writing a document to a file, ask the user to choose the display language—`Vietnamese` or `English`—unless the request already specifies the language. If the choice is missing, wait for it before writing. For bilingual example files, preserve both localized versions.
 
 ## Priorities
 
-Yêu cầu người dùng cụ thể và mới nhất quyết định phạm vi output, miễn không xung đột ràng buộc bắt buộc của nền tảng và thực tế công cụ. Template chỉ là trợ giúp — không áp đặt form khi format đã được user chọn.
+The user's latest specific request defines the output scope unless it conflicts with platform constraints or tool capabilities. Templates are aids, not mandatory forms when the user has specified a format.
 
-Xem [inline output](inline-and-scoped-output.md) và [file export](file-export.md).
+See [inline output](inline-and-scoped-output.md) and [file export](file-export.md).

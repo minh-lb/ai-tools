@@ -1,35 +1,37 @@
-# Ứng dụng nguyên tắc AMM có chọn lọc
+# Selectively Applying AMM-Inspired Principles
 
-## Lấy nguyên tắc, không sao chép mẫu biểu
+## Borrow principles; do not copy aviation structures
 
-Dùng tư duy tài liệu thao tác: **phạm vi → điều kiện sẵn sàng → hành động → kết quả mong đợi → kiểm tra → phục hồi khi cần**. Không áp đặt tiêu đề, mã đánh số, cảnh báo hoặc chương mục ATA/S1000D.
+Use the Aircraft Maintenance Manual (AMM) as a writing-method reference that values accuracy, clarity, structure, actionability, and verifiability. This is a selective quality lens, not a compliance standard or mandatory schema for every document. The operational pattern **scope → readiness conditions → action → expected result → verification → recovery when needed** applies to procedures when appropriate; it is not a required structure for every document. Do not copy aviation chapter hierarchies, work cards, sign-offs, ATA/S1000D codes, or impose headings, warnings, or numbering on non-operational documents.
 
-## Mẫu một bước cho runbook/plan
+Use only the elements appropriate to the document type and risk. The user's requested format and the project's conventions/contracts take precedence. ADRs, designs, and specifications do not default to procedural workflows. Template headings are suggestions to select or omit, not a form that must be completed in full.
 
-1. **Precondition:** điều kiện bắt buộc trước bước có ảnh hưởng.
-2. **Action:** một động từ và một thao tác xác định.
-3. **Expected:** trạng thái hoặc artifact quan sát sau bước.
-4. **Verify:** phép đo/test/check đủ xác nhận kết quả.
-5. **Stop / Recovery:** chỉ khi thao tác có nguy cơ lỗi nghiêm trọng hoặc khó đảo ngược.
+## One-step pattern for runbooks and plans
 
-Các bước đơn giản có thể gộp `Action + Expected`; không buộc 5 dòng cho mọi thao tác.
+1. **Precondition:** a required condition before a consequential step.
+2. **Action:** one verb and one specific operation.
+3. **Expected:** an observable state or artifact after the step.
+4. **Verify:** a measurement, test, or check sufficient to confirm the result.
+5. **Stop / Recovery:** include only when the operation could fail severely or be difficult to reverse.
 
-## Phân mức cảnh báo
+Simple steps may combine `Action + Expected`; do not force every operation into five lines.
 
-- **WARNING:** tác động nghiêm trọng với người dùng, production hoặc bảo mật; nêu điều kiện ngăn chặn.
-- **CAUTION:** dữ liệu, tương thích hoặc kết quả có thể hỏng; mô tả cách giảm thiểu.
-- **NOTE:** điều kiện phụ trợ giúp thao tác chính xác, không dùng để che một precondition.
+## Warning levels
 
-## Ví dụ (minh họa, chưa phải quy trình thực tế)
+- **WARNING:** serious impact on users, production, or security; state the condition that prevents harm.
+- **CAUTION:** data, compatibility, or results may be damaged; describe mitigation.
+- **NOTE:** supporting condition that helps perform the operation correctly; do not use it to hide a precondition.
 
-> **CAUTION:** đổi schema production có thể ảnh hưởng phiên bản ứng dụng cũ.
+## Example (illustrative, not an actual procedure)
+
+> **CAUTION:** changing a production schema may affect older application versions.
 >
-> **Precondition:** xác minh cả phiên bản cũ và mới đọc được schema mở rộng.
+> **Precondition:** verify that both old and new versions can read the expanded schema.
 >
-> **Action:** triển khai migration dạng additive trước code sử dụng cột mới.
+> **Action:** deploy an additive migration before deploying code that uses the new column.
 >
-> **Expected / Verify:** schema mới tồn tại, truy vấn tương thích đạt trong staging.
+> **Expected / Verify:** the new schema exists and compatible queries pass in staging.
 >
-> **Recovery:** dừng rollout khi kiểm tra tương thích thất bại; không tự động xóa cột chứa dữ liệu mới.
+> **Recovery:** stop the rollout if compatibility checks fail; do not automatically delete a column that may contain new data.
 
-Dùng cấu trúc này khi viết hướng dẫn **thực thi**; tài liệu ADR/design ưu tiên quyết định và trade-off hơn quy trình bước.
+Use this structure for **execution procedures**. ADRs and designs should emphasize decisions and trade-offs instead.

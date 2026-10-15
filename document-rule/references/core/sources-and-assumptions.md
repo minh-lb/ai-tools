@@ -1,26 +1,26 @@
-# Nguồn sự thật, căn cứ và giả định
+# Sources of Truth, Evidence, and Assumptions
 
-## Thứ tự thu thập
+## Source priority
 
-1. Yêu cầu, phạm vi và các điều chỉnh mới nhất của người dùng.
-2. File/ticket/schema/API spec/code/test đã trực tiếp kiểm tra.
-3. Quy ước, ADR và chuẩn dự án đã cung cấp.
-4. Giả định có nhãn, chỉ khi thiếu dữ kiện không ngăn cản việc viết hữu ích.
+1. The user's latest request, scope, and corrections.
+2. Files, tickets, schemas, API specifications, code, or tests directly inspected.
+3. Supplied project conventions, ADRs, and standards.
+4. Explicitly labeled assumptions, only when missing information does not prevent a useful draft.
 
-## Phân loại từng claim
+## Classify claims
 
-| Nhãn | Khi nào dùng | Cách viết |
+| Label | When to use | How to write it |
 |---|---|---|
-| `Đã xác minh` | Có căn cứ quan sát được từ nguồn | Gắn source/path/section khi có thể |
-| `Được yêu cầu` | Người dùng đặt mục tiêu trong tương lai | Viết như yêu cầu, không như behavior hiện có |
-| `Giả định` | Điều kiện giả định để soạn thảo | Nêu giả định, hậu quả nếu sai |
-| `Chưa xác định` | Thiếu quyết định quan trọng | Nêu câu hỏi cụ thể và tác động |
+| `Verified` | Supported by observable evidence | Cite the source/path/section when possible |
+| `Requested` | The user states a future goal | State it as a requirement, not existing behavior |
+| `Assumption` | A drafting assumption | State the assumption and the consequence if it is wrong |
+| `Unknown` | An important decision or fact is missing | State a specific question and its impact |
 
-**As-is** (mô tả hiện trạng): chỉ khẳng định từ code/nguồn đã đọc. **To-be** (đặc tả mong muốn): viết như kỳ vọng, không nói đã triển khai.
+**As-is** statements describe current behavior and may be asserted only from code or sources that were inspected. **To-be** statements describe intended behavior; do not imply they are already implemented.
 
-## Quy tắc không bịa
+## Do not invent facts
 
-- Không chế path/file/module, migration name, command, endpoint, status, SLA hoặc tính năng hiện có.
-- Các tình huống minh họa phải có nhãn **Ví dụ giả định**, không dùng làm contract thực tế.
-- Nếu thiếu nhiều thông tin: viết phần có cơ sở, gom open questions; chỉ hỏi lại khi không thể tạo đầu ra có ích mà không đoán sai phần cốt lõi.
-- Khi ghi `Verified` hoặc `Passed`, phải có bằng chứng; `Proposed`, `Not inspected`, `Not run` không phải thất bại.
+- Do not fabricate paths, files, modules, migration names, commands, endpoints, statuses, SLAs, or existing features.
+- Label illustrative scenarios **Fictional example**; do not present them as real contracts.
+- If much information is missing, write what is supported and group open questions. Ask the user only when a useful output cannot be produced without guessing a core decision.
+- Claims such as `Verified` or `Passed` require evidence. `Proposed`, `Not inspected`, and `Not run` are not failures.

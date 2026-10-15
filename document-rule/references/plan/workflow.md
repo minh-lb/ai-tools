@@ -1,25 +1,25 @@
-# Quy trình viết Implementation Plan
+# Writing an Implementation Plan
 
-**Điều kiện kích hoạt:** chỉ áp dụng workflow này **sau khi xác định cần viết Plan** theo [quy tắc lựa chọn Plan](plan-decision.md). Không tạo file Plan mặc định cho bug fix/sửa nhỏ. Nếu user yêu cầu rõ Plan, vẫn viết Plan dù task nhỏ.
+**Activation condition:** use this workflow **only after determining that a Plan is needed** under [Plan decision](plan-decision.md). Do not create a Plan file by default for bug fixes/small changes. If the user explicitly requests a Plan, write one even for a small task.
 
-## Đầu vào / baseline
+## Inputs / baseline
 
-- Ưu tiên Specification đã thống nhất, acceptance criteria và những phần code/schema/CI đã đọc.
-- Nếu chưa có Spec nhưng user **chỉ yêu cầu Plan**, dùng mục `Baseline requirements` ngắn + open questions; không tự tạo một tài liệu Spec đầy đủ.
-- Tài liệu Plan là **đề xuất công việc**, không chứng minh đã thực hiện.
+- Prefer an agreed Specification, acceptance criteria, and code/schema/CI sources that were inspected.
+- If no Spec exists and the user **only asks for a Plan**, use a brief `Baseline requirements` section plus open questions; do not create a full Specification document automatically.
+- A Plan is a **proposal for work**, not evidence that the work was performed.
 
-## Trình tự
+## Sequence
 
-1. Mục tiêu và coverage (`FR/BR/NFR/AC` IDs).
-2. Khảo sát code/architecture/conventions có sẵn; phân biệt `verified` và `to inspect`.
-3. Impact analysis: API, domain, persistence, data, auth, testing, deploy, monitoring khi liên quan.
-4. Giải quyết decision blockers, dependency.
-5. Phân nhỏ task theo thứ tự an toàn (inspect → change → verify → release).
-6. Gắn requirement/AC vào task, expected result, test; bổ sung migration/rollback khi rủi ro.
-7. Definition of Done (đo được) + execution status rõ ràng.
+1. State a concrete, outcome-based goal and requirement coverage (`FR/BR/NFR/AC` IDs). Name the target actor/system, the specific desired behavior/state/artifact, the key boundary or constraint, and an observable success signal; do not use a generic verb such as “implement” or “improve” without the target outcome. If a source fact or decision is unknown, phrase the goal conditionally and record the blocker instead of inventing it.
+2. Inspect existing code/architecture/conventions; distinguish `verified` from `to inspect`.
+3. Analyze impact across API, domain, persistence, data, auth, testing, deployment, and monitoring when relevant.
+4. Resolve decision blockers and dependencies.
+5. Break work into tasks in a safe order (inspect → change → verify → release).
+6. Map requirements/acceptance criteria to tasks, expected results, and tests; add migration/rollback when risk warrants it.
+7. Define measurable completion criteria and explicit execution status.
 
-## Không tự giả định
+## Do not assume
 
-Không chế tên file, package, bảng/cột đã tồn tại, test command, nhân sự, thời gian, story points hoặc trạng thái `Done/Passed`. Nếu chưa kiểm tra repo, dùng `Component to inspect` và `Test command: theo repository, chưa xác minh`.
+Do not invent existing filenames, packages, tables/columns, test commands, staff, timelines, story points, or `Done/Passed` status. If the repository has not been inspected, use `Component to inspect` and `Test command: repository-defined, not yet verified`.
 
-Dùng [Feature Plan](../../templates/plan/feature-plan.md) hoặc [Small Change](../../templates/plan/small-change.md) **khi Plan là deliverable**. Không dùng Small Change template để biện minh cho việc tự tạo Plan file của một bug fix đơn giản.
+Use the [Feature Plan](../../templates/plan/feature-plan.md) or [Small Change](../../templates/plan/small-change.md) **when a Plan is a requested deliverable**. Do not use the Small Change template to justify creating a Plan file for a simple bug fix without a request.

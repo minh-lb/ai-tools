@@ -1,24 +1,33 @@
+---
+id: "<unique-task-id-or-uuid>"
+title: "<Operational task> — Runbook"
+type: runbook
+status: draft
+created: "YYYY-MM-DD"
+updated: "YYYY-MM-DD"
+tags: []
+---
 # <Operational Task> — Runbook
 
 > **Environment:** <...> | **Owner:** <if known> | **Last verified:** <only with evidence>
 
-## Trigger & Purpose
+## Trigger and Purpose
 
-<When to use and when NOT to use.>
+<When to use this runbook and when NOT to use it.>
 
 ## Preconditions
 
-- <permission / health / backup / environment>
+- <permissions / health / backup / environment>
 
-## Risk / Warning (nếu cần)
+## Risks / Warnings (if needed)
 
-<Severity, impact, mitigation.>
+<Severity, impact, and mitigation.>
 
 ## Procedure
 
 1. **Action:** <specific step>.  
    **Expected:** <observable result>.  
-   **Verify:** <command/signal if known>.
+   **Verify:** <command/signal, if known>.
 2. **Action:** <...>.  
    **Expected:** <...>.  
    **Verify:** <...>.
@@ -31,4 +40,4 @@
 
 - Stop if: <...>
 - Recovery: <verified safe action or decision gate>
-- Escalate to: <role/channel if known>
+- Escalate to: <role/channel, if known>

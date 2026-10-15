@@ -1,26 +1,26 @@
-# Behavior Flow, State Transition và Error Handling
+# Behavior Flows, State Transitions, and Error Handling
 
-## Flow
+## Flows
 
-- **Trigger → Authorization → Validation → Business decision → Mutation/side effects → Response**: dùng làm checklist, không phải thứ tự mặc định cho mọi hệ thống.
-- Mỗi bước nói **điều gì xảy ra**, không nói chi tiết cách code trừ khi đặc tả technical design.
-- Liên kết bước với `FR-*`/`BR-*`, không định nghĩa hai bản khác nhau của cùng một rule.
+- **Trigger → Authorization → Validation → Business decision → Mutation/side effects → Response** is a checklist, not a mandatory order for every system.
+- State **what happens** at each step; do not prescribe code-level details unless a technical design is requested.
+- Link steps to `FR-*`/`BR-*`; do not define two different versions of the same rule.
 
-## State machine
+## State machines
 
-Khi có state, nêu transition hợp lệ và bị cấm; ai được phép chuyển; dữ liệu thay đổi kèm theo; invariant phải giữ.
+When states exist, describe allowed and prohibited transitions, who may perform them, associated data changes, and invariants that must hold.
 
 | Current | Trigger | Next | Condition |
 |---|---|---|---|
 | PENDING | cancel | CANCELLED | owner + authenticated |
 | SHIPPED | cancel | unchanged | rejected |
 
-Bảng là ví dụ minh họa. Nếu trạng thái thật chưa biết, **không tự phát minh enumeration**.
+This table is illustrative. If actual states are unknown, **do not invent an enumeration**.
 
-## Lỗi và tác dụng phụ
+## Errors and side effects
 
-Mỗi lỗi quan trọng phải có: điều kiện → observable response/error → state/database/event có thay đổi không. Cần quy định lỗi có retry được hay không **khi có contract**. Nêu thứ tự ưu tiên lỗi nếu cùng một request có thể thỏa nhiều nhánh lỗi và thứ tự ảnh hưởng đến thông tin bị lộ.
+For each important error, state: condition → observable response/error → whether state/database/event changes. Specify retryability only **when there is a contract**. Define error precedence when one request may match multiple error branches and their order could affect information disclosure.
 
-## Đồng thời / idempotency
+## Concurrency / idempotency
 
-Đặc tả thuộc tính mong muốn (ví dụ "tối đa một transition thành công") thay vì ép ngay cơ chế kỹ thuật như locking/transaction. Cơ chế thuộc Implementation Plan hoặc Design.
+Specify the desired property (for example, "at most one transition succeeds") instead of prematurely requiring a technical mechanism such as locking/transactions. Mechanisms belong in an Implementation Plan or Design.

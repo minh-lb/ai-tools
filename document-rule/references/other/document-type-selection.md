@@ -1,15 +1,15 @@
-# Chọn đúng loại tài liệu kỹ thuật
+# Choose the Right Technical Document
 
-| Loại | Câu hỏi chính | Template |
+| Type | Main question | Template |
 |---|---|---|
-| Architecture / System Design | Thành phần nào và vì sao? Luồng dữ liệu? Trade-offs? | [architecture](../../templates/other/architecture-design.md) |
-| ADR | Quyết định nào, lựa chọn gì, lý do và hệ quả? | [ADR](../../templates/other/adr.md) |
-| Runbook / SOP | Khi nào thao tác? Các bước, check, recovery? | [runbook](../../templates/other/runbook.md) |
-| Test Plan | Phạm vi, phương pháp, scenarios, exit criteria? | [test plan](../../templates/other/test-plan.md) |
-| README / Setup Guide | Cài, chạy, cấu hình, xác minh ra sao? | [README](../../templates/other/technical-readme.md) |
-| Incident / RCA | Điều gì xảy ra, bằng chứng, impact, corrective actions? | [postmortem](../../templates/other/incident-postmortem.md) |
-| Review report | Vấn đề, bằng chứng, mức độ, cách sửa? | [review report](../../templates/other/review-report.md) |
+| Architecture / System Design | What are the components and why? What is the data flow? What are the trade-offs? | [Architecture](../../templates/other/architecture-design.md) |
+| ADR | What decision was made, among which choices, and with what rationale and consequences? | [ADR](../../templates/other/adr.md) |
+| Runbook / SOP | When should an operation run? What are the steps, checks, and recovery actions? | [Runbook](../../templates/other/runbook.md) |
+| Test Plan | What is in scope, how will it be tested, and what are the scenarios and exit criteria? | [Test Plan](../../templates/other/test-plan.md) |
+| README / Setup Guide | How should the project be installed, run, configured, and verified? | [README](../../templates/other/technical-readme.md) |
+| Incident / RCA | What happened, what evidence exists, what was the impact, and what corrective actions follow? | [Postmortem](../../templates/other/incident-postmortem.md) |
+| Review Report | What are the issues, evidence, severity, and proposed corrections? | [Review Report](../../templates/other/review-report.md) |
 
-Quy tắc chi tiết: [architecture/ADR](architecture-and-adr.md), [runbook/test/README/incident](runbook-readme-test.md).
+Details: [Architecture/ADR](architecture-and-adr.md), [Runbook/Test/README/Incident](runbook-readme-test.md).
 
-Chỉ dùng preconditions/ordered steps cho tài liệu **thao tác**. Tài liệu giải thích hoặc quyết định không bị buộc thành procedural manual. Với API docs/contract, áp dụng [API spec rules](../spec/data-api-contracts.md); với functional requirements dùng [Spec rules](../spec/workflow.md).
+Use preconditions and ordered steps only for **operational** documents. Explanatory or decision documents do not have to become procedural manuals. For API docs/contracts, apply [API Specification rules](../spec/data-api-contracts.md); for functional requirements, use the [Specification workflow](../spec/workflow.md).

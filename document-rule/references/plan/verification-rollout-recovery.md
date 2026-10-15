@@ -1,27 +1,27 @@
-# Verification, Rollout và Recovery
+# Verification, Rollout, and Recovery
 
-## Lập kế hoạch kiểm chứng
+## Plan verification
 
-- Chọn **unit** cho logic/rule thuần, **integration** cho persistence/API/dependency, **e2e** cho journey quan trọng.
-- Với thay đổi tương thích hoặc data migration, xác minh schema/version compatibility, rollback feasibility, dữ liệu trước/sau.
-- Ghi **lệnh thực tế** chỉ khi đã kiểm tra repo. Nếu không, mô tả test/check cần chạy.
-- Điều kiện Pass/Fail phải là observable signal, không phải "kiểm tra hoạt động ổn định".
+- Choose **unit** tests for pure logic/rules, **integration** tests for persistence/API/dependencies, and **end-to-end** tests for critical journeys.
+- For compatibility changes or data migrations, verify schema/version compatibility, rollback feasibility, and before/after data.
+- Include **actual commands** only when verified in the repository. Otherwise describe the check/test to run.
+- Pass/fail conditions must be observable signals, not "check that it works reliably."
 
-## Rollout theo rủi ro
+## Risk-based rollout
 
-1. Preconditions/backup hoặc recovery point nếu cần.
-2. Deploy sequence tương thích (expand → code → contract khi có migration).
-3. Health checks/log/metrics cần quan sát.
-4. Stop/rollback triggers và quyền quyết định khi biết.
-5. Recovery nếu một thao tác không thể tự đảo ngược.
+1. Preconditions/backup or recovery point when needed.
+2. Compatible deployment sequence (expand → code → contract when migrating).
+3. Health checks/logs/metrics to observe.
+4. Stop/rollback triggers and decision authority when known.
+5. Recovery if an operation cannot be reversed automatically.
 
-**CAUTION:** DB down migration không đảm bảo hoàn nguyên business data. Không đề xuất rollback phá dữ liệu như giải pháp mặc định.
+**CAUTION:** a database down migration does not guarantee restoration of business data. Do not recommend destructive rollback as the default.
 
-## Status và evidence
+## Status and evidence
 
-- `Proposed` = kế hoạch chưa thực hiện.
-- `Verified in repository` = source đã được khảo sát và dẫn nguồn.
-- `Executed` = công việc đã làm, có log/artifact.
-- `Passed` = có test/check result chứng minh.
+- `Proposed` = plan not executed.
+- `Verified in repository` = source inspected and cited.
+- `Executed` = work completed with a log/artifact.
+- `Passed` = a test/check result proves it.
 
-Trong Plan chưa thi công, viết `Verification planned`; không tick checklist `Done` cho lệnh chưa chạy.
+Before implementation, write `Verification planned`; do not mark a checklist item `Done` for a command that has not run.

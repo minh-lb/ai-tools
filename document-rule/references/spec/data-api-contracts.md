@@ -1,25 +1,25 @@
-# Data Contract và API Specification
+# Data Contracts and API Specifications
 
-## Khi nào cần
+## When to include them
 
-Chỉ thêm API/schema nếu tài liệu đang đặc tả interface hoặc thay đổi đó phụ thuộc rõ vào contract. Nếu user chỉ yêu cầu quy tắc nghiệp vụ, tránh đưa chi tiết DTO không cần thiết.
+Include an API/schema only when the document specifies an interface or the change clearly depends on that contract. If the user asks only for business rules, avoid unnecessary DTO details.
 
-## Checklist API
+## API checklist
 
 1. Method, path, caller, authentication/authorization.
-2. Request: field, type, required, nullable, validation, format, default (nếu có).
-3. Success: HTTP status, schema/fields, side effects.
-4. Error: HTTP status, domain code, schema, side effects.
-5. Retry/idempotency, pagination/filter/sort/rate-limit **chỉ khi liên quan**.
-6. Backward compatibility/deprecation nếu sửa contract đã dùng.
+2. Request: field, type, required, nullable, validation, format, and default (if any).
+3. Success: HTTP status, schema/fields, and side effects.
+4. Error: HTTP status, domain code, schema, and side effects.
+5. Retry/idempotency, pagination/filter/sort/rate limits **only when relevant**.
+6. Backwards compatibility/deprecation when modifying a contract already in use.
 
-## Checklist dữ liệu
+## Data checklist
 
-- Entity ID, field/type, nullability, trạng thái và invariant.
-- Với mutation: field nào **đổi**, field nào **không đổi**, khi nào commit; field/event derivation nếu có.
-- Với read: source và consistency/visibility nếu yêu cầu phụ thuộc.
-- Tên trường, mã lỗi, enum phải nhất quán trong Spec, examples và AC.
+- Entity ID, field/type, nullability, state, and invariants.
+- For mutations: which fields **change**, which do **not**, and when the change commits; derived fields/events when relevant.
+- For reads: source and consistency/visibility when required by the behavior.
+- Field names, error codes, and enums must be consistent across the Specification, examples, and acceptance criteria.
 
-**Không** tự chọn `401/403/404/409`, UUID, timestamp format, DB index hoặc JSON schema nếu hệ thống hiện có chưa được xác minh. Ví dụ giả định phải dán nhãn; khi thiếu quyết định quan trọng, ghi `Open Question`.
+Do **not** choose `401/403/404/409`, UUIDs, timestamp formats, database indexes, or JSON schemas without verifying the existing system. Label fictional examples; when a material decision is missing, record an `Open Question`.
 
-Dùng [API Spec template](../../templates/spec/api-spec.md).
+Use the [API Specification template](../../templates/spec/api-spec.md).

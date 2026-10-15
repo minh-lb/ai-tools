@@ -1,30 +1,30 @@
-# Functional Requirements và Business Rules
+# Functional Requirements and Business Rules
 
-## Câu viết chuẩn
+## Standard wording
 
-- `FR-001`: Khi **[actor/trigger]** và **[điều kiện]**, hệ thống **PHẢI [hành vi]**, tạo ra **[observable result]**.
-- `BR-001`: Chỉ khi **[điều kiện nghiệp vụ]** thì **[hành động/trạng thái]** được phép.
-- `BR-002`: Nếu **[trường hợp bị cấm]**, hệ thống **PHẢI [error]**, và **KHÔNG [side effect]**.
+- `FR-001`: When **[actor/trigger]** and **[condition]**, the system **MUST [behavior]**, producing **[observable result]**.
+- `BR-001`: Only when **[business condition]** is **[action/state]** allowed.
+- `BR-002`: If **[prohibited case]**, the system **MUST [error]** and **MUST NOT [side effect]**.
 
-Tách rule khi có điều kiện hoặc kết quả cần kiểm thử độc lập. Nêu thứ tự ưu tiên khi nhiều rule có thể đồng thời thỏa.
+Split rules when their conditions or outcomes need independent testing. State precedence when multiple rules may apply at once.
 
-## Dùng decision table khi có nhiều điều kiện
+## Use a decision table for multiple conditions
 
 | Authenticated | Owner | Status=PENDING | Expected |
 |---|---|---|---|
-| No | N/A | N/A | 401, không mutation |
-| Yes | No | N/A | 403, không mutation |
-| Yes | Yes | Yes | Cho phép hủy |
-| Yes | Yes | No | 409, không mutation |
+| No | N/A | N/A | 401, no mutation |
+| Yes | No | N/A | 403, no mutation |
+| Yes | Yes | Yes | Allow cancellation |
+| Yes | Yes | No | 409, no mutation |
 
-**Chỉ là ví dụ giả định**: code status/permission phải theo contract đã biết, không mặc định dùng bảng này cho dự án thật.
+**Fictional example only:** status codes/permissions must follow a known contract; do not apply this table to a real project by default.
 
-## Các trường hợp thường bị bỏ sót
+## Commonly missed cases
 
-- Input trống/sai kiểu/sai format, thiếu quyền.
-- State không hợp lệ, thao tác lặp, duplicate message/request.
-- Failure từ dependency và tình trạng dữ liệu sau thất bại.
-- Concurrent modification/race nếu làm đổi state hoặc tồn kho/số dư.
-- Timezone, rounding, priority khi phép tính phụ thuộc chúng.
+- Empty input, wrong type/format, missing permission.
+- Invalid state, repeated operation, duplicate message/request.
+- Dependency failure and data state after failure.
+- Concurrent modification/races when state, inventory, or balances change.
+- Time zones, rounding, and priority when a calculation depends on them.
 
-Không thêm hành vi mới chỉ để "đủ coverage"; trường hợp chưa được quyết định phải ghi `Open questions`.
+Do not add behavior merely for "complete coverage"; record undecided cases as `Open Questions`.

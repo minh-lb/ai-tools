@@ -1,57 +1,60 @@
 ---
 name: document-rule
 description: >-
-  Viết, chỉnh sửa, review, hiển thị và xuất tài liệu kỹ thuật phần mềm.
-  Ưu tiên Specification (SRS, BLS, API/Feature Spec); Implementation Plan
-  chỉ tạo khi task cần và phạm vi output cho phép;
-  áp dụng nguyên tắc AMM có chọn lọc, kiểm chứng được, tuân thủ chính xác
-  nội dung/định dạng output người dùng yêu cầu. Dùng khi tạo tài liệu kỹ thuật,
-  đặc tả nghiệp vụ, kế hoạch triển khai, runbook, ADR, design, test plan,
-  README hoặc xuất một phần/toàn bộ tài liệu.
+  Write, edit, review, display, and export software engineering documents.
+  Prefer Specifications (SRS, BLS, API/Feature Specs); create an Implementation Plan
+  only when needed and allowed by the output contract. Apply AMM-inspired principles
+  selectively and verify claims. Use for technical documents, business specifications,
+  bug-fix specifications when behavior/cause must be aligned, implementation plans,
+  runbooks, ADRs, designs, test plans, READMEs, and scoped/full document exports.
 ---
 
 # document-rule
 
-## Mục tiêu
+## Purpose
 
-Viết tài liệu **đúng sự thật, đúng phạm vi, rõ nghĩa, có thể sử dụng và kiểm chứng**.
-Học từ AMM: chỉ rõ điều kiện, hành động, kết quả kỳ vọng, điểm kiểm tra và cách phục hồi khi có rủi ro.
-**Không** sao chép biểu mẫu/chương mục ngành hàng không hoặc ép mọi tài liệu thành runbook.
+Write documents that are **truthful, scoped, clear, useful, and verifiable**. A qualified intended reader who did not write the document must be able to perform the documented work correctly, determine when it is complete, and verify the result. Borrow AMM's precision, clarity, structure, actionability, and verifiability, while matching the document type and risk. **Do not** copy aviation forms/section structures or turn every document into a runbook.
 
-## Quy trình bắt buộc (ngắn)
+## Required workflow (brief)
 
-1. **Xác định output contract**: người dùng muốn loại tài liệu/phần nào, mức chi tiết nào, định dạng nào, ngôn ngữ nào, in trong chat hay tạo file? Không tự thêm deliverable.
-2. **Phân loại đầu việc và quyết định có cần Plan không**: bug fix/thay đổi nhỏ, rủi ro thấp thì không tạo Plan file mặc định. Sau đó chỉ đọc các reference đúng nhu cầu; không tải cả thư mục.
-3. **Xác minh nguồn**: ưu tiên user, file/code/tài liệu đã đọc; phân biệt `Đã xác minh`, `Giả định`, `Chưa xác định`; tuyệt đối không dựng dữ kiện.
-4. **Soạn khi có yêu cầu tài liệu**: nêu WHAT/WHY trong Spec, HOW/ORDER/VERIFY trong Plan; chèn guardrails/rủi ro theo mức độ thực tế. Không tự sinh Spec/Plan từ một yêu cầu sửa code nhỏ.
-5. **Review** theo checklist phù hợp, kiểm tra traceability Spec → Plan khi người dùng yêu cầu cả hai.
-6. **Chỉ xuất đúng nội dung** người dùng yêu cầu; nếu tạo file thì xác minh file thực tế trước khi gửi link.
+1. **Resolve the output contract:** identify the requested document/sections, depth, format, language, and whether it should be inline or a file. Do not add deliverables.
+2. **Resolve the display language before writing a document file:** if the request does not explicitly choose a language, ask the user to choose `Vietnamese` or `English` and wait for the answer. Do not ask again when the request already specifies the language. For bilingual examples, maintain separate English and Vietnamese files. Preserve specialized industry/domain terminology in its canonical original form; do not translate technical terms, acronyms, product names, or code identifiers.
+3. **Classify the task and decide whether a Plan is needed:** do not create Plan files by default for small, low-risk bug fixes/changes. Then read only the relevant references; do not load the whole directory.
+4. **Verify sources:** prioritize the user, inspected files/code/documents; distinguish `Verified`, `Assumption`, and `Unknown`. Never invent facts.
+5. **Draft only when requested:** use WHAT/WHY in a Specification and HOW/ORDER/VERIFY in a Plan; add guardrails/risks in proportion to actual risk. Do not generate a Spec/Plan from a simple code-fix request.
+6. **Review** with the appropriate checklist; check Specification → Plan traceability when both were requested. If review-and-fix/iteration is requested, follow [quality gates](references/review/quality-gates.md); for review-only, do not edit.
+7. **Return only what was requested:** if creating a file, verify that it exists before linking it.
 
-## Router — chỉ đọc file cần thiết
+## Router — read only what is needed
 
-| Tác vụ | References cần đọc | Template (khi tạo mới) | Example (khi cần minh họa) |
+For bug-fix Specifications, describe **current behavior** and **desired behavior** in separate sections; do not combine them in a single table or section.
+
+| Task | References to read | Template (when creating) | Examples (EN / VI) |
 |---|---|---|---|
-| Mọi tài liệu | [core/principles](references/core/principles.md), [core/sources](references/core/sources-and-assumptions.md) | — | — |
-| Quyết định **có cần file Plan?** / task code, bug fix | [plan/decision](references/plan/plan-decision.md) | — | [No Plan](examples/plan/no-plan-required.md) |
-| Viết Spec / SRS | [spec/workflow](references/spec/workflow.md), [spec/requirements](references/spec/requirements-and-rules.md), [spec/acceptance](references/spec/acceptance-and-nfr.md) | [Feature Spec](templates/spec/feature-spec.md) | [Spec](examples/spec/order-cancellation-spec.md) |
-| Viết BLS, business flows | [spec/rules](references/spec/requirements-and-rules.md), [spec/flows](references/spec/flows-states-errors.md) | [BLS](templates/spec/bls.md) | [BLS](examples/spec/order-cancellation-bls.md) |
-| Viết API Spec | [spec/api](references/spec/data-api-contracts.md), [spec/acceptance](references/spec/acceptance-and-nfr.md) | [API Spec](templates/spec/api-spec.md) | [API](examples/spec/order-cancellation-api.md) |
-| Viết Implementation Plan | [plan/workflow](references/plan/workflow.md), [plan/tasks](references/plan/task-breakdown.md), [plan/traceability](references/plan/traceability.md) | [Feature Plan](templates/plan/feature-plan.md) | [Plan](examples/plan/order-cancellation-plan.md) |
-| **Viết Plan đã được yêu cầu** cho thay đổi nhỏ / migration | [plan/decision](references/plan/plan-decision.md), [plan/tasks](references/plan/task-breakdown.md), [plan/verification](references/plan/verification-rollout-recovery.md) | [Small Change](templates/plan/small-change.md) / [Migration](templates/plan/migration-plan.md) | [Small](examples/plan/small-change-plan.md) / [Migration](examples/plan/migration-plan.md) |
-| Architecture, ADR, README, Runbook, Test | [other/selection](references/other/document-type-selection.md) rồi chọn reference chuyên biệt trong đó | Xem `templates/other/` | Xem `examples/other/` |
-| Viết hướng dẫn thao tác có rủi ro | [core/AMM](references/core/amm-inspired-procedures.md), [plan/verification](references/plan/verification-rollout-recovery.md) | [Runbook](templates/other/runbook.md) | [Runbook](examples/other/runbook.md) |
-| Review tài liệu | [review/quality](references/review/quality-gates.md), [review/spec](references/review/spec-checklist.md) hoặc [review/plan](references/review/plan-checklist.md) | [Review report](templates/other/review-report.md) | [Findings](examples/other/review-findings.md) |
-| Mọi câu trả lời / in / xuất file | [output/contract](references/output/output-contract.md); thêm [inline](references/output/inline-and-scoped-output.md) hoặc [file](references/output/file-export.md) theo nhu cầu | — | [Output examples](examples/output/only-acceptance-criteria.md) |
+| Any document | [core/principles](references/core/principles.md), [core/sources](references/core/sources-and-assumptions.md) | — | — |
+| Decide whether a Plan file is needed / code task or bug fix | [plan/decision](references/plan/plan-decision.md) | — | [No Plan](examples/plan/no-plan-required.en.md) / [Vietnamese](examples/plan/no-plan-required.vi.md) |
+| Write a bug-fix Specification (when requested/needed to align behavior and cause) | [spec/workflow](references/spec/workflow.md), [requirements](references/spec/requirements-and-rules.md), [acceptance](references/spec/acceptance-and-nfr.md) | [Bug-fix Spec](templates/spec/bug-fix-spec.md) | [EN](examples/spec/bug-fix-spec.en.md) / [VI](examples/spec/bug-fix-spec.vi.md) |
+| Write a Specification / SRS | [spec/workflow](references/spec/workflow.md), [spec/requirements](references/spec/requirements-and-rules.md), [spec/acceptance](references/spec/acceptance-and-nfr.md) | [Feature Spec](templates/spec/feature-spec.md) | [EN](examples/spec/order-cancellation-spec.en.md) / [VI](examples/spec/order-cancellation-spec.vi.md) |
+| Write a BLS / business flows | [spec/rules](references/spec/requirements-and-rules.md), [spec/flows](references/spec/flows-states-errors.md) | [BLS](templates/spec/bls.md) | [EN](examples/spec/order-cancellation-bls.en.md) / [VI](examples/spec/order-cancellation-bls.vi.md) |
+| Write an API Specification | [spec/api](references/spec/data-api-contracts.md), [spec/acceptance](references/spec/acceptance-and-nfr.md) | [API Spec](templates/spec/api-spec.md) | [EN](examples/spec/order-cancellation-api.en.md) / [VI](examples/spec/order-cancellation-api.vi.md) |
+| Write an Implementation Plan | [plan/workflow](references/plan/workflow.md), [plan/tasks](references/plan/task-breakdown.md), [plan/traceability](references/plan/traceability.md) | [Feature Plan](templates/plan/feature-plan.md) | [EN](examples/plan/order-cancellation-plan.en.md) / [VI](examples/plan/order-cancellation-plan.vi.md) |
+| **Write a requested Plan** for a small change/migration | [plan/decision](references/plan/plan-decision.md), [plan/tasks](references/plan/task-breakdown.md), [plan/verification](references/plan/verification-rollout-recovery.md) | [Small Change](templates/plan/small-change.md) / [Migration](templates/plan/migration-plan.md) | [Small](examples/plan/small-change-plan.en.md) / [Migration](examples/plan/migration-plan.en.md) (see matching `.vi.md` files) |
+| Architecture, ADR, README, Runbook, Test | [other/selection](references/other/document-type-selection.md), then the specialized reference | See `templates/other/` | See matching EN/VI files in `examples/other/` |
+| Write a risky operational procedure | [core/AMM](references/core/amm-inspired-procedures.md), [plan/verification](references/plan/verification-rollout-recovery.md) | [Runbook](templates/other/runbook.md) | [EN](examples/other/runbook.en.md) / [VI](examples/other/runbook.vi.md) |
+| Review a document | [review/quality](references/review/quality-gates.md), [review/spec](references/review/spec-checklist.md) or [review/plan](references/review/plan-checklist.md) | [Review report](templates/other/review-report.md) | [EN](examples/other/review-findings.en.md) / [VI](examples/other/review-findings.vi.md) |
+| Any response / print / file export | [output/contract](references/output/output-contract.md); add [inline](references/output/inline-and-scoped-output.md) or [file](references/output/file-export.md) as needed | — | See EN/VI pairs in `examples/output/` |
 
-## Luật áp dụng ngay, kể cả khi chưa mở reference
+## Rules to apply even before opening references
 
-- **Không mặc định tạo Implementation Plan file cho mọi task.** Bug fix/sửa đổi cục bộ rủi ro thấp → sửa trực tiếp và kiểm chứng; task trung bình → checklist ngắn nếu cần, không tạo file; task rủi ro cao → chuẩn bị trình tự và verification, chỉ tạo file Plan khi user yêu cầu hoặc repo/project quy định. Chi tiết: [plan-decision](references/plan/plan-decision.md).
-- Chỉ viết **Spec trước rồi Plan** nếu **cả hai** được yêu cầu. Nếu chỉ yêu cầu Plan, lập Plan dựa vào baseline có sẵn; không sinh thêm full Spec. Nếu user yêu cầu Plan dù task nhỏ, vẫn tạo Plan phù hợp.
-- Không bịa API/schema/path/test result/điều kiện nghiệp vụ. Không dùng ví dụ làm bằng chứng cho hệ thống thật.
-- Spec mô tả behavior + exceptions + acceptance criteria; Plan mô tả bước thực hiện + dependency + expected result + verification.
-- Mọi thông tin quan trọng phải dễ tìm và kiểm tra. Bỏ phần template không áp dụng thay vì để mục rỗng.
-- Khi user yêu cầu **“chỉ in X”**, xuất chính **X**; không thêm lời dẫn, khuyến nghị, plan hay tóm tắt.
-- Khi user yêu cầu **“toàn bộ”**, không thay bằng summary/`...`/placeholder. Khi user yêu cầu file, phải có file thật và link đúng.
-- Không tuyên bố đã đọc repo, chạy test, tạo file hoặc deploy nếu chưa thực hiện.
+- **Do not create an Implementation Plan file by default for every task.** Small, local, low-risk bug fix → fix and verify directly; medium task → use a short checklist if useful, no file by default; high-risk task → establish sequence and verification, and create a Plan file only when requested or required by repository/project policy. Details: [Plan decision](references/plan/plan-decision.md).
+- Write **Specification first, then Plan** only when **both** are requested. If only a Plan is requested, base it on the available baseline; do not generate a full Specification. If the user requests a Plan for a small task, still create an appropriately concise Plan.
+- Do not invent APIs/schemas/paths/test results/business conditions. Do not present examples as evidence about a real system.
+- Specifications describe behavior, exceptions, and acceptance criteria; Plans describe steps, dependencies, expected results, and verification. Every Plan must begin with a concrete, outcome-based Goal naming the target, desired state/behavior, key scope or constraint, and observable success signal, traceable to the baseline requirements. Avoid generic “implement/improve X” goals; if source facts are unknown, state a conditional Goal and the blocker rather than guessing.
+- In a bug-fix Specification, always separate the description of current behavior from the description of desired behavior.
+- Important information must be easy to find and verify. Remove inapplicable template sections rather than leaving empty headings.
+- Every Markdown document template must include root-level YAML frontmatter showing the default properties, with clear placeholders for project-specific values and `status: draft`. Use a unique task/ticket ID for `id` when available; otherwise generate a UUID. Frontmatter `status` may only be `draft` or `approved`; use `draft` unless the user explicitly approves the document. Domain statuses in document content remain governed by their own contract.
+- If the user requests **"print only X,"** output only **X**—no lead-in, recommendation, plan, or summary.
+- If the user requests **"everything,"** do not replace it with a summary, `...`, or a placeholder. If a file is requested, create the actual file and provide the correct link.
+- Treat templates and examples as documents subject to the same independent-reader test. Label fictional content and placeholders; for an example that is not execution-ready, state that clearly and name the evidence/details required before use. Never claim or imply that a repository was inspected, a test was run, a file was created, or a deployment occurred unless it actually happened.
 
-**Tài liệu điều hướng:** [README.md](README.md). Đọc [references/core/writing-style.md](references/core/writing-style.md) khi cần chỉnh độ rõ ràng/ngắn gọn.
+**Navigation:** [README.md](README.md). Read [references/core/writing-style.md](references/core/writing-style.md) when clarity/conciseness guidance is needed.

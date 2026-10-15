@@ -1,21 +1,21 @@
-# Acceptance Criteria, NFR và Traceability của Spec
+# Specification Acceptance Criteria, NFRs, and Traceability
 
-## Acceptance Criteria phải test được
+## Acceptance criteria must be testable
 
-Ưu tiên `Given` bối cảnh/dữ liệu ban đầu; `When` một trigger; `Then` kết quả quan sát + dữ liệu/state/side effect.
+Prefer `Given` initial context/data; `When` a trigger; `Then` an observable outcome plus data/state/side effects.
 
-- Đặt `AC-001` và map về `FR-*`, `BR-*`, `NFR-*`.
-- Có happy path, validation, permission, invalid state; thêm race/retry khi có rủi ro.
-- Không gộp nhiều biến thể khó kiểm chứng vào 1 AC nếu cần nhiều tests; 1 AC có thể map nhiều requirement khi scenario thực sự chung.
-- Tránh AC: "hệ thống chạy đúng", "API hoạt động tốt", "giao diện thân thiện".
+- Assign `AC-001` and map it to `FR-*`, `BR-*`, and `NFR-*`.
+- Cover the happy path, validation, permissions, and invalid states; add race/retry cases when risk warrants it.
+- Do not combine variants that are hard to verify in one AC when they need separate tests; one AC may map to multiple requirements when the scenario is genuinely shared.
+- Avoid criteria such as "the system works correctly," "the API works well," or "the UI is user-friendly."
 
-## NFR
+## NFRs
 
-- Ghi performance, availability, security, audit, observability, consistency, localization **nếu yêu cầu hoặc căn cứ có thật**.
-- Có phương pháp đo, môi trường/tải và ngưỡng **nếu người dùng cung cấp**; thiếu ngưỡng thì `Chưa xác định`, không tự đặt số.
-- Ví dụ: `NFR-001: Với hai yêu cầu hủy cùng đơn đang PENDING, tối đa một thao tác đổi trạng thái thành công.` → kiểm thử bằng concurrent requests.
+- Include performance, availability, security, audit, observability, consistency, and localization **only when requested or supported by evidence**.
+- Specify measurement method, environment/load, and threshold **when supplied by the user**; if a threshold is missing, mark it `Unknown` rather than inventing a number.
+- Example: `NFR-001: For two cancellation requests on the same PENDING order, at most one operation successfully changes the state.` → verify with concurrent requests.
 
-## Matrix trước bàn giao
+## Handoff matrix
 
 | Requirement ID | Flow / Contract | Acceptance |
 |---|---|---|
@@ -23,4 +23,4 @@
 | BR-002 | Error path | AC-002 |
 | NFR-001 | Concurrency rule | AC-004 |
 
-Mọi requirement quan trọng cần AC hoặc giải thích ngoại lệ. Không tự tuyên bố test đã đạt: acceptance là **định nghĩa cần kiểm chứng**, không phải test report.
+Every important requirement needs an acceptance criterion or an explained exception. Do not claim a test passed: acceptance criteria **define what must be verified**; they are not a test report.

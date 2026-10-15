@@ -1,26 +1,30 @@
-# Nguyên tắc nền tảng
+# Foundational Principles
 
-## Ưu tiên theo thứ tự
+## Priority order
 
-1. **Fidelity:** đáp ứng đúng yêu cầu người dùng và các nguồn có thẩm quyền; không thay đổi logic khi chỉ được biên tập.
-2. **Correctness:** không biến suy đoán thành sự thật; không tạo API, schema, số liệu hay trạng thái giả.
-3. **Testability:** mọi hành vi quan trọng có điều kiện và kết quả kiểm tra được.
-4. **Usability:** người đọc mục tiêu có thể tìm thông tin và thực hiện đúng công việc.
-5. **Conciseness:** chỉ giữ nội dung phục vụ quyết định/thực hiện/kiểm chứng; không lan man.
+1. **Fidelity:** satisfy the user's request and authoritative sources; do not change meaning when asked only to edit.
+2. **Correctness:** do not turn speculation into fact or invent APIs, schemas, metrics, or statuses.
+3. **Testability:** important behavior has verifiable conditions and outcomes.
+4. **Usability:** the intended reader can find information and perform the right work.
+5. **Conciseness:** keep only content that supports decisions, execution, or verification.
 
-## Tách mục đích
+## Independent-reader test
 
-- **Specification:** `WHAT`, `WHEN`, input/output, constraints, errors, acceptance.
-- **Implementation Plan:** `HOW`, order, dependencies, risk, verification, done.
-- **Design/ADR:** alternatives, rationale, trade-offs.
-- **Runbook:** trigger, prerequisites, procedure, signals, recovery.
-- **README:** setup và vận hành thường ngày đã xác minh.
+A qualified intended reader who did not author the document must be able to perform the documented work correctly, tell when it is complete, and verify the outcome. For documents that do not prescribe actions, define the equivalent decision, evidence, or acceptance signals instead of forcing procedural steps.
 
-Nếu người dùng chỉ đòi một tài liệu, không tự tạo tài liệu liên quan. Nếu yêu cầu Spec + Plan, hoàn thiện Spec và ID trước khi map Plan. Với task sửa code/bug đơn giản, **không tự tạo Spec/Plan file**; xem [quyết định có cần Plan](../plan/plan-decision.md).
+## Separate document purposes
 
-## Quy phạm
+- **Specification:** `WHAT`, `WHEN`, inputs/outputs, constraints, errors, and acceptance criteria.
+- **Implementation Plan:** `HOW`, order, dependencies, risk, verification, and completion.
+- **Design / ADR:** alternatives, rationale, and trade-offs.
+- **Runbook:** trigger, prerequisites, procedure, signals, and recovery.
+- **README:** verified setup and routine operation.
 
-- `MUST`: bắt buộc; `MUST NOT`: cấm; `SHOULD`: nên, trừ khi có lý do cụ thể; `MAY`: tùy chọn.
-- ID ổn định: `FR-`, `BR-`, `NFR-`, `AC-`, `IMP-`; không đổi ID giữa phiên bản khi ý nghĩa còn nguyên.
-- Không thêm chương mục không áp dụng hoặc placeholder vô nghĩa.
-- Sử dụng level chi tiết tương ứng rủi ro và sự phức tạp; không yêu cầu mọi tài liệu đều có rollback, API, database.
+If the user requests only one document, do not create related documents automatically. If both a Specification and Plan are requested, complete the Specification and its IDs before mapping the Plan. For a simple code change or bug fix, **do not create Specification/Plan files automatically**; see [Plan decision](../plan/plan-decision.md).
+
+## Normative language and IDs
+
+- `MUST`: required; `MUST NOT`: prohibited; `SHOULD`: recommended unless a specific reason applies; `MAY`: optional.
+- Use stable IDs (`FR-`, `BR-`, `NFR-`, `AC-`, `IMP-`) when traceability or cross-references are useful; do not force IDs into every document. Do not change an ID between versions when its meaning is unchanged.
+- Do not add irrelevant sections or meaningless placeholders.
+- Match detail to risk and complexity; do not require every document to include rollback, API, database, or procedural-workflow structure.

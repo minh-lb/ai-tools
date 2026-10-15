@@ -1,21 +1,22 @@
-# Architecture, Design và ADR
+# Architecture, Design, and ADRs
 
 ## Architecture / System Design
 
-- Nêu goals/non-goals, ràng buộc, workload/actors, context.
-- Các component và trách nhiệm, integration boundaries, data flow, trust boundary.
-- Quyết định kỹ thuật có căn cứ: options, trade-offs, failure modes, scaling/observability/security.
-- Contract/interface nổi bật và phương án migration khi thiết kế ảnh hưởng tương thích.
-- Diagram chỉ khi giảm mơ hồ; không thay prose quan trọng bằng sơ đồ không thể truy cập.
+- State goals/non-goals, constraints, workload/actors, and context.
+- Describe components and responsibilities, integration boundaries, data flow, and trust boundaries.
+- Ground technical decisions: options, trade-offs, failure modes, scaling, observability, and security.
+- Include validation/success signals when needed to determine whether the design meets its goals; do not claim checks were run unless they were.
+- Include notable contracts/interfaces and a migration approach when the design affects compatibility.
+- Add diagrams only when they reduce ambiguity; do not replace important prose with an inaccessible diagram.
 
 ## ADR
 
-- **Context:** vấn đề và forces.
-- **Decision:** một lựa chọn cụ thể và scope áp dụng.
-- **Alternatives:** các lựa chọn đã cân nhắc, trade-offs.
-- **Consequences:** được/mất, vận hành/khả năng đổi ý.
-- **Status:** Proposed/Accepted/Superseded **chỉ khi có cơ sở**.
+- **Context:** the problem and forces.
+- **Decision:** a specific choice and the scope where it applies.
+- **Alternatives:** options considered and their trade-offs.
+- **Consequences:** benefits, costs, operational impact, and reversibility.
+- **Decision status:** Proposed/Accepted/Superseded **only when supported by evidence**.
 
-Đừng viết quyết định chưa được duyệt như sự thật. Nếu user yêu cầu exploration, trình bày alternatives; nếu chỉ yêu cầu ADR, không tự thêm Implementation Plan dài.
+Do not present an unapproved decision as fact. If the user asks for exploration, present alternatives; if they ask only for an ADR, do not add a lengthy Implementation Plan automatically.
 
 Templates: [Architecture](../../templates/other/architecture-design.md), [ADR](../../templates/other/adr.md).

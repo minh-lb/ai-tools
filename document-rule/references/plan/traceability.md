@@ -1,24 +1,24 @@
-# Traceability và Dependencies trong Plan
+# Plan Traceability and Dependencies
 
-## Mapping ngược từ Spec
+## Map backward from the Specification
 
-| Spec ID | Plan task | Verification |
+| Specification ID | Plan task | Verification |
 |---|---|---|
 | FR-001 | IMP-03 | IT-01 / AC-001 |
 | BR-002 | IMP-02 | UT-02 / AC-002 |
 | NFR-001 | IMP-02, IMP-04 | IT-04 / AC-004 |
 
-Đây là mapping ví dụ, không phải test đã tồn tại. Nếu chưa biết test IDs, mô tả scenario hoặc gắn `Planned`.
+This is an illustrative mapping, not evidence that the tests exist. If test IDs are unknown, describe the scenario or label it `Planned`.
 
-## Hai phép kiểm tra
+## Two checks
 
-- **Coverage:** mỗi requirement trong scope có task hoặc explicit exclusion với lý do.
-- **Verifiability:** mỗi task quan trọng có cách chứng minh outcome; mỗi AC quan trọng có test/check dự kiến.
+- **Coverage:** every in-scope requirement maps to a task or an explicit exclusion with rationale.
+- **Verifiability:** every important task has a way to prove its outcome; every important acceptance criterion has a planned test/check.
 
 ## Dependencies
 
-Đánh số task sao cho thứ tự thi công hợp lý; chỉ ra blocker, precondition và nơi có quyết định chưa chốt. Phân biệt phụ thuộc **bắt buộc** với thứ tự **khuyến nghị**. Không bịa approval, owner hay lịch phát hành.
+Number tasks in a sensible execution order; identify blockers, preconditions, and unresolved decisions. Distinguish **required** dependencies from **recommended** sequencing. Do not invent approvals, owners, or release dates.
 
-## Khi Spec thay đổi
+## When the Specification changes
 
-Kiểm tra ảnh hưởng tới task/verification liên quan; giữ các ID ổn định hoặc ghi rõ mapping thay đổi. Không để Plan tham chiếu đến requirement không còn tồn tại.
+Check impacts on related tasks/verification; keep IDs stable or document the mapping change. Do not leave Plan references to requirements that no longer exist.

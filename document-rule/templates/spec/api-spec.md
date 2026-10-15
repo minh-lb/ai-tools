@@ -1,14 +1,23 @@
+---
+id: "<unique-task-id-or-uuid>"
+title: "<Endpoint or API group> — API Specification"
+type: api-specification
+status: draft
+created: "YYYY-MM-DD"
+updated: "YYYY-MM-DD"
+tags: []
+---
 # <Endpoint / API Group> — API Specification
 
-> **Status:** Draft | **Source/Version:** <...>
+> **Document status:** `draft` | **Source/Version:** <...>
 
-## Purpose & Scope
+## Purpose and Scope
 
-<What capability, who uses it, what is excluded.>
+<What capability, who uses it, and what is excluded.>
 
 ## Endpoint
 
-- Method & path: `<METHOD /path>`
+- Method and path: `<METHOD /path>`
 - Auth/permission: <...>
 - Content type / headers: <only required headers>
 
@@ -20,11 +29,11 @@
 
 ## Success Response
 
-- Status: `<status>`
+- HTTP status: `<status>`
 - Fields: <names, types, meanings>
 
 ```json
-{"example":"replace with valid verified or illustrative payload"}
+{"example":"replace with a valid verified or clearly illustrative payload"}
 ```
 
 ## Error Contract
@@ -33,7 +42,7 @@
 |---|---|---|---|
 | <invalid case> | <status> | <code> | <...> |
 
-## Semantics (nếu liên quan)
+## Semantics (if relevant)
 
 <Idempotency, retry, ordering, consistency, versioning, deprecation.>
 
@@ -43,6 +52,6 @@
 |---|---|
 | AC-001 | <...> |
 
-## Open Questions (nếu còn)
+## Open Questions (if any)
 
 - <...>

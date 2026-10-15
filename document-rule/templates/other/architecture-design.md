@@ -1,14 +1,23 @@
+---
+id: "<unique-task-id-or-uuid>"
+title: "<System or change> — System Design"
+type: architecture-design
+status: draft
+created: "YYYY-MM-DD"
+updated: "YYYY-MM-DD"
+tags: []
+---
 # <System / Change> — System Design
 
-## Context, Goals & Non-Goals
+## Context, Goals, and Non-Goals
 
-<Users/workload, measurable goals, explicit exclusions.>
+<Users/workload, measurable goals, and explicit exclusions.>
 
-## Constraints & Assumptions
+## Constraints and Assumptions
 
-<Verified or labeled.>
+<Verified or clearly labeled.>
 
-## Components & Responsibilities
+## Components and Responsibilities
 
 | Component | Responsibility | Interface / Dependency |
 |---|---|---|
@@ -16,18 +25,22 @@
 
 ## Data / Request / Event Flow
 
-<Steps or diagram when useful. Include failure paths.>
+<Steps or a diagram when useful. Include failure paths.>
 
-## Technical Options & Decision
+## Technical Options and Decision
 
 | Option | Benefit | Trade-off | Evidence |
 |---|---|---|---|
 | <...> | <...> | <...> | <...> |
 
-## Security, Reliability & Observability (theo rủi ro)
+## Validation / Success Signals (if applicable)
 
-<Threat boundaries, error behavior, metrics/logging.>
+<Observable evidence or checks that would show the design meets its goals; do not claim they were run.>
 
-## Compatibility, Rollout & Open Questions
+## Security, Reliability, and Observability (as relevant to risk)
 
-<Only when change requires them.>
+<Trust boundaries, error behavior, metrics/logging.>
+
+## Compatibility, Rollout, and Open Questions
+
+<Include only when the change requires them.>

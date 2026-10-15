@@ -1,28 +1,43 @@
-# Quy trình viết Specification
+# Specification Writing Workflow
 
-## Xác định spec thuộc loại gì
+## Identify the Specification type
 
-- **Feature/SRS:** kỳ vọng observable đối với một tính năng hoặc hệ thống.
-- **BLS:** business rules, quyết định, trạng thái và side effects.
-- **API Specification:** interface contract; không tự biến thành implementation details.
+- **Feature/SRS:** observable expectations for a feature or system.
+- **BLS:** business rules, decisions, states, and side effects.
+- **API Specification:** interface contract; do not turn it into implementation details.
+- **Bug-fix Specification:** current versus desired behavior, fix scope, and acceptance/non-regression criteria; create only when requested or when material behavior must be aligned.
 
-## Thứ tự soạn
+## Bug-fix Specification
 
-1. Objective và in/out-of-scope.
-2. Actor, trigger, input và preconditions.
-3. Thuật ngữ, trạng thái, business invariants.
-4. Functional requirements có ID (`FR-*`), business rules (`BR-*`).
-5. Happy path, alternative/error paths, side effects.
-6. Contract dữ liệu/API nếu thuộc phạm vi.
-7. NFR có căn cứ (`NFR-*`) và acceptance criteria (`AC-*`).
-8. Mâu thuẫn/open questions, rồi review traceability.
+A bug may need a Specification. This document defines **the behavior to fix**; it is not a root-cause analysis (RCA) report or an Implementation Plan.
 
-## Mức chi tiết
+- Write one when the user requests a Spec, or when current/desired behavior, an interface contract, impact scope, or non-regression conditions must be agreed before a change.
+- For a small, local bug with clear desired behavior and direct verification, do not create a Spec file by default; see the [Plan/Spec decision](../plan/plan-decision.md).
+- Put current behavior and desired behavior in **separate sections**; do not combine them in one table/section. Include evidence/reproduction status for current behavior and the source for desired behavior.
+- State the **bug cause** separately as well. Describe a verified causal relationship with evidence; if unknown, say `Unknown` and list any hypothesis separately.
+- Acceptance criteria should cover the reproduced scenario and related behavior that must be preserved. If desired behavior is unverified, state the open question; do not turn an assumption into a requirement.
+- Do not present a hypothesis as fact. The short cause section in a Specification does not replace a full RCA when one is requested.
+- Keep the Specification proportionate to impact; do not add a Plan or a full feature specification automatically.
 
-- **Small:** scope + behavior/rules/errors + AC.
-- **Feature:** actors + FR/BR + flows + errors + data/API (nếu có) + AC.
-- **System / cross-service:** thêm state transitions, concurrency, compatibility, security, observability theo rủi ro.
+Use the [bug-fix Specification template](../../templates/spec/bug-fix-spec.md) and examples: [English](../../examples/spec/bug-fix-spec.en.md), [Vietnamese](../../examples/spec/bug-fix-spec.vi.md).
 
-**Boundary:** Spec không được lén chọn tech stack/đặt file path/chiến lược transaction trừ khi đã là constraint người dùng cung cấp hoặc technical design spec được yêu cầu.
+## Drafting order
 
-Dùng [Feature Spec template](../../templates/spec/feature-spec.md) cho spec tổng quát; [BLS](../../templates/spec/bls.md) hoặc [API](../../templates/spec/api-spec.md) cho phân loại chuyên biệt.
+1. Objective and in/out of scope.
+2. Actors, triggers, inputs, and preconditions.
+3. Terms, states, and business invariants.
+4. Functional requirements (`FR-*`) and business rules (`BR-*`).
+5. Happy path, alternative/error paths, and side effects.
+6. Data/API contracts when in scope.
+7. Evidence-based NFRs (`NFR-*`) and acceptance criteria (`AC-*`).
+8. Contradictions/open questions, then review traceability.
+
+## Level of detail
+
+- **Small:** scope + behavior/rules/errors + acceptance criteria.
+- **Feature:** actors + FR/BR + flows + errors + data/API (if applicable) + acceptance criteria.
+- **System / cross-service:** add state transitions, concurrency, compatibility, security, and observability in proportion to risk.
+
+**Boundary:** do not silently choose a tech stack, file path, or transaction strategy unless supplied as a constraint or requested in a technical design.
+
+Use the [Feature Specification template](../../templates/spec/feature-spec.md) for a general Spec; use [BLS](../../templates/spec/bls.md) or [API](../../templates/spec/api-spec.md) for specialized types.
