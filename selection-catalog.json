@@ -51,6 +51,13 @@
       "sourcePath": "review-code"
     },
     {
+      "id": "second-brain-logger",
+      "label": "Second Brain Logger",
+      "description": "Record how AI agents investigate, implement, and verify project work in Obsidian for future recall.",
+      "sourceBranch": "agent-skills",
+      "sourcePath": "second-brain-logger"
+    },
+    {
       "id": "task-creator",
       "label": "Task Creator",
       "description": "Draft and push tasks/tickets to Jira, Trello, Notion, Linear, Asana, monday.com, or a local file, with an objective estimate and user review before creation.",

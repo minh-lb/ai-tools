@@ -421,6 +421,7 @@ test("loadSelectionCatalog includes curated local skills in installer choices", 
       "git-workflow",
       "react-component-generator",
       "review-code",
+      "second-brain-logger",
       "task-creator",
       "team-mini",
       "testcase-creator"
@@ -543,6 +544,18 @@ test("loadSelectionCatalog includes curated local skills in installer choices", 
       description: "Create or refactor repo-aligned React components under components/** with index.tsx, controller.ts, and style.module.css conventions; keep client directives conditional on framework needs and make test examples compatible with the project’s test runner.",
       sourceBranch: "agent-skills",
       sourcePath: "react-component-generator",
+      targets: undefined
+    }
+  );
+
+  assert.deepEqual(
+    catalog.skills.find((skill) => skill.id === "second-brain-logger"),
+    {
+      id: "second-brain-logger",
+      label: "Second Brain Logger",
+      description: "Record how AI agents investigate, implement, and verify project work in Obsidian for future recall.",
+      sourceBranch: "agent-skills",
+      sourcePath: "second-brain-logger",
       targets: undefined
     }
   );
