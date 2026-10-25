@@ -2,6 +2,13 @@
   "version": 1,
   "skills": [
     {
+      "id": "ai-memory",
+      "label": "AI Memory",
+      "description": "Resume project work and save checkpoints, decisions, and completion notes through the configured Obsidian MCP.",
+      "sourceBranch": "agent-skills",
+      "sourcePath": "ai-memory"
+    },
+    {
       "id": "coding-rule",
       "label": "Coding Rule",
       "description": "Language- and framework-agnostic coding guidance for implementing, editing, debugging, and refactoring software, including application code, APIs, databases, UI, security, infrastructure as code, containers, and shell scripts.",

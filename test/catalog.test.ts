@@ -414,6 +414,7 @@ test("loadSelectionCatalog includes curated local skills in installer choices", 
   assert.deepEqual(
     catalog.skills.map((skill) => skill.id),
     [
+      "ai-memory",
       "coding-rule",
       "document-rule",
       "domain-driven-design",
@@ -426,6 +427,18 @@ test("loadSelectionCatalog includes curated local skills in installer choices", 
       "team-mini",
       "testcase-creator"
     ]
+  );
+
+  assert.deepEqual(
+    catalog.skills.find((skill) => skill.id === "ai-memory"),
+    {
+      id: "ai-memory",
+      label: "AI Memory",
+      description: "Resume project work and save checkpoints, decisions, and completion notes through the configured Obsidian MCP.",
+      sourceBranch: "agent-skills",
+      sourcePath: "ai-memory",
+      targets: undefined
+    }
   );
 
   assert.deepEqual(
