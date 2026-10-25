@@ -1,0 +1,6 @@
+interface:
+  display_name: "AI Memory"
+  short_description: "Project memory for each work session"
+  default_prompt: "Use $ai-memory to resume this project's work from memory."
+policy:
+  allow_implicit_invocation: true
