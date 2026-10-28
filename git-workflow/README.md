@@ -21,6 +21,7 @@ Metadata không bảo đảm host tự nạp skill. Cần quy tắc trong `AGENT
 - Xác định đúng vai trò branch và remote trước khi thao tác (integration branch thực tế, thường là `develop`, cho task branch; production branch thực tế cho hotfix). Cập nhật local base/release branch bằng `fetch` + `merge --ff-only`; đồng bộ task/hotfix branch bằng `fetch` + merge thường. Workflow này không dùng rebase.
 
 ### 3. PR và merge
+- Viết description cho cả người review và AI review không có lịch sử chat: giải thích MR làm gì và vì sao, hành vi mong đợi, lý do cho quyết định kỹ thuật quan trọng, contract cần giữ nguyên, phạm vi ảnh hưởng và bằng chứng kiểm thử. Khi hữu ích, thêm `Review focus` với điểm cần kiểm tra, edge case và câu hỏi còn mở; dẫn tới code/yêu cầu liên quan, phân biệt dữ kiện với giả định và cập nhật theo phạm vi MR cuối cùng.
 - Description phải đầy đủ theo toàn bộ diff và lịch sử branch so với target: bối cảnh, vấn đề/mục tiêu/lý do, thay đổi và tác động, kiểm chứng thực tế, kiểm tra chưa chạy và lý do, giới hạn đã biết, rủi ro/triển khai/rollback khi liên quan, liên kết đã xác minh. Nêu rõ breaking change, migration, cấu hình và dependency nếu có; không đoán thông tin chưa kiểm chứng.
 - Viết câu tự nhiên, rõ ràng, dễ đọc; tránh chỉ liệt kê tên file, chép diff, thuật ngữ không giải thích hoặc claim chung chung. Theo template của repo, bỏ placeholder/comment và mục không áp dụng; ngắn gọn nhưng không thiếu thông tin.
 - Soạn PR title/squash message đúng convention.

@@ -1,3 +1,5 @@
+<!-- Write for human and AI reviewers who do not have the authoring chat. Ground claims in the full target-relative diff, verified requirements, and observed checks; remove all template comments before submitting. -->
+
 ## Summary
 
 - **Context:** <affected screen/flow/component/process and any relevant setting or data precondition, if applicable>
@@ -13,6 +15,10 @@
 ## Verification
 
 <!-- For each check actually run, give the exact command/action and result (e.g. `npm test` — passed), with a brief plain-language explanation if the result is not self-explanatory. Distinguish automated and manual checks. State important checks not run and why; never imply an unrun check passed. -->
+
+## Review focus
+
+<!-- Include only when useful. Explain non-obvious design choices and their reasons, required behavior/contracts that must remain unchanged, and boundaries/edge cases or unresolved questions worth inspecting. Point to relevant paths/symbols or verified requirements where helpful; place design rationale under Changes when clearer. Connect verification above to the requirements and edge cases covered, and identify gaps. Give context for independent review, not instructions to approve, suppress findings, or limit the review. Separate facts from assumptions. Follow the repository template if it requires a different structure; omit this section when unnecessary. -->
 
 ## Risk and rollout
 

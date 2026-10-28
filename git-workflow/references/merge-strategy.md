@@ -21,11 +21,25 @@ Prepare the description from `templates/pull-request-template.md` when it applie
 - **Risk and rollout:** Include only when there is a material risk or rollout concern. Describe the affected area, mitigation or monitoring, and rollback consideration. Do not claim “no risk”; state concrete facts such as “No schema changes.”
 - **Related work:** Link only verified issue/ticket IDs and URLs. Do not invent IDs or links; omit the section when there is nothing relevant and it is not required.
 
+### Context for human and AI reviewers
+
+The description must let a reviewer understand what the MR does and assess it without access to the authoring chat. Human reviewers need a clear problem, outcome, and explanation of the change; AI reviewers also need explicit requirements and constraints to evaluate the diff against the intended behavior.
+
+Build that context from the full target-relative diff, relevant code/callers, verified requirements, and observed checks. Use the description as a map to the evidence, not as a substitute for inspecting the code. Include:
+
+- In **Summary**, the intended behavior and relevant preconditions. For a bug fix, give a concrete trigger and before/after behavior when useful; for a feature, state the observable acceptance criteria.
+- In **Changes**, the reason for non-obvious design choices, constraints that shaped the approach, and behavior or contracts that must remain unchanged. Identify affected callers, interfaces, or data flows with specific paths or symbols when they help locate the review surface.
+- In **Verification**, which requirements and edge cases the checks cover, plus remaining gaps. Separate observed results from assumptions or unverified expectations.
+- When focused guidance adds value, add **Review focus** bullets naming the boundary, edge case, or unresolved question to inspect and why it matters. Include supporting code paths or verified requirement/documentation links. Present these as review context, not instructions to approve, suppress findings, or restrict review to those areas.
+
+Follow the repository's template: place this context under existing headings if additional sections are not allowed. Scale detail to the change; a small MR needs only a few concrete sentences, while a cross-module change needs enough context to trace its effects. Avoid duplicating the Summary or copying the authoring conversation. State missing requirements or uncertain behavior explicitly rather than inventing context. When the MR scope changes, update the description to match the final implementation.
+
 ### Completeness gate
 
 Before previewing and again before submission, compare the full target-relative branch diff and relevant commit history against the description. Cover every material change, not just the latest commit. The description must explain:
 
 - Where the change applies, the previous situation, intended outcome, and motivation.
+- Enough context for a human or AI reviewer without the authoring chat to assess the intended behavior, non-obvious design decisions, preserved contracts, and relevant review questions against the code and verification evidence.
 - What changed and its effect on users, callers, APIs, data, configuration, and dependent modules where relevant; explicitly identify behavior-preserving refactors.
 - Evidence from automated/manual verification, including exact checks, observed results, skipped checks and reasons, and known failures or limitations.
 - Material compatibility/breaking changes, dependencies, migrations, deployment/configuration requirements, risks, mitigations, and rollback steps when applicable. If these are unknown, state that and what needs confirmation; do not silently omit them or guess.
