@@ -4,20 +4,28 @@ title: Cancel Order — BLS (fictional example)
 type: example
 status: draft
 created: 2026-10-16
-updated: 2026-10-16
+updated: 2026-10-28
 tags: [document-rule, spec, bls, en]
 ---
-# Cancel Order — BLS (Fictional Example)
+# Cancel Order — Business Logic Specification (BLS, Fictional Example)
 
 > Related to [SPEC-ORDER-001](order-cancellation-spec.en.md); illustrates business rules only.
 
-## Entity, Trigger, and Invariants
+## Purpose and Terms
 
-- `Order.status`: `PENDING`, `PAID`, `SHIPPED`, `CANCELLED`.
+Customers may cancel only their own orders that are waiting to be processed. These rules let business readers check who can cancel and what changes; the exact status and error names let developers implement the same behavior.
+
+- `Order.status` is the order's processing state: waiting (`PENDING`), paid (`PAID`), shipped (`SHIPPED`), or cancelled (`CANCELLED`).
+- Authenticated means the system has confirmed who the caller is; owner means the customer the order belongs to.
+- `cancelledAt` records when cancellation occurred. “No mutation” means no stored data is changed by that request.
+- The numeric response codes below tell the caller whether the request succeeded or why it was rejected.
+
+## Trigger and Invariants
+
 - The user initiates cancellation; caller must be authenticated and own the order.
 - An order can be successfully cancelled at most once.
 
-## Decision Table (top-down priority)
+## Decision Table (check from top to bottom; first matching row applies)
 
 | Priority | Authenticated | Order exists | Is owner | Is PENDING | Decision |
 |---|---|---|---|---|---|

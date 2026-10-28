@@ -11,7 +11,7 @@ tags: []
 
 ## Context, Goals, and Non-Goals
 
-<Users/workload, measurable goals, and explicit exclusions.>
+<Plain-language problem and user impact, then workload, measurable goals, and exclusions. Explain necessary terms before mechanisms.>
 
 ## Constraints and Assumptions
 

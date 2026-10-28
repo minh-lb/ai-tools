@@ -23,9 +23,9 @@ Use the [bug-fix Specification template](../../templates/spec/bug-fix-spec.md) a
 
 ## Drafting order
 
-1. Objective and in/out of scope.
+1. Plain-language objective and in/out of scope: what changes for whom and why it matters.
 2. Actors, triggers, inputs, and preconditions.
-3. Terms, states, and business invariants.
+3. Essential terms, states/fields, and business invariants: explain their source-supported meaning beside exact identifiers before rules/criteria. If a state/field's semantics are unknown, describe only its known role and flag the gap instead of guessing.
 4. Functional requirements (`FR-*`) and business rules (`BR-*`).
 5. Happy path, alternative/error paths, and side effects.
 6. Data/API contracts when in scope.

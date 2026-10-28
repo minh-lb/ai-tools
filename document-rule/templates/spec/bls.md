@@ -13,7 +13,7 @@ tags: []
 
 ## Objective and Vocabulary
 
-<Business outcome, actor, entities, definitions.>
+<Business outcome and actor in plain language. Define necessary entities/states with their exact identifiers so business readers can follow the rules.>
 
 ## Inputs and Preconditions
 

@@ -6,6 +6,8 @@ Quy tắc cho AI khi **viết, sửa, review, in/hiển thị và xuất tài li
 
 Tài liệu phải đủ rõ để một người có chuyên môn phù hợp, dù không phải tác giả, cũng có thể thực hiện đúng công việc, biết khi nào công việc hoàn thành và biết cách kiểm tra kết quả. Viết tài liệu theo phong cách hướng dẫn bảo dưỡng máy bay (Aircraft Maintenance Manual – AMM) là phương pháp viết tài liệu đề cao tính chính xác, rõ ràng, có cấu trúc, có thể thực hiện và kiểm chứng được.
 
+Người mới hoặc không chuyên cũng phải hiểu tài liệu nói về việc gì, vì sao cần, hành vi/quyết định chính, hệ quả và giới hạn. Giải thích bằng ngôn ngữ thông thường trước, diễn giải thuật ngữ ở lần xuất hiện đầu rồi mới đi vào chi tiết kỹ thuật; giữ nguyên tên field, trạng thái và mã để đối chiếu. Dễ hiểu không có nghĩa là bỏ điều kiện, ngoại lệ hoặc yêu cầu chuyên môn/quyền truy cập khi thao tác.
+
 Skill áp dụng các nguyên tắc về độ chính xác, rõ ràng, cấu trúc, tính thực hiện và kiểm chứng theo mức phù hợp với loại tài liệu; **không** sao chép cấu trúc biểu mẫu hàng không hay ép mọi tài liệu thành quy trình thao tác.
 
 ## Cấu trúc
@@ -18,8 +20,12 @@ Skill áp dụng các nguyên tắc về độ chính xác, rõ ràng, cấu tr�
 ## Cách dùng
 
 1. Cài toàn bộ thư mục `document-rule/` vào folder skills được runtime hỗ trợ, ví dụ `.agents/skills/document-rule/` trong dự án dùng Codex.
-2. AI đọc `SKILL.md`, chỉ mở reference theo router; không preload toàn bộ thư mục, README hay examples. Chỉ mở template khi tạo tài liệu và một example đúng ngôn ngữ khi cần làm rõ mẫu; chỉ đọc Plan decision khi cần quyết định có tạo Plan. Khi sửa/review/export nội dung có sẵn, giữ nguyên ngôn ngữ từng file và các cặp EN/VI, không hỏi lại. Chỉ hỏi `Vietnamese` hoặc `English` trước khi tạo tài liệu mới ra file nếu yêu cầu/ngữ cảnh đã xác nhận chưa chọn ngôn ngữ.
-3. Template là khung chọn lọc, không phải bộ mục bắt buộc. Với Plan, Goal phải nêu outcome cụ thể, scope/constraint chính và tín hiệu thành công có thể kiểm chứng; tránh mô tả chung chung. Trước khi bàn giao, bỏ placeholders không cần thiết và review theo góc nhìn independent reader: người có chuyên môn phù hợp nhưng không phải tác giả có thể thực hiện đúng, biết khi nào hoàn thành và kiểm tra kết quả hay không. Với fix bug đơn giản, thực hiện và kiểm chứng trực tiếp thay vì viết Plan file.
+2. AI đọc `SKILL.md`. Với sửa/trích một phần nhỏ, bắt đầu từ nguồn và kiểm tra trực tiếp ý nghĩa, scope, liên kết bị ảnh hưởng; chỉ mở reference khi còn quy tắc chưa rõ. Với tạo/review đáng kể, đọc theo router và quality gates. Không preload toàn bộ thư mục, README hay examples. Chỉ mở template khi tạo tài liệu và một example đúng ngôn ngữ khi cần làm rõ mẫu; chỉ đọc Plan decision khi chưa rõ có cần Plan. Giữ ngôn ngữ hiện tại và các cặp EN/VI. Chỉ hỏi `Vietnamese` hoặc `English` trước khi tạo tài liệu mới ra file nếu yêu cầu/ngữ cảnh đã xác nhận chưa chọn ngôn ngữ.
+3. Template là khung chọn lọc, không phải bộ mục bắt buộc. Với Plan, Goal phải nêu kết quả cụ thể, scope/ràng buộc chính và tín hiệu thành công kiểm chứng được. Trước bàn giao, bỏ placeholder không cần thiết và kiểm tra hai mức: người không chuyên có hiểu mục đích, thuật ngữ, hành vi/hệ quả; người thực hiện có đủ thông tin để làm đúng và kiểm tra hoàn tất. Không thêm lời giải thích ngoài phần được yêu cầu trích nguyên văn. Với fix bug đơn giản, thực hiện và kiểm chứng trực tiếp thay vì viết Plan file.
+
+## Hoạt động độc lập
+
+Sao chép toàn bộ `document-rule/` là đủ cho hướng dẫn Markdown/văn bản: mọi reference, template và example đều nằm trong thư mục này. Không bắt buộc skill khác, MCP, mạng, script của repo hay dịch vụ ngoài. Nguồn thông tin thực tế vẫn do người dùng/dự án cung cấp; thiếu nguồn thì nêu rõ điều chưa biết. Xuất PDF/DOCX cần công cụ tương ứng của môi trường; nếu thiếu phải báo giới hạn, không giả vờ đã tạo file.
 
 Ví dụ prompt:
 
@@ -123,6 +129,10 @@ Dùng các scenario độc lập dưới đây khi thay đổi skill. Đối chi
 | `Đổi requirement trong tài liệu approved` theo schema mặc định | Chuyển draft trừ khi revision mới được user duyệt; giữ ID/created |
 | `Viết ADR` / `Fix typo nhỏ` | ADR không thành runbook; typo không tự sinh Spec/Plan |
 | `Chỉ sửa một AC` | Chỉ đọc source/reference cần thiết; không preload toàn skill; không cắt điều kiện để tiết kiệm token |
+| `Giải thích thay đổi cho chủ cửa hàng không biết lập trình` | Nêu mục đích/hệ quả bằng lời thường, giải thích trạng thái/mã cần thiết, cách nghiệm thu quan sát được; không bịa giao diện |
+| `Viết ADR cho quản lý và lập trình viên` | Bối cảnh/hệ quả trước cơ chế; giải thích thuật ngữ lần đầu; tách quyết định đã duyệt khỏi so sánh do tác giả đề xuất |
+| `Viết runbook cho người mới`, thiếu quyền/công cụ/nguồn | Đọc hiểu được mục đích và giới hạn; điều kiện thao tác còn thiếu được nêu rõ; không biến outline thành lệnh chạy thật |
+| Cài chỉ thư mục skill, không MCP/mạng/skill khác | Vẫn tạo/review Markdown theo nguồn được cung cấp; không gọi phụ thuộc ngoài để hoàn thành nội dung |
 
 Kiểm tra tĩnh bổ sung: links nội bộ tồn tại; frontmatter hợp lệ theo schema áp dụng; không trùng document ID; template giữ placeholder rõ, output thực không còn placeholder bắt buộc; JSON examples parse được; index và các cặp EN/VI đồng bộ. Không dùng kiểm tra tĩnh để suy ra production readiness.
 

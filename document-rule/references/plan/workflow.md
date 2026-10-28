@@ -11,6 +11,7 @@
 ## Sequence
 
 1. State a concrete, outcome-based goal and requirement coverage (`FR/BR/NFR/AC` IDs). Name the target actor/system, the specific desired behavior/state/artifact, the key boundary or constraint, and an observable success signal; do not use a generic verb such as “implement” or “improve” without the target outcome. If a source fact or decision is unknown, phrase the goal conditionally and record the blocker instead of inventing it.
+   Introduce the goal in plain language; explain essential states/fields beside their identifiers using the baseline's meanings. In paired Spec + Plan, link to definitions already supplied rather than repeating a glossary; a standalone Plan must supply enough context itself.
 2. Inspect existing code/architecture/conventions; distinguish `verified` from `to inspect`.
 3. Analyze impact across API, domain, persistence, data, auth, testing, deployment, and monitoring when relevant.
 4. Resolve decision blockers and dependencies.

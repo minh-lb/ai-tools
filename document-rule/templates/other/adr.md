@@ -15,7 +15,7 @@ tags: []
 
 ## Context
 
-<Problem, constraints, forces, and evidence.>
+<Problem and reader-facing impact in plain language, then constraints and evidence. Explain essential technical terms on first use.>
 
 ## Decision
 
@@ -26,6 +26,8 @@ tags: []
 | Option | Pros | Cons | Why chosen/rejected |
 |---|---|---|---|
 | <...> | <...> | <...> | <...> |
+
+<Distinguish recorded past options from a present comparison; do not invent decision history.>
 
 ## Consequences
 

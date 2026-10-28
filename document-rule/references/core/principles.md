@@ -10,7 +10,7 @@
 
 ## Independent-reader test
 
-A qualified intended reader who did not author the document must be able to perform the documented work correctly, tell when it is complete, and verify the outcome. For documents that do not prescribe actions, define the equivalent decision, evidence, or acceptance signals instead of forcing procedural steps.
+A newcomer, including a non-specialist, can understand the purpose, essential terms, behavior/decision, consequences, and limits. The intended qualified reader can also perform the documented work correctly, tell when it is complete, and verify the outcome without relying on the author. For documents that do not prescribe actions, use decision, evidence, or acceptance signals instead of forcing procedural steps. Explain first, then provide precise details; readability does not remove expertise/access requirements. See [writing style](writing-style.md) for the two-level reader check.
 
 ## Separate document purposes
 

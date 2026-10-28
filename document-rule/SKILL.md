@@ -1,11 +1,9 @@
 ---
 name: document-rule
 description: >-
-  Write, edit, review, display, and export software technical documents:
-  specifications (SRS, BLS, API, feature, bug-fix), implementation plans,
-  runbooks, ADRs, designs, test plans, READMEs, and scoped/full exports.
-  Apply AMM-inspired precision and verifiability without imposing aviation forms
-  or creating unrequested documents. Support iterative review-and-fix.
+  Use when creating, editing, reviewing, displaying, or exporting software
+  documentation (specifications, plans, runbooks, ADRs, READMEs), including
+  mixed technical and nontechnical audiences.
 metadata:
   author: Minh Luu
 ---
@@ -14,23 +12,24 @@ metadata:
 
 ## Quality bar
 
-A qualified intended reader who did not author the document can understand the required behavior or decision, perform any documented work, determine completion/acceptance, and verify the result. Apply AMM's precision proportionately; do not turn specifications, ADRs, or references into runbooks.
+A non-specialist newcomer can understand purpose, behavior/decision, consequences, and acceptance signals. A qualified operator can perform and verify documented work. Borrow Aircraft Maintenance Manual (AMM) precision, not aviation forms or procedures for every document.
+
+Explain business outcomes before technical details, essential jargon/acronyms on first use, and identifiers beside their meaning. Comprehension does not replace training/access. Consult [writing style](references/core/writing-style.md) for substantial explanations/rewrites.
 
 ## Workflow
 
-1. **Resolve the contract:** mode (create/edit/review/print/export), deliverables, scope, format, depth, and inline/file. Follow explicit user/project contracts; templates are selective aids, not mandatory forms.
-2. **Language:** for existing documents, preserve each file's language and EN/VI pairs unless translation is requested; do not ask again. For a new document file with no language selected in the request or confirmed context, ask `Vietnamese` or `English` and wait. Inline output follows the conversation unless otherwise requested. Preserve domain terms and code identifiers; localize surrounding prose and normative words.
-3. **Ground the content:** inspect relevant sources; distinguish current evidence, requested future behavior, assumptions, and unknowns. Never invent paths, contracts, commands, metrics, approvals, or execution results. Ask only for a missing decision that blocks useful work; otherwise mark the gap and its impact.
-4. **Produce only authorized work:** review-only means findings, not edits; printing/extraction preserves source wording. A code-fix request does not authorize Spec/Plan files unless project policy requires them. If both Spec and Plan are requested, write Spec first; Plan-only uses the available baseline without creating a Spec. Small fixes need no Plan file by default; use [Plan decision](references/plan/plan-decision.md) when the boundary is unclear.
-5. **Draft for the reader:** Spec = WHAT/WHEN and acceptance; Plan = HOW/ORDER/VERIFY with a concrete outcome-based Goal; procedure = preconditions, actions, expected results, checks, and risk-based stop/recovery. Keep current behavior, desired behavior, and cause in separate bug-fix Spec sections; mark an unverified cause `Unknown` and list hypotheses separately.
-6. **Check before delivery:** apply [quality gates](references/review/quality-gates.md), plus the Spec/Plan checklist when applicable. For requested iteration, fix, check, and review the full scope again until no actionable finding remains; disclose blockers rather than looping without progress or claiming a clean result.
-7. **Deliver exactly:** “only X” means only X; “complete” means no omitted content or placeholders. For files, follow [file rules](references/output/file-export.md), preserve existing schemas, and verify real artifacts before linking. Never add frontmatter to inline/raw output.
+1. **Resolve:** mode, deliverables, scope, format, audience, depth, inline/file. Infer audience; default to newcomer-friendly context. Ask only for blocking choices. Templates are optional aids.
+2. **Language:** preserve existing files and EN/VI pairs unless translation is requested. New file with no language selected in the request/confirmed context: ask `Vietnamese` or `English` and wait. Inline follows the conversation. Localize prose; retain identifiers.
+3. **Ground:** inspect relevant sources. Separate current evidence, future requirements, assumptions, and unknowns. Never invent contracts, paths, commands, metrics, approvals, or results. Mark gaps and impacts; ask only for blocking decisions.
+4. **Draft:** new/rewritten prose starts with plain-language purpose and essential terms (including states/fields), then precise detail. Explain only source-supported meanings; mark unknown semantics. Spec = WHAT/WHEN/acceptance; Plan = HOW/ORDER/VERIFY with an outcome-based Goal. Bug-fix Spec separates current behavior, desired behavior, and cause (`Unknown` if unverified; hypotheses separate). Procedures include preconditions, actions, results/checks, and risk-based stop/recovery.
+5. **Check:** for a narrow edit/extraction, verify meaning, exact scope, and affected cross-references directly. For substantive creation/review, use [quality gates](references/review/quality-gates.md) and the relevant checklist. Requested iteration: fix → check → review the full scope until no actionable finding remains; report blockers without looping on unchanged evidence.
+6. **Deliver:** review-only = findings, no edits; extraction = source wording; “only X” = only X; “complete” = no omissions/placeholders. Spec + Plan = Spec first; Plan-only adds no Spec or implementation. Code fixes add no document unless requested/required; consult [Plan decision](references/plan/plan-decision.md) if unclear. Files use [file rules](references/output/file-export.md); preserve schemas, verify artifacts before linking. No frontmatter inline/raw.
 
 ## Router — load progressively
 
-Read only the row(s) needed for the current task. Skip creation templates for review/extraction. Open at most one matching-language example when a pattern is unclear; compare both locales only for bilingual work. Do not preload README indexes, all core modules, or the entire directory.
+Narrow edit/extraction: source first, references only for unresolved rules. Otherwise read matching rows. Skip creation templates for review/extraction. Examples: one matching locale if needed; both for bilingual work. Do not preload indexes/directories.
 
-Paths below are relative to this skill. Templates live under `templates/`; examples under `examples/` use matching `.en.md` / `.vi.md` pairs.
+Paths are skill-relative; Markdown/text needs no other skill, MCP, network, or repository script. Other exports need host tools; disclose missing capabilities. Examples: `.en.md` / `.vi.md` pairs.
 
 | Task | References under `references/` | Template under `templates/` |
 |---|---|---|
@@ -44,4 +43,4 @@ Paths below are relative to this skill. Templates live under `templates/`; examp
 | Output edge cases | [contract](references/output/output-contract.md); [inline](references/output/inline-and-scoped-output.md) or [file](references/output/file-export.md) as needed | — |
 | Source conflicts / writing ambiguity | [sources](references/core/sources-and-assumptions.md), [style](references/core/writing-style.md); [principles](references/core/principles.md) for rationale | — |
 
-Stop expanding context once the task can be completed and checked. Save tokens by removing duplication and irrelevant sections, never by omitting conditions, error cases, safety gates, or acceptance criteria. Label fictional examples and non-executable outlines; they are not evidence about the user's system.
+Stop loading once drafting/checking is possible. Cut duplication, not conditions, errors, safety gates, or acceptance criteria. Fictional examples and non-executable outlines are not system evidence.

@@ -15,7 +15,7 @@ tags: []
 
 ## 1. Objective and Scope
 
-- Objective: <observable business/system outcome>
+- Objective: <observable business/system outcome in plain language; explain essential terms on first use>
 - In scope: <behavior>
 - Out of scope: <explicit exclusions>
 

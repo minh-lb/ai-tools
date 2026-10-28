@@ -11,9 +11,10 @@
 
 ## ADR
 
-- **Context:** the problem and forces.
+- **Context:** the problem, forces, and reader-facing impact in plain language before technical mechanisms. Explain essential terms on first use; retain exact identifiers.
 - **Decision:** a specific choice and the scope where it applies.
 - **Alternatives:** options considered and their trade-offs.
+- Distinguish documented past alternatives from the author's present comparison; do not invent decision history or rejection/approval evidence.
 - **Consequences:** benefits, costs, operational impact, and reversibility.
 - **Decision status:** Proposed/Accepted/Superseded **only when supported by evidence**.
 

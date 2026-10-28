@@ -11,11 +11,11 @@ tags: []
 
 ## Purpose
 
-<What this project/service does, verified from the repository.>
+<Who this serves, what it does, and why it matters, in plain language verified from the repository. Explain essential terms before setup details.>
 
 ## Requirements
 
-<Language/runtime/package-manager versions from project configuration.>
+<Required expertise/access and language/runtime/package-manager versions from project configuration.>
 
 ## Setup
 

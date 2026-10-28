@@ -15,6 +15,7 @@
 - Long statements that combine multiple behaviors and are hard to test.
 - Plan tasks that are too broad, have hidden dependencies, or vague verification.
 - Duplication or a proposal presented as fact.
+- The stated audience cannot understand the purpose, essential terms, behavior/decision, or consequences without asking the author; jargon without explanation blocks a non-specialist or mixed audience.
 - For an action-oriented document, a qualified intended reader who did not author it cannot determine the prerequisites/actions, expected outcome, completion condition, or how to verify the result.
 - A Markdown template shipped with this skill omits its default root-level frontmatter, or a template/example hides placeholders or unknowns, implies unperformed work, or presents a non-executable procedure as ready to run. For user/project templates, check the applicable schema instead of imposing the default.
 
@@ -27,7 +28,7 @@
 
 1. Establish scope, output contract, sources, and applicable project conventions/contracts; record what cannot be checked.
 2. Compare content with requirements/sources; check semantics and internal consistency.
-3. Apply the independent-reader test: can the intended qualified reader use the document without relying on the author, determine the relevant completion/decision state, and verify the result? Use document-type-appropriate signals; do not force procedures into reference/decision documents.
+3. Apply both reading levels: can a newcomer understand purpose, essential terms, behavior/decision, consequences, and limits; can the qualified intended reader use it independently, determine completion/decision state, and verify the result? Use document-type-appropriate signals; do not force procedures into reference/decision documents. For exact extraction or a narrow edit, preserve the requested scope rather than adding explanations outside it.
 4. Check verifiability, usability, and risk/recovery proportional to impact.
 5. Edit content/style only when the user asks for changes; for review-only, stop after reporting findings.
 6. For requested review-and-fix: keep a compact ledger (location, severity, evidence, correction, open/resolved/blocked). Fix actionable P0/P1 findings and requested/material P2 improvements; run appropriate checks, then review the entire scope again, including cross-file consistency and regressions. Do not inflate the deliverable with repeated round reports unless requested.
