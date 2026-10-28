@@ -414,7 +414,6 @@ test("loadSelectionCatalog includes curated local skills in installer choices", 
   assert.deepEqual(
     catalog.skills.map((skill) => skill.id),
     [
-      "ai-memory",
       "coding-rule",
       "document-rule",
       "domain-driven-design",
@@ -422,23 +421,11 @@ test("loadSelectionCatalog includes curated local skills in installer choices", 
       "git-workflow",
       "react-component-generator",
       "review-code",
-      "second-brain-logger",
       "task-creator",
       "team-mini",
-      "testcase-creator"
+      "testcase-creator",
+      "testing-rule"
     ]
-  );
-
-  assert.deepEqual(
-    catalog.skills.find((skill) => skill.id === "ai-memory"),
-    {
-      id: "ai-memory",
-      label: "AI Memory",
-      description: "Resume project work and save checkpoints, decisions, and completion notes through the configured Obsidian MCP.",
-      sourceBranch: "agent-skills",
-      sourcePath: "ai-memory",
-      targets: undefined
-    }
   );
 
   assert.deepEqual(
@@ -446,7 +433,7 @@ test("loadSelectionCatalog includes curated local skills in installer choices", 
     {
       id: "coding-rule",
       label: "Coding Rule",
-      description: "Language- and framework-agnostic coding guidance for implementing, editing, debugging, and refactoring software, including application code, APIs, databases, UI, security, infrastructure as code, containers, and shell scripts.",
+      description: "Use when implementing, debugging, or refactoring software, or making code naming and design decisions, including PHP, JavaScript, TypeScript, React, Next.js, Laravel, NestJS, and APIs.",
       sourceBranch: "agent-skills",
       sourcePath: "coding-rule",
       targets: undefined
@@ -458,7 +445,7 @@ test("loadSelectionCatalog includes curated local skills in installer choices", 
     {
       id: "document-rule",
       label: "Document Rule",
-      description: "Write, edit, review, display, and export software technical documents with AMM-inspired precision and verifiability, without creating unrequested Specs or Plans.",
+      description: "Use when creating, editing, reviewing, displaying, or exporting software documentation (specifications, plans, runbooks, ADRs, READMEs), including mixed technical and nontechnical audiences.",
       sourceBranch: "agent-skills",
       sourcePath: "document-rule",
       targets: undefined
@@ -470,7 +457,7 @@ test("loadSelectionCatalog includes curated local skills in installer choices", 
     {
       id: "domain-driven-design",
       label: "Domain Driven Design",
-      description: "Laravel backend module design using DDD layers, Actions, DTOs, repositories, and events.",
+      description: "Design or implement a Laravel module when the user requests Domain-Driven Design or the target codebase already uses that approach. Use for bounded-context modeling, domain behavior, repositories, application flows, and domain events; do not impose DDD layers on ordinary Laravel CRUD work.",
       sourceBranch: "agent-skills",
       sourcePath: "domain-driven-design",
       targets: undefined
@@ -482,7 +469,7 @@ test("loadSelectionCatalog includes curated local skills in installer choices", 
     {
       id: "testcase-creator",
       label: "Testcase Creator",
-      description: "Create or expand per-feature Markdown test case suites covering frontend and backend from specifications, designs, and the built-in QA checklists.",
+      description: "Create compact, traceable end-to-end (E2E) test case suites and linked Playwright automation from approved feature evidence. Use when asked to write E2E test cases, user-flow scenarios, Playwright E2E tests, or a feature-level E2E test plan.",
       sourceBranch: "agent-skills",
       sourcePath: "testcase-creator",
       targets: undefined
@@ -494,7 +481,7 @@ test("loadSelectionCatalog includes curated local skills in installer choices", 
     {
       id: "git-workflow",
       label: "Git workflow",
-      description: "GitFlow-style git workflow — committing, branching, merging, PRs, releases, and conflict resolution.",
+      description: "Load before every Git operation, including read-only checks and PR/MR tasks; require user permission to commit or push.",
       sourceBranch: "agent-skills",
       sourcePath: "git-workflow",
       targets: undefined
@@ -506,7 +493,7 @@ test("loadSelectionCatalog includes curated local skills in installer choices", 
     {
       id: "team-mini",
       label: "Team Mini",
-      description: "Boot a Claude Code + Codex agent team (Leader + on-demand Coder). Waits for user task before running.",
+      description: "Coordinate a bounded Claude Code/Codex agent team when the user explicitly asks for team-mini or a multi-agent implementation/review workflow. Do not trigger merely because a coding task is complex.",
       sourceBranch: "agent-skills",
       sourcePath: "team-mini",
       targets: undefined
@@ -518,7 +505,7 @@ test("loadSelectionCatalog includes curated local skills in installer choices", 
     {
       id: "review-code",
       label: "Review code",
-      description: "Structured code review for backend services, APIs, and server-side code.",
+      description: "Use when explicitly invoked as $review-code, @review-code, /review-code, or directly requested by name for backend or browser frontend review.",
       sourceBranch: "agent-skills",
       sourcePath: "review-code",
       targets: undefined
@@ -530,7 +517,7 @@ test("loadSelectionCatalog includes curated local skills in installer choices", 
     {
       id: "task-creator",
       label: "Task Creator",
-      description: "Draft and push tasks/tickets to Jira, Trello, Notion, Linear, Asana, monday.com, or a local file, with an objective estimate and user review before creation.",
+      description: "Draft and create a new backlog task, ticket, or issue in a task tracker or an explicitly requested local file. Use when the user asks to create, log, or file new work; do not trigger for ordinary implementation requests or updates to an existing task.",
       sourceBranch: "agent-skills",
       sourcePath: "task-creator",
       targets: undefined
@@ -542,7 +529,7 @@ test("loadSelectionCatalog includes curated local skills in installer choices", 
     {
       id: "generate-flow",
       label: "Generate Flow",
-      description: "Trace a feature's data and logic end-to-end through source code layers — from trigger to persistence, event emission, response, or failure.",
+      description: "Create an evidence-backed flow document when the user asks to trace, map, document, or generate an end-to-end flow for a specific feature. Do not trigger on a generic question about how code works when no document is requested.",
       sourceBranch: "agent-skills",
       sourcePath: "generate-flow",
       targets: undefined
@@ -554,7 +541,7 @@ test("loadSelectionCatalog includes curated local skills in installer choices", 
     {
       id: "react-component-generator",
       label: "React Component Generator",
-      description: "Create or refactor repo-aligned React components under components/** with index.tsx, controller.ts, and style.module.css conventions; keep client directives conditional on framework needs and make test examples compatible with the project’s test runner.",
+      description: "Create, refactor, or improve a React component or UI block. Use when the requested work is component-level; inspect the target repository and follow its placement, styling, state, testing, and accessibility conventions rather than imposing a new stack.",
       sourceBranch: "agent-skills",
       sourcePath: "react-component-generator",
       targets: undefined
@@ -562,13 +549,13 @@ test("loadSelectionCatalog includes curated local skills in installer choices", 
   );
 
   assert.deepEqual(
-    catalog.skills.find((skill) => skill.id === "second-brain-logger"),
+    catalog.skills.find((skill) => skill.id === "testing-rule"),
     {
-      id: "second-brain-logger",
-      label: "Second Brain Logger",
-      description: "Record how AI agents investigate, implement, and verify project work in Obsidian for future recall.",
+      id: "testing-rule",
+      label: "Testing Rule",
+      description: "Use when running, writing, reviewing, or debugging E2E tests and frontend journeys, including forms, async UI, responsive/accessibility checks, smoke/regression runs, and flaky failures. Not for unit-only testing or test case documentation alone.",
       sourceBranch: "agent-skills",
-      sourcePath: "second-brain-logger",
+      sourcePath: "testing-rule",
       targets: undefined
     }
   );
