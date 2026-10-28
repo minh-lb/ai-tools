@@ -57,7 +57,9 @@ Chọn các kiểm tra theo tính năng và rủi ro; không bắt buộc chạy
 
 ## Cấu trúc và tiết kiệm token
 
-[SKILL.md](SKILL.md) chứa quy trình chung và bảng chọn reference. AI chỉ đọc tài liệu liên quan đến bước đang làm, không tải toàn bộ thư viện ngay từ đầu.
+[SKILL.md](SKILL.md) chứa quy trình chung và bảng chọn reference. Với smoke có sẵn và đủ cấu hình, chỉ cần entrypoint; AI chỉ mở reference khi quyết định hoặc rủi ro hiện tại cần hướng dẫn chi tiết. Không tải toàn bộ thư viện hoặc đọc lại tài liệu không đổi. README phục vụ người dùng, không bắt buộc nạp khi chạy test.
+
+So với bản trước chỉnh sửa, entrypoint giảm từ 513 xuống 387 từ (khoảng 25%). Luồng smoke đủ cấu hình giảm lượng hướng dẫn phải đọc từ 1.239 xuống 387 từ (khoảng 69%) nhờ bỏ yêu cầu đọc mặc định hai reference. Đây là số từ của tài liệu, không phải số token đo trực tiếp hoặc mức giảm tổng chi phí phiên làm việc.
 
 | Reference | Khi cần đọc |
 |---|---|
@@ -84,6 +86,8 @@ Báo cáo cần nêu phạm vi, môi trường, lệnh hoặc thao tác đã ch�
 | Not run / skipped | Chưa thực thi; phải ghi lý do. |
 
 Flaky là thông tin bổ sung: phải giữ kết quả lần lỗi và lần retry, không gộp thành pass sạch. Test local có mock không chứng minh tích hợp thật hoặc production hoạt động. Viết được test cũng chưa có nghĩa là test đã chạy thành công.
+
+Timeout sau thao tác ghi có thể xảy ra khi server đã xử lý thành công. AI phải đối chiếu trạng thái trước khi retry; nếu chưa xác định được kết quả thì dừng thao tác đó và báo cáo phần chưa rõ. Exit code 0 của runner cũng chưa đủ để kết luận sẵn sàng phát hành nếu tiêu chí bắt buộc còn thiếu bằng chứng.
 
 ## Giới hạn và an toàn
 

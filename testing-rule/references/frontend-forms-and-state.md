@@ -22,6 +22,7 @@ For affected data-loading or mutation flows, cover the relevant transitions rath
 | Slow response | Loading feedback, usable/correctly disabled controls, no false empty or success state. |
 | Empty response | Appropriate empty state and available recovery/navigation. |
 | Network/server failure | Actionable error, no false success, preserved state, and safe retry. |
+| Mutation response lost or timed out | Reconcile server outcome before retry; use [failure diagnosis](failure-diagnosis.md#mutation-with-an-unknown-outcome) when commit status is unknown. |
 | Expired session or denied access | Intended sign-in/permission state without exposing another user's data. |
 | Rapid search/filter/route change | The final view corresponds to the current input/route; older responses do not silently replace it. |
 | Optimistic mutation rejected | Specified rollback/reconciliation and clear feedback; no unsupported success claim. |
@@ -32,3 +33,7 @@ Use existing sandbox mechanisms, test interception, or controllable fixtures for
 Example race probe: start search A, start B before A completes, resolve B then A, and inspect query text, result identity, and loading state. Apply the approved search contract as the oracle; if it is unclear, record the mismatch as an observation requiring a decision.
 
 Test reload/back navigation and cached state when relevant to the change. Preserve meaningful state intentionally; do not treat all caching or all retained form values as defects. Observe outcomes with bounded waits; fixed sleeps do not establish correct transition handling.
+
+For profile, ownership, or session changes, check fresh navigation and account switching with distinct owned records when in scope. Distinguish tabs sharing authentication from independently authenticated browser contexts: signing in as B in an isolated context does not invalidate A's separate session. For a shared-session switch, check cached identity/content and subsequent reads/writes against the approved session-switch contract. Distinguish stale display from demonstrated unauthorized access; record an essential missing synchronization rule as `pending-spec`.
+
+If concurrent editing is supported, exercise a stale tab's save against the approved conflict policy; record an unspecified merge/overwrite rule as `pending-spec`, rather than inventing one.

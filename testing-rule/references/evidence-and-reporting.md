@@ -30,6 +30,8 @@ Do not generate a long test document unless requested or required by the project
 
 Before claiming success, reconcile planned journeys with results. Passing smoke checks establish only their selected scope. Local tests with mocked providers establish only that local configuration. Manual browser checks establish only the inspected session. Unit tests, builds, and file validation cannot substitute for an unexecuted E2E run.
 
+Separate runner success from acceptance readiness: exit code 0 can coexist with retries and skipped criteria. Give a readiness recommendation only against the project's acceptance/release policy and the evidence available. If that policy or required coverage is missing, state the verified scope and gaps instead of inventing a universal release gate. A timeout with an unknown committed result remains unresolved even when no error is visible afterward.
+
 Example verdict: “Local smoke: 3 passed. Checkout failed on the first attempt and passed on retry; instability remains unresolved. Payment used a stub, so provider settlement and production checkout remain unverified.”
 
 When tooling or accounts are unavailable, deliver the runnable work and precise blocker. Do not claim the tests passed because they were authored, statically reviewed, or expected to work.

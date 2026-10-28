@@ -12,12 +12,15 @@ Distinguish modes:
 
 ## Select meaningful journeys
 
-For each journey capture an ID, actor/role, entry point, preconditions, test data, actions, observable expected result, and cleanup needs. Keep this in existing tests or a short run note; do not require duplicate documents.
+For each journey capture an ID, actor/role, entry point, preconditions, test data, actions, observable expected result, and cleanup needs. Link the outcome to its acceptance criterion so omitted criteria remain visible. Keep this in existing tests or a short run note; do not require duplicate documents.
+
+Set a practical execution/investigation budget using the task deadline and project policy; choose a bounded budget if neither exists. Reserve time for authorized teardown. Prioritize critical outcomes within the remaining budget. At the investigation limit, stop new probes, perform bounded teardown, and report unresolved cases and the next discriminating check; a deadline does not change a case's status.
 
 Start with the critical happy path. Add materially different risks where applicable:
 
 - Invalid input and relevant boundaries; rejected actions leave state unchanged.
 - Anonymous, expired session, and distinct authorized/unauthorized roles.
+- Where ownership or tenancy matters, two identities with the same role and separate owned records. Check both allowed access and denied cross-owner access through supported test paths; a hidden UI action alone does not prove authorization.
 - Empty, loading, error, recovery, and partial completion states.
 - Reload, direct navigation, history, or repeat submission when these affect the changed journey.
 - Delayed jobs, dependency failure, duplicate actions, or interrupted flows when their outcomes are specified.

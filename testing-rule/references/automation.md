@@ -25,4 +25,4 @@ Do not stub the feature's core behavior and call the resulting run full E2E. Set
 
 Run the smallest relevant selection first, then the required affected suite. Follow existing browser/project matrices, timeouts, and retry policy. Keep tests safe for concurrent workers; reduce concurrency when resources cannot be isolated rather than accepting races.
 
-Record the exact command, selection, target, revision, counts, exit status, retries, and artifact location. Failures must propagate to the runner/CI exit status. Preserve first-attempt failures even when retries succeed. Report skipped/quarantined tests separately; do not disable checks to obtain green output.
+Record the exact command, selection, target, revision, counts, exit status, retries, and artifact location. Terminal test failures must propagate to the runner/CI exit status. For a failure followed by a successful retry, follow existing CI policy for the final exit status while preserving first-attempt failures and exposing instability. Report skipped/quarantined tests separately; do not disable checks to obtain green output.
