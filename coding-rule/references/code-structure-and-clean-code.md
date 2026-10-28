@@ -59,6 +59,8 @@ Use classes only where the language and design benefit from them; apply the same
 - Avoid hidden temporal coupling. If an operation requires prior initialization, a transaction, or a specific call order, make that lifecycle explicit in the API or encapsulate it.
 - Keep tests readable and focused on behavior. Tests are maintained code; do not trade away clarity or isolation for superficial coverage.
 - Follow formatting and style automation for the repository. Do not combine broad formatting churn with a focused behavior change unless requested.
+- Prefer command/query separation when it makes side effects clearer; a command may still return its created resource or useful outcome when the contract calls for it. Do not add an extra read/race merely to force every function into a rigid category.
+- Apply KISS and YAGNI to structure: solve the present requirement with clear control flow. Apply DRY to a shared business rule, not merely similar syntax. Keep coupling low and cohesion high; avoid reaching through another module's internals or long object chains to perform its responsibility.
 
 ## 3. SOLID as conditional design guidance
 
@@ -83,6 +85,16 @@ Consumers should not be forced to depend on capabilities they do not use. Split 
 ### D — Dependency Inversion
 
 Keep high-level policy from being unnecessarily bound to volatile low-level details. Depend on a stable contract and supply implementation details at a boundary when replaceability, testing, or architecture justifies it. An abstraction is not automatically beneficial: if the concrete dependency is stable and trivial, a direct call may be clearer.
+
+### Applying SOLID to this stack
+
+| Observed pressure | Useful response | Avoid |
+|---|---|---|
+| Checkout mixes HTTP parsing, pricing, persistence, and email | Let the controller map HTTP; keep pricing policy and checkout orchestration cohesive; isolate delivery where its lifecycle differs (SRP). | Moving every statement into a one-method class. |
+| Several payment providers change independently | Use a focused gateway contract and supply the implementation at the composition boundary (OCP/DIP). | A factory/interface hierarchy for one stable local calculation. |
+| A replacement gateway returns success before a payment is accepted | Align success, pending, failure, retry, and side-effect guarantees across implementations (LSP). | Calling implementations interchangeable because their method signatures match. |
+| A read-only consumer must depend on mutation/admin operations | Expose the read capability it actually needs (ISP). | Arbitrarily splitting every method into a separate interface. |
+| A React component mixes state, view, and unrelated lifecycle work | Separate a cohesive component/custom hook or pure policy function where it clarifies ownership. | Translating OOP patterns into mandatory React classes or hooks for every helper. |
 
 ## 4. Practical pre-merge questions
 

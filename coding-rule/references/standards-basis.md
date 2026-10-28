@@ -24,3 +24,20 @@ The skill's operational rules are self-contained in `SKILL.md` and its reference
 ## Applying the guidance
 
 Many coding principles are context-sensitive. Do not turn heuristics about naming casing, line counts, table width, join count, whether every class needs an interface, or whether a particular database constraint is always needed into universal rules. Confirm fit against the target repository, language/platform conventions, measurements, and authoritative documentation.
+
+## Stack-specific sources
+
+Reviewed on 2026-10-28. Match the target project's pinned version before copying APIs; Laravel 12.x here is a reviewed reference, not a required upgrade. Keep these links optional during normal coding.
+
+- [React rules](https://react.dev/reference/rules) and [useEffect](https://react.dev/reference/react/useEffect): render purity, hooks, dependencies, and external synchronization.
+- [Next.js Server and Client Components](https://nextjs.org/docs/app/getting-started/server-and-client-components) and [data security](https://nextjs.org/docs/app/guides/data-security): client import boundaries, serialization, and server entry-point authorization. Caching/request APIs must be checked against the installed version.
+- [TypeScript narrowing](https://www.typescriptlang.org/docs/handbook/2/narrowing.html): safe refinement, truthiness pitfalls, and discriminated unions; static types do not validate network data.
+- [PHP type declarations](https://www.php.net/manual/en/language.types.declarations.php), [PSR-12](https://www.php-fig.org/psr/psr-12/), and [PER Coding Style](https://www.php-fig.org/per/coding-style/): native typing, calling-file strictness, and declared style standards. Follow the project's adopted style rather than silently migrating it.
+- Laravel 12.x [validation](https://laravel.com/docs/12.x/validation), [authorization](https://laravel.com/docs/12.x/authorization), [Eloquent](https://laravel.com/docs/12.x/eloquent), and [queues](https://laravel.com/docs/12.x/queues): validated input, policies, mass assignment, and after-commit delivery.
+- NestJS [validation](https://docs.nestjs.com/techniques/validation) and [injection scopes](https://docs.nestjs.com/fundamentals/injection-scopes): runtime DTO metadata/pipes and provider lifetime.
+
+## Clean Code and SOLID interpretation
+
+The complete operational guidance is bundled in [Code structure and Clean Code](code-structure-and-clean-code.md). Apply intent-revealing names, cohesive responsibilities, explicit side effects, focused contracts, and policy/detail separation directly from that reference.
+
+Numeric function-size/argument targets, blanket polymorphism, and absolute exception preferences are not mandatory rules. Avoid over-engineering; OCP does not prohibit fixing existing code or deliberately changing a contract.

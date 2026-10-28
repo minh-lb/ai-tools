@@ -1,6 +1,6 @@
 ---
 name: coding-rule
-description: Language- and framework-agnostic coding guidance for implementing, editing, debugging, and refactoring software, including application code, APIs, databases, UI, security, infrastructure as code, containers, and shell scripts.
+description: Use when implementing, editing, debugging, or refactoring software, especially PHP, JavaScript, TypeScript, React, Next.js, Laravel, NestJS, and REST APIs, or when consistent naming, Clean Code, SOLID, security, and maintainability rules are needed.
 metadata:
   author: Minh Luu
 ---
@@ -54,7 +54,23 @@ For material changes to public behavior, security, persisted data, or compatibil
 
 ## Load only relevant guidance
 
-Use this entry skill for every coding task. Load only the reference sections that match the changed surface; do not read the whole reference library by default. The detailed code-structure reference is conditional, not required for every small code edit. The [standards and research basis](references/standards-basis.md) is an optional source index, not required to implement the rules.
+Use this entry skill for every coding task. Load only references and sections matching the changed language, framework, and surface; stop following links when their condition does not apply. Do not recursively load the library. All coding rules are contained in this skill and its bundled references; no personal knowledge base, external notes, or MCP connection is required. The [standards and research basis](references/standards-basis.md) is an optional public source index, not required to apply the rules.
+
+### Language and framework selection
+
+Use the repository's supported versions and router/runtime. These references supplement the surface rules below; load a surface reference only when its concerns change. For example, a React naming-only edit needs naming guidance, not every frontend/security/testing reference.
+
+| Changed concern | Reference |
+|---|---|
+| Variable, constant, function, method, class/type, component, hook, file, or directory names | [Naming conventions](references/naming-conventions.md) for concrete PHP/JS/TS defaults; existing project and framework names take precedence. |
+| JavaScript or TypeScript implementation | [JavaScript and TypeScript](references/javascript-typescript.md). |
+| PHP implementation | [PHP](references/php.md). |
+| React component, hook, state, or effect | [React](references/react.md); add JS/TS only for language/type/async decisions. |
+| Next.js routing, rendering, data access, caching, or mutations | [Next.js](references/nextjs.md); add React only when changing components/hooks/state. |
+| Laravel request, Eloquent, policy, job, or application flow | [Laravel](references/laravel.md); add PHP only for language/type decisions. |
+| NestJS module, controller, provider, DTO, guard, or request lifecycle | [NestJS](references/nestjs.md); add JS/TS only for language/type/async decisions. |
+
+### Cross-cutting selection
 
 | Work in scope | Load relevant guidance |
 |---|---|
