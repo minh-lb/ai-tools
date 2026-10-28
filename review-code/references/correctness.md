@@ -15,8 +15,8 @@ Review whether the code preserves intended behavior, business invariants, and fa
 - **Numeric edge cases**: integer overflow or underflow, floating-point equality comparison, division by zero, rounding accumulation across operations
 - **Off-by-one errors**: range bounds, slice indices, pagination offsets, loop termination, fencepost conditions
 - **Early return and cleanup**: whether early returns skip required cleanup (resource release, state reset, audit log)
-- **Type coercion and implicit conversion**: silent widening, narrowing, truthiness checks that pass for unexpected values (e.g., `0`, `""`, `[]` treated as falsy)
-- **Shared-state correctness under concurrency**: whether a logic invariant relies on state that another goroutine, thread, or async task can mutate mid-operation (raise here for logic correctness; raise in [Concurrency](concurrency.md) for the synchronization mechanism)
+- **Type coercion and implicit conversion**: silent widening, narrowing, truthiness checks that pass for unexpected values (e.g., `0` or `""` rejected by a JavaScript truthiness check; `[]` is truthy in JavaScript)
+- **Shared-state correctness under concurrency**: whether a logic invariant relies on state that another goroutine, thread, or async task can mutate mid-operation (choose Correctness or [Concurrency](concurrency.md) by root cause; report once)
 
 ## Review Questions
 

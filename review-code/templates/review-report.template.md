@@ -1,17 +1,14 @@
-<!-- Save the completed report as docs/review-code/<YYYY-MM-DD>-<short-description>.md. Replace all placeholders and remove HTML comments. Use the current local date and a sanitized lowercase kebab-case slug. -->
-# Báo cáo Code Review — {{short-description}}
+# Báo cáo Code Review — {{subject}}
 
-- **Ngày:** {{YYYY-MM-DD}}
-- **Chế độ:** {{codebase | git-diff}}
-- **Phạm vi:** {{module, service, files, or changed behavior}}
-- **Revision / diff:** {{for branches: <base>...<head> plus base, merge-base, and head SHAs; otherwise PR, commit range, or patch}}
-- **Ngoại lệ:** {{material exclusions, or “Không có”}}
+- **Ngày:** {{local YYYY-MM-DD}}
+- **Chế độ / phạm vi:** {{mode, inspected scope and material exclusions}}
+- **Source:** {{resolved SHAs/comparison, dirty state, or supplied patch identity and coordinate basis}}
 
 ## Checklist
 
 | Code | Hạng mục | Trạng thái |
 |---|---|---|
-| CORR | Correctness | {{🔴 Critical / 🟠 High / 🟡 Medium / 🔵 Low / ✅ Đạt / — N/A}} |
+| CORR | Correctness | {{status}} |
 | SEC | Security | {{status}} |
 | PERF | Performance | {{status}} |
 | ARCH | Architecture | {{status}} |
@@ -26,26 +23,29 @@
 | INFRA | Infrastructure | {{status}} |
 | COMPAT | Backward Compatibility | {{status}} |
 
-<!-- Keep all 14 rows. Status is the worst finding in that dimension. Allowed statuses: 🔴 Critical, 🟠 High, 🟡 Medium, 🔵 Low, ✅ Đạt, — N/A. Explain N/A in Summary if the reason is not obvious from the scope. -->
+<!-- All rows required. Worst independent severity (Critical/High/Medium/Low),
+✅ Đạt = assessed/no finding, ⚪ Chưa xác minh = insufficient assessment,
+— N/A = absent surface. Explain material gaps and non-obvious N/A below. -->
 
 ## Findings
 
-<!-- Sort by severity descending. Keep findings concise: one short description, evidence/trigger and impact, then an actionable fix. If none, state that explicitly and briefly say what was covered. -->
+<!-- Descending severity, one root cause per finding. If none, explicitly say so.
+Replace/remove all placeholders and authoring comments. -->
 
-- [{{CORR | SEC | PERF | ARCH | DB | API | UI | A11Y | TEST | MAINT | OBS | CONC | INFRA | COMPAT}}] {{Critical | High | Medium | Low}} — {{short description}}.
+- [{{CODE}}] {{Severity}} — {{short description}}
 
-  Path: {{repository-verified path/to/file.ext:line-or-range}}
+  Path: {{verified path:line or range, with base/head/patch side when needed}}
 
-  Why: {{brief evidence, trigger, and concrete impact}}
+  Why: {{evidence, reachable trigger, concrete impact}}
 
-  Fix: {{concise, actionable remediation}}
+  Fix: {{practical remediation and regression check when needed}}
 
 ## Kết luận
 
-**Disposition:** {{Ready | Changes requested | Needs verification}} — {{one-sentence reason}}
+**Disposition:** {{Ready | Changes requested | Needs verification}} — {{reason}}
 
 ## Summary
 
-1. **Phạm vi/revision:** {{reviewed code, revision or diff source, and material exclusions}}
-2. **Rủi ro/giả định:** {{main risks, open questions, confidence limits, and residual risk}}
-3. **Checks:** {{exact checks/commands and results; state what was not run and why}}
+- **Rủi ro / giả định:** {{material assumptions, residual risk, uninspected paths and unresolved questions; no invented findings}}
+- **Checks:** {{exact commands, environment/revision and actual results; checks not run and why}}
+- **Xác minh tiếp:** {{specific check/evidence needed for each material gap, or none}}

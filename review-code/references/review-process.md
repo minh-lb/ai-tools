@@ -1,174 +1,54 @@
 # Review Process
 
-## Contents
+## 1. Establish the source
 
-1. Objective
-2. Scenario Enumeration (mandatory for every review)
-3. Review Depth and Limits
-4. Optional Parallel Frontend/Backend Specialist Review
-5. Simplicity, Reuse, and Platform Fit (mandatory)
-6. Review Sequence (Codebase Review: 6 steps / Code Change Review: 7 steps)
-7. Evidence Standard
-8. Reporting Format
-9. Large Scope and Diff Strategy
-10. When To Mark N/A
-11. External Guidance
+Record intent/acceptance criteria if available; otherwise state only assumptions that affect findings. Separate review scope from artifact location: invoking from `src/` still defaults `codebase` to the repository's application code, bounded by the authorized workspace; the report remains under that invocation directory.
 
-## Objective
+- **Codebase:** record HEAD plus dirty/untracked state affecting inspected files; a dirty checkout is not an immutable commit. Exclude generated/vendor/build/dependency files unless material. Without Git, identify the supplied files/snapshot and limitations.
+- **Branches:** resolve base and head to commit SHAs, then their merge-base. Default `base...head` is merge-base → head. Pin reads/diffs to resolved SHAs; tip-to-tip is only for an explicit request. Missing refs, ambiguous roles or no common ancestor require clarification, never a fallback to current changes. Read source from the head tree (`git show <sha>:<path>`); deleted code uses the merge-base side. Do not checkout another branch.
+- **Commit/range:** a single ordinary commit compares parent → commit; root commit compares empty tree → commit. For a merge commit, ask which parent/comparison unless specified. Preserve explicit two-dot/tip comparison; record actual endpoints and semantics.
+- **Working tree/staged:** include only the requested layers, identify comparison base, and list included untracked files. For any checkout-based review, recheck state before finalizing; if it changed, reassess affected paths or disclose snapshot drift.
+- **PR/patch:** record the supplied source and available base/head identity. A partial patch permits a bounded review; cite patch-side coordinates and disclose unavailable context. If no source is accessible, request it. Never run checks in a different checkout and attribute results to the reviewed revision.
 
-The purpose of review is to identify meaningful risk before merge or deployment. Focus on defects, regressions, unsafe assumptions, missing controls, and operational blind spots. Assess whether the change improves or preserves overall code health while still allowing useful work to progress; require fixes for material risk, not perfection, personal style preferences, or unrelated broad refactors. A good review does not try to rewrite the whole change. It isolates the highest-value findings with enough evidence that another engineer can validate and act on them.
+## 2. Trace behavior and impact
 
-## Review Depth and Limits
+Inspect human-authored changed lines in their containing functions and relevant context. For codebase review, map entry points and prioritize auth, money, writes, migrations, public contracts and critical user journeys. Follow callers/consumers as well as callees; check return shapes, nullability, errors, side effects and stored data assumptions. Read beyond the diff where needed.
 
-- Calibrate depth to impact and expected lifetime. Deeply inspect security, authorization, money, destructive writes, public contracts, migrations, and long-lived core paths. A hotfix or one-off utility may need a narrower review, but urgency does not excuse ignoring a known critical risk; state the scope and residual risk.
-- Code review complements—not replaces—compilation, static analysis, automated tests, integration testing, and QA. Never claim that a review proves the code bug-free or that an unrun check passed.
-- Let configured formatters, linters, type-checkers, and CI gates handle mechanical rules when available. Review their relevant failures, but spend human review effort on intent, behavior, design, and realistic risk rather than personal style preferences.
-- If required runtime evidence or domain expertise is unavailable, state the exact verification limit and request a suitable follow-up instead of guessing.
+For each distinct behavior, trace materially different scenarios, grouping equivalent cases rather than taking a Cartesian product:
 
-## Optional Parallel Frontend/Backend Specialist Review
+| Axis | Consider when reachable |
+|---|---|
+| Input | Empty/null/zero, boundaries, malformed, oversized, duplicate/stale/adversarial |
+| State/actor | Fresh/partial state, wrong role/tenant, expired credentials, concurrent writes |
+| Failure/operation | Timeout after side effect, retry, cleanup, rollback, dependency outage, mixed versions |
+| Browser | Direct load/history, loading/empty/error/success, repeated action, stale response, unmount, narrow viewport/zoom, keyboard/focus, SSR/hydration |
 
-A single reviewer is the default. Use separate frontend and backend subagent passes only when both surfaces have material changes and the feature has a meaningful cross-layer contract or end-to-end behavior, or when a large/high-risk mixed diff can be split into genuinely independent review lanes. Do not split a small change that merely touches both sides for mechanical wiring, a docs-only change, or a one-surface scope. If the user requests one reviewer, honor that.
+Trace failure through catch/retry/compensation/finally and the caller after external calls return. Stop tracing into an unavailable external implementation; verify its visible contract and local handling. Do not invent external guarantees. Check end-to-end frontend/backend seams when in scope.
 
-Delegate only when subagents are available and permitted by applicable harness/project rules. Invoking this skill authorizes these bounded specialist passes when the trigger above is met, unless the user requests one reviewer; obey any stricter rule requiring separate consent. Use only subagents allowed by the repository's privacy/security constraints, and do not transmit repository content to an external service without user authorization. If delegation is unavailable or unauthorized, complete the review as one reviewer; do not imply parallel review occurred.
+Check necessity and reuse: demonstrated requirement → existing project code → standard library/platform/framework → already-declared dependencies → smallest complete implementation. Verify equivalent semantics for supported versions before recommending substitution. Report concrete cost/risk, not stylistic preferences or speculative features. Preserve the [safety constraints](../SKILL.md#safety).
 
-Before dispatch, the coordinating reviewer must provide both specialists with the same:
+For large scopes, inspect high-risk paths first. Sample repetitive changes only after confirming equivalence. Record important uninspected paths; partial coverage cannot support a whole-repository readiness claim.
 
-- Review mode, intent, acceptance criteria, and explicit scope/exclusions.
-- Immutable source snapshot. In `git-diff` mode, include the exact `base`, `head`, resolved SHAs, merge-base, and the same diff semantics; in `codebase` mode, identify the same repository snapshot and bounded scope.
-- Relevant contracts and known verification limits. Do not let either specialist substitute another branch, working-tree state, or diff source.
+## 3. Evaluate and validate
 
-Bound the responsibilities:
+Check all 14 dimensions for applicability, including indirectly affected consumers. No schema change does not make DB N/A when query/write behavior changed. No API shape change does not make API N/A when error/retry semantics changed. Prefer focused searches/reads and reuse evidence across dimensions.
 
-- **Frontend specialist:** browser-visible behavior, routing, forms, client state, rendering/hydration, responsive behavior, UI, Accessibility, frontend security/performance, and relevant tests. Trace requests to the shared API boundary and verify consumer assumptions against the contract.
-- **Backend specialist:** API behavior/contracts, validation, authorization, domain logic, persistence/side effects, errors, concurrency, observability, infrastructure, and relevant tests. Trace responses/events to the shared boundary and verify provider behavior against the contract.
+Run relevant safe project checks after inspecting commands/hooks, configs and external dependencies. Do not install packages or start services merely to satisfy a checklist. Record command, environment, tested revision and result, or the reason not run. Distinguish pre-existing failures from regressions only when evidence supports that distinction. Review tests for whether they detect the actual failure; missing tests alone do not prove broken behavior. Browser/assistive-technology checks are needed for runtime claims; static review or automated scans cannot certify WCAG conformance.
 
-Each specialist returns only evidence-backed candidate findings with dimension, severity, exact path/line in the shared snapshot, triggering scenario, impact, remediation direction, and confidence/verification limits. They also state the scope inspected, material exclusions, and checks actually run. Do not ask both specialists to produce full reports or repeat the same test suite; coordinate safe checks once.
+Available CI, browser or specialist tools can add evidence; absence never blocks static review. Delegation is optional only when explicitly requested/authorized by the user or applicable project instructions and supported by the host. All reviewers must share scope and snapshot; coordinator verifies candidates, cross-layer seams and duplicates, then writes one report. Do not imply a delegated pass or check occurred without evidence.
 
-The coordinating reviewer remains accountable for the review. Independently verify candidate paths, citations, trigger conditions, and risk; reconcile duplicates or conflicting assumptions; inspect the frontend/backend seam end-to-end (including auth/authorization, response/error shape, loading/failure UI, and data effects as applicable); evaluate uncovered dimensions; and set the final status for all 14 checklist rows. Subagent output is input, not proof. Only the coordinating reviewer writes the single canonical report under `docs/review-code/`; specialists must not modify application files or create separate reports.
+## 4. Calibrate evidence and report
 
-## Simplicity, Reuse, and Platform Fit
+A finding needs a reachable trigger, exact source location, concrete incorrect behavior/impact and practical fix. Confirm mitigations and caller assumptions before reporting. Use the reviewed revision's line numbers; distinguish head/base sides for deleted code. For patch-only evidence, label patch coordinates; never invent full-file lines or missing context. Cite the implementation for absent coverage.
 
-This is a mandatory review gate, not a new report dimension. Apply it to every new or substantially changed feature, component, helper, dependency, abstraction, configuration, or algorithm. In `codebase` mode, use it to detect concrete duplication or unnecessary custom machinery within scope; do not infer that a product capability is unneeded without requirements.
+Merge findings sharing a root cause and remediation, including across dimensions. Missing regression coverage for a reported bug belongs in that finding's Fix; use a separate TEST finding only for an independent coverage risk. Keep unverified hypotheses (including runtime-only suspicions) in verification gaps with the needed check. A static proof or actual runtime observation can establish a finding; cite the evidence and environment.
 
-Ask, in order:
+Use [severity](severity-model.md) for each finding. Checklist severity is the worst independent finding in that dimension. `✅ Đạt` means assessed with no finding in this scope, not certified safe. `⚪ Chưa xác minh` means applicability is established but assessment is materially incomplete; explain why. `— N/A` means no relevant surface, never “not inspected.” A row may have a supported severity plus an explicit assessment gap in Summary.
 
-1. **Does this need to exist?** Tie it to the issue, acceptance criteria, user need, or a demonstrated defect. If intent is unclear, state the assumption or ask only when it materially affects the review; do not invent requirements.
-2. **Does the codebase already provide it?** Search the target revision for an existing function, component, service, design-system element, shared utility, or package that already meets the requirement. Avoid parallel implementations and wrappers that add no meaningful behavior.
-3. **Can the standard library do it?** Check the language/runtime standard library before adding hand-written utilities or dependencies.
-4. **Can a native platform or framework feature do it?** Check browser/platform APIs and existing framework capabilities in the project's supported versions. Verify the actual semantics and limitations; do not assume a native feature is equivalent by name alone.
-5. **Is a suitable dependency already declared?** Inspect the project manifest and lockfile, not a globally installed package. Prefer an existing, maintained dependency when it fits; if proposing a new dependency, explain why existing code, standard-library, platform, and framework facilities are insufficient, then assess security, maintenance, license, compatibility, and (for web UI) bundle/runtime cost.
-6. **Would a one-line call or smaller implementation be enough?** Prefer a direct, clear call when it meets the contract. Do not optimize for line count: an opaque one-liner or wrapper that hides validation, failure behavior, or policy is not simpler.
-7. **What is the minimum working solution?** Include the branches, configuration, abstraction, and extension points required by current behavior; omit speculative future flexibility.
-8. **Are safety invariants preserved?** Apply [Non-Negotiable Safety Invariants](../SKILL.md#non-negotiable-safety-invariants): simplification must not cut necessary validation, error handling, security, or (for web UI) accessibility. Prove equivalent controls remain at the correct boundary when logic is consolidated or removed.
+Disposition:
 
-A finding needs repository evidence and a concrete cost or risk, such as duplicated behavior that can diverge, an unnecessary dependency with maintenance/security/bundle cost, custom code replacing an adequate native facility, or complexity that increases defect risk. Do not report “a one-liner would be nicer” or “this feature may not be needed” as a finding by itself. Attribute the finding to the root dimension (usually Architecture or Maintainability; Security/Performance when that is the concrete impact) and avoid duplicate findings for the same cause.
+- **Changes requested:** at least one material defect (normally Medium–Critical); mention concurrent verification gaps.
+- **Needs verification:** no established material defect, but missing evidence/coverage prevents a reliable scope decision.
+- **Ready:** no material defect and verification adequate for the stated scope. Low nonblocking findings may remain; state them. Review readiness is not deployment approval or proof of absence of bugs.
 
-## Scenario Enumeration
-
-Before evaluating any dimension, identify the materially distinct reachable scenario classes for each entry point or changed path. Do not enumerate every Cartesian combination: combine variants when they do not change behavior, and split them when interactions (for example, tenant + retry, or mixed-version rollout + old data) alter the outcome. Assume a scenario is reachable unless code, schema, or infrastructure explicitly prevents it. Record meaningful scope limits instead of implying exhaustive coverage when the codebase is too large to inspect fully.
-
-| Category | Key scenarios to enumerate |
-|----------|---------------------------|
-| **Input** | Empty/null/zero · boundary and off-by-one · malformed or truncated · largest realistic or unbounded input · duplicate/retried · out-of-order or stale · adversarially crafted |
-| **State** | Fresh system (no data) · resource pressure · concurrent modification of the same record · partially completed prior operation · expired/revoked credentials · dependency down or slow · clock skew |
-| **Actor** | Unauthenticated · wrong role/tenant/owner · least-privileged actor · admin (can they reach what they should not?) · automated caller (cron, bot, service account) |
-| **Operational** | First deploy · rolling deploy with old/new code · rollback against changed state · missing/stale config · expected peak or burst traffic · partial write failure |
-
-For browser UI, also enumerate relevant route/action × UI state combinations: direct navigation/refresh/back-forward; loading/empty/success/error/denied; slow/offline network and stale response; repeated form action; narrow viewport/zoom/long text; keyboard/touch input; and SSR/hydration versus client-only rendering. Do not mechanically test every combination—split them where the resulting behavior differs.
-
-For each materially distinct reachable scenario class: trace the path to its terminal state and check whether the outcome is correct, safe, and recoverable. A scenario handled silently and incorrectly is a finding even if untested.
-
-## Review Sequence
-
-### Codebase Review
-
-1. Map scope.
-   Identify the boundaries being reviewed (full project, a module, a service, or a browser app). List entry points: HTTP handlers, CLI commands, queue consumers, scheduled jobs, SDK surfaces, browser routes/pages, forms, interactive components, and server/client rendering boundaries. If the user says only `codebase`, use repository-owned application code plus relevant tests and configuration as the default scope; normally exclude generated, vendored, build, and dependency files unless they are directly relevant. State the scope and material exclusions in the report, and do not claim complete coverage if only a subset could be inspected.
-2. Enumerate scenarios (mandatory).
-   For each entry point, identify materially distinct reachable scenario classes across input, state, actor, and operational variants. Use the four categories in [Scenario Enumeration](#scenario-enumeration); do not mechanically enumerate their full Cartesian product. Separate combinations when their interaction changes the path or outcome. An unexamined material scenario that causes a bug is a missed finding.
-3. Trace critical paths.
-   From each entry point, follow inputs, validation, domain logic, persistence, side effects, rendering, and outputs. For browser flows, trace user action → state transition → request/response → rendered result, including pending/error/recovery paths, duplicate actions, stale responses, navigation/unmount, and cleanup. Cover success paths, failure paths, partial failures, and local execution after calls to external dependencies return. When a call fails or throws, continue through catch, retry, fallback, compensation, and cleanup/finally handling instead of stopping at the exception. Verify whether a target is local or external from the available code and contracts rather than guessing from its name; an unresolved target should be marked as such. Treat an external boundary as a limit on tracing into the external callee, not as a reason to stop tracing the local caller's subsequent behavior. For asynchronous work, trace the producer to its acknowledgment/cutoff point, then document consumers as separate paths when they are in scope.
-4. Check applicability for all 14 dimensions across the declared scope and assess existing-design fit.
-   Load a dimension reference when the scope contains a relevant surface and the guidance is useful; do not load a reference for a concern with no surface. Apply the [Simplicity, Reuse, and Platform Fit](#simplicity-reuse-and-platform-fit) gate to in-scope custom mechanisms where relevant, without inventing product requirements. UI and Accessibility apply to browser-facing UI; mark them N/A only when the declared scope has no such surface. Mark other dimensions N/A only when the codebase has no meaningful surface for that concern.
-5. Check safeguards.
-   Run relevant tests and static checks when safe and feasible. Inspect project-defined commands before running them; do not trigger production access, external messages, destructive data changes, or other consequential side effects without authorization. Also verify alerting, rollback readiness, permissions, and operational coverage across the critical paths inspected. Record exact commands/results or why checks were not run.
-6. Write findings.
-   Report only issues with a concrete path to impact. Order by severity, then by confidence and blast radius. Note confidence limits for subsystems not deeply inspected.
-
-### Code Change Review
-
-1. Establish intent and resolve the diff source.
-   Read the diff source first, then any associated issue/PR description and acceptance criteria when available. Translate criteria into observable behavior and trace them to implementation and tests. If criteria are unavailable, state inferred intent and assumptions rather than inventing requirements.
-   For a branch pair, treat the first ref as `base` and the second as `head`; default to the PR-style diff `git diff <base>...<head>`, which compares the merge base of the refs to `head` (equivalent to `git diff $(git merge-base <base> <head>) <head>`). Do not substitute `git diff <base>..<head>` or `git diff <base> <head>` by default: those compare the two tip snapshots and can include changes on the base branch that are not part of the feature branch. Use tip-to-tip comparison only when explicitly requested.
-   Verify that both refs resolve, record their resolved commit SHAs and the merge-base SHA, and do not silently fall back to the current branch. Read source files from the `head` tree; if the checkout differs, read the ref's content (for example, `git show <head>:<path>`) or first verify the checkout matches the resolved head SHA. The branch comparison excludes staged, unstaged, and untracked working-tree changes by default; include those only when explicitly requested and report them as a separate source. Do not switch branches just to perform the comparison. If base/head roles are ambiguous, a ref is unavailable, or no common ancestor exists, ask for the minimum clarification needed. For a PR, use its actual target/base and source/head refs.
-2. Enumerate scenarios (mandatory).
-   For each changed entry point or function, identify materially distinct reachable scenario classes across input, state, actor, and operational variants. Use the four categories in [Scenario Enumeration](#scenario-enumeration); do not mechanically enumerate the full Cartesian product. Do not limit the scenario set to what the author tested or described.
-3. Trace execution paths of the changed code.
-   Follow the changed behavior through each enumerated scenario: success paths, failure paths, and partial failures. For frontend changes, trace the user interaction through component/event handlers, state and data layers, network boundaries, rendering, and user-visible feedback; include loading/error/retry states, async races, focus/navigation effects, and server/client hydration boundaries where relevant. When a call fails or throws, continue through catch, retry, fallback, compensation, and cleanup/finally handling instead of stopping at the exception. Verify whether a target is local or external from the available code and contracts rather than guessing from its name; an unresolved target should be marked as such. Trace local caller behavior after an external call returns; stop at the external boundary only for tracing into the external callee. Treat asynchronous consumers as separate paths when they are in scope. Read every changed human-authored line in its containing function/class and relevant surrounding context; skip generated/vendor material only after identifying it and confirming it is not material. For a large repetitive diff, sample only after confirming the changes are mechanical and equivalent, and disclose material areas not inspected.
-4. Check necessity, reuse/platform fit, and impact logic (mandatory).
-   Apply the [Simplicity, Reuse, and Platform Fit](#simplicity-reuse-and-platform-fit) gate to each new or substantially changed feature, component, helper, dependency, abstraction, or configuration. Then, for each changed function, method, type, schema, event, or config key: use grep, LSP, or file reads to find call sites and dependents within the reviewed repository/revision. For each one, verify its logic still holds under the new behavior:
-   - Return value assumptions: shape, range, or nullability that the caller expects.
-   - Side effect assumptions: writes, events, or cache updates the caller relies on.
-   - Error condition assumptions: error types or handling paths the caller expects.
-   - Data shape assumptions: fields the caller accesses, iterates, or indexes into.
-   For each changed function/method/class, compare its name, documentation, and public contract with its actual responsibility. Check whether the unit has one coherent purpose or mixes unrelated reasons to change, and whether it has hidden side effects that make reuse, tests, or safe modification harder. Do not apply “single responsibility” mechanically or use line count alone; require a concrete risk to readability, testing, change safety, or correctness.
-   Do not rely on the diff alone. A change silently breaks caller logic when assumptions no longer hold even though no compile error appears. For simplifications, verify necessary validation, error handling, security, and frontend accessibility controls remain effective; do not accept reduced safeguards merely because the new code is shorter.
-5. Evaluate all 14 dimensions for the changed surface.
-   Load only the references that apply. For browser UI changes, always assess UI and Accessibility; for backend-only changes, mark both N/A. Mark other dimensions N/A only after checking whether the diff materially touches them.
-6. Check safeguards.
-   Run relevant tests and static checks when safe and feasible; inspect project-defined commands before running them and do not trigger production access, external messages, destructive data changes, or other consequential side effects without authorization. Verify logging, retries, rollbacks, rollout guards, and migration safety for the changed paths. When public behavior, APIs/events, configuration, setup/build/test, or operational procedures change, check related documentation and examples; report omissions only when they create concrete user, developer, or operator risk. Record exact commands/results or why checks were not run.
-7. Write findings.
-   Report only issues with a concrete path to impact. Order by severity, then by confidence and blast radius.
-
-## Evidence Standard
-
-A review finding should answer five questions:
-
-1. What exact condition triggers the issue?
-2. Where in the code or diff does that condition appear?
-3. What incorrect behavior, security exposure, or operational failure follows?
-4. Who or what is affected?
-5. What change would reduce the risk?
-
-Before saving the report, verify every cited path exists in the reviewed revision and every line/range points to the relevant code. For changed code, use coordinates that identify the actual source in the reviewed revision; do not confuse patch hunk offsets with current file lines. For a branch comparison, line citations should map to the `head` tree where the code exists; for deleted code, identify the base/diff side explicitly. If the target revision is unavailable, cite coordinates from the supplied patch and state that basis in the Summary rather than presenting current-checkout lines as if they matched. Cite the service, controller, or other source that owns the behavior being described. Never fabricate test execution, caller coverage, or external vulnerability/license checks. In `git-diff` mode, tie each finding to a regression or risk introduced/materially worsened by the change; in `codebase` mode, findings may describe any material defect within scope. Avoid findings that rely on vague phrases such as "might be bad" or "could be cleaner" without a concrete failure mode. If behavior remains unclear after inspecting the relevant code, callers, and contracts—or a high-risk area cannot be assessed confidently because context or domain expertise is missing—state the specific limit and request clarification or an appropriate specialist check rather than guessing.
-
-## Reporting Format
-
-The authoritative output format is defined in `SKILL.md` — Review Output Contract. It has three parts:
-
-1. **Checklist table** — one fixed row per dimension (CORR, SEC, PERF, ARCH, DB, API, UI, A11Y, TEST, MAINT, OBS, CONC, INFRA, COMPAT), showing the worst severity found in that dimension.
-2. **Findings** — one bullet per finding, ordered by severity descending. A code location may appear multiple times across different dimensions. Each finding includes: dimension code, severity, description, Path, Why, and Fix. See `SKILL.md` for the exact bullet format.
-3. **Summary** — reviewed scope/revision, open questions, major risk areas, checks actually run, testing gaps, and residual risks.
-
-If there are no findings, all table rows show ✅ Đạt or — N/A and the summary confirms coverage. For each N/A status, briefly explain the reason in the Summary when it is not obvious from the stated scope.
-
-## Large Scope and Diff Strategy
-
-When the codebase/module scope or diff is large:
-
-1. Identify high-risk entry points first: auth, data writes, schema changes, queues, caches, money paths, destructive operations, and external contracts.
-2. Sample repeated mechanical changes only after confirming they are actually mechanical.
-3. Prefer reviewing invariants and interfaces over reading every line equally.
-4. For a large codebase, prioritize critical paths and explicitly list important areas not inspected; do not describe a partial review as complete.
-5. Call out confidence limits when parts of the system were not inspected deeply enough.
-
-## When To Mark N/A
-
-- **Codebase Review**: mark N/A when the codebase has no meaningful surface for that concern (e.g., no database layer → Database is N/A; no async processing → Concurrency is N/A; no browser-facing UI → UI and Accessibility are N/A).
-- **Code Change Review**: mark N/A when the change does not touch that concern in any meaningful way (e.g., no schema change → Database may be N/A; no interface change → API may be N/A; backend-only change → UI and Accessibility are N/A). For any changed browser UI, assess UI and Accessibility even if no issue is ultimately found.
-
-Do not mark an area N/A simply because no bug was found there.
-
-## External Guidance
-
-These sources informed the review workflow. Apply them contextually; the skill's scope, evidence rules, and project-specific standards take precedence.
-
-- [Google Engineering Practices — What to look for in a code review](https://google.github.io/eng-practices/review/reviewer/looking-for.html): assess design, functionality, complexity at line/function/class level, tests, naming, comments, documentation, and surrounding/system context.
-- [Google Engineering Practices — The Standard of Code Review](https://google.github.io/eng-practices/review/reviewer/standard.html): improve overall code health without demanding perfection; use technical facts over personal preferences.
-- [Google Engineering Practices — How to write code review comments](https://google.github.io/eng-practices/review/reviewer/comments.html): focus comments on the code, explain why, and make mandatory versus optional intent clear.
-- [GitLab Code Review Guidelines](https://docs.gitlab.com/development/code_review/): consider quality, maintainability, security, reliability, scalability, documentation, observability, and domain expertise in context.
-- [Git `git-diff` documentation](https://git-scm.com/docs/git-diff): `A...B` compares the merge base of `A` and `B` to `B`; `A..B` compares the two endpoint trees.
-- [W3C — WCAG 2.2 Quick Reference](https://www.w3.org/WAI/WCAG22/quickref/): success criteria and techniques for evaluating web accessibility; apply the project's target and do not claim conformance from a source-only review.
-- [OWASP — Cross Site Scripting Prevention Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html): safe output handling, dangerous contexts, HTML sanitization, and DOM sinks.
-- [web.dev — Web Vitals](https://web.dev/articles/vitals): LCP, INP, and CLS definitions/thresholds; field data and lab diagnostics have different limits.
-- [Playwright — Best Practices](https://playwright.dev/docs/best-practices): resilient E2E tests based on user-facing locators and observable behavior.
+State when there are no findings. Summary contains only reviewed source/scope, material assumptions/exclusions, actual checks/results and remaining risks/gaps. Write once using the bundled template; avoid repeating the full report in chat after saving it.

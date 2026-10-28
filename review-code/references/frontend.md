@@ -63,7 +63,7 @@ When the framework or browser test environment is available and safe, verify cri
 
 ## Evidence
 
-A UI finding should state the triggering route/action/state or viewport, the owning component/route and line range, what the user sees or cannot do, and the impact. For runtime-only behavior, mark **[Cannot verify statically]** and state the browser, viewport, network condition, or test needed to confirm it.
+A UI finding should state the triggering route/action/state or viewport, the owning component/route and line range, what the user sees or cannot do, and the impact. For a runtime-evidenced defect, cite the observed result and browser/viewport/network/test conditions. If a runtime-only suspicion cannot be verified, place it in verification gaps with the check needed to confirm it, not in Findings.
 
 ## Remediation Direction
 

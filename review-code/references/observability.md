@@ -25,7 +25,7 @@ Review whether the change leaves enough signals to detect, diagnose, and audit f
 
 - New critical path with no logs, metrics, or trace coverage
 - Error logs without request, tenant, job, or entity identifiers
-- Sensitive data dumped into logs for convenience (if the data is a secret, token, or credential, also raise a [Security](security.md) finding at the appropriate severity — that dimension owns the access-control angle; raise one observability finding for the logging gap itself)
+- Sensitive data dumped into logs for convenience (report secret/token exposure once under [Security](security.md); a separate observability finding requires an independent diagnostic gap)
 - Async or queue processing that loses correlation context
 - Privileged write path with no audit trail
 - Retries or dead-letter paths with no visibility into volume or cause

@@ -78,6 +78,6 @@ A security finding should describe:
 - Verify webhook authenticity and freshness, and make replay handling idempotent
 - Redact secrets and PII from logs, errors, and external payloads
 - Add abuse controls where the path can be amplified
-- Vet new dependencies for CVEs before merging; pin versions; audit licenses
+- Inspect declared/locked dependencies and available vulnerability/license evidence; disclose missing or stale audit data instead of claiming a current audit
 - Use modern, well-reviewed cryptographic libraries; never roll custom crypto
 - Scope PII access, set retention limits, and mask personal fields before logging
