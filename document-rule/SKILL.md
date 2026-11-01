@@ -1,46 +1,23 @@
 ---
 name: document-rule
 description: >-
-  Use when creating, editing, reviewing, displaying, or exporting software
-  documentation (specifications, plans, runbooks, ADRs, READMEs), including
-  mixed technical and nontechnical audiences.
+  Use when creating, editing, reviewing, displaying, or exporting software docs.
 metadata:
   author: Minh Luu
 ---
 
 # document-rule
 
-## Quality bar
+Write for readers: clarify purpose, decisions, impact, and acceptance; make instructions actionable and verifiable.
 
-A non-specialist newcomer can understand purpose, behavior/decision, consequences, and acceptance signals. A qualified operator can perform and verify documented work. Borrow Aircraft Maintenance Manual (AMM) precision, not aviation forms or procedures for every document.
+## Rules
 
-Explain business outcomes before technical details, essential jargon/acronyms on first use, and identifiers beside their meaning. Comprehension does not replace training/access. Consult [writing style](references/core/writing-style.md) for substantial explanations/rewrites.
+1. Resolve scope, type, audience, language, format, and inline/file; ask only blockers. Preserve language/pairs. Ask Vietnamese/English for a new file only if unclear.
+2. Inspect sources; separate current/requested/assumed/unknown. Code describes current only. Never invent facts or infer a new outcome/error response by analogy; mark gaps.
+3. Spec = WHAT/WHEN/acceptance; Plan = HOW/order/verify; bug-fix Spec separates current/desired/cause. Procedures need preconditions, checks, and risk-based recovery.
+4. Narrow edits: check scope/links. Substantive work: use [quality gates](references/review/quality-gates.md) and a checklist. Plan reviews check each step's order, dependencies, and schema/app compatibility. Review-and-fix: fix/verify/review full scope until clear; report blockers.
+5. Honor exact output: review-only = no edits; extraction = source wording; only X = only X; complete = no omissions/placeholders. Plan-only adds no Spec/code. Add no unrequested documents. Preserve schemas, verify files, no frontmatter in inline/raw output.
 
-## Workflow
+## Load only what applies
 
-1. **Resolve:** mode, deliverables, scope, format, audience, depth, inline/file. Infer audience; default to newcomer-friendly context. Ask only for blocking choices. Templates are optional aids.
-2. **Language:** preserve existing files and EN/VI pairs unless translation is requested. New file with no language selected in the request/confirmed context: ask `Vietnamese` or `English` and wait. Inline follows the conversation. Localize prose; retain identifiers.
-3. **Ground:** inspect relevant sources. Separate current evidence, future requirements, assumptions, and unknowns. Never invent contracts, paths, commands, metrics, approvals, or results. Mark gaps and impacts; ask only for blocking decisions.
-4. **Draft:** new/rewritten prose starts with plain-language purpose and essential terms (including states/fields), then precise detail. Explain only source-supported meanings; mark unknown semantics. Spec = WHAT/WHEN/acceptance; Plan = HOW/ORDER/VERIFY with an outcome-based Goal. Bug-fix Spec separates current behavior, desired behavior, and cause (`Unknown` if unverified; hypotheses separate). Procedures include preconditions, actions, results/checks, and risk-based stop/recovery.
-5. **Check:** for a narrow edit/extraction, verify meaning, exact scope, and affected cross-references directly. For substantive creation/review, use [quality gates](references/review/quality-gates.md) and the relevant checklist. Requested iteration: fix → check → review the full scope until no actionable finding remains; report blockers without looping on unchanged evidence.
-6. **Deliver:** review-only = findings, no edits; extraction = source wording; “only X” = only X; “complete” = no omissions/placeholders. Spec + Plan = Spec first; Plan-only adds no Spec or implementation. Code fixes add no document unless requested/required; consult [Plan decision](references/plan/plan-decision.md) if unclear. Files use [file rules](references/output/file-export.md); preserve schemas, verify artifacts before linking. No frontmatter inline/raw.
-
-## Router — load progressively
-
-Narrow edit/extraction: source first, references only for unresolved rules. Otherwise read matching rows. Skip creation templates for review/extraction. Examples: one matching locale if needed; both for bilingual work. Do not preload indexes/directories.
-
-Paths are skill-relative; Markdown/text needs no other skill, MCP, network, or repository script. Other exports need host tools; disclose missing capabilities. Examples: `.en.md` / `.vi.md` pairs.
-
-| Task | References under `references/` | Template under `templates/` |
-|---|---|---|
-| Feature / bug-fix Spec | [spec/workflow](references/spec/workflow.md), [requirements](references/spec/requirements-and-rules.md), [acceptance](references/spec/acceptance-and-nfr.md) | `spec/feature-spec.md` / `spec/bug-fix-spec.md` |
-| BLS / business flows | [requirements](references/spec/requirements-and-rules.md), [flows](references/spec/flows-states-errors.md), [acceptance](references/spec/acceptance-and-nfr.md) | `spec/bls.md` |
-| API Spec | [contracts](references/spec/data-api-contracts.md), [acceptance](references/spec/acceptance-and-nfr.md) | `spec/api-spec.md` |
-| Implementation Plan | [plan/workflow](references/plan/workflow.md), [tasks](references/plan/task-breakdown.md), [traceability](references/plan/traceability.md) | `plan/feature-plan.md` / `plan/small-change.md` |
-| Migration / risky procedure | [verification](references/plan/verification-rollout-recovery.md), [AMM](references/core/amm-inspired-procedures.md); add Plan row for migrations | `plan/migration-plan.md` / `other/runbook.md` |
-| Other document types | [selection](references/other/document-type-selection.md), then only the relevant specialized reference | Matching `other/` template |
-| Spec / Plan review or final check | [spec checklist](references/review/spec-checklist.md) / [plan checklist](references/review/plan-checklist.md) | `other/review-report.md` only if requested |
-| Output edge cases | [contract](references/output/output-contract.md); [inline](references/output/inline-and-scoped-output.md) or [file](references/output/file-export.md) as needed | — |
-| Source conflicts / writing ambiguity | [sources](references/core/sources-and-assumptions.md), [style](references/core/writing-style.md); [principles](references/core/principles.md) for rationale | — |
-
-Stop loading once drafting/checking is possible. Cut duplication, not conditions, errors, safety gates, or acceptance criteria. Fictional examples and non-executable outlines are not system evidence.
+Load only relevant guides/checklists; source first for narrow edits. Template for creation, example if useful. See [Spec](references/spec/workflow.md), [Plan](references/plan/plan-decision.md) + [workflow](references/plan/workflow.md), [review](references/review/quality-gates.md) + checklist, [other](references/other/document-type-selection.md), [output](references/output/output-contract.md), and [sources](references/core/sources-and-assumptions.md). Paths are relative; PDF/DOCX needs host tools.

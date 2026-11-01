@@ -6,6 +6,7 @@
 - **Current behavior:** cite inspected code, schemas, logs, or observed checks. A ticket is evidence of a report, not proof that the reported behavior was reproduced; a test definition is not a passing test result.
 - **Conflicts:** identify the conflicting sources and the affected requirement; do not silently choose a winner or overwrite an approved contract. Ask for a decision only if it blocks useful work; otherwise mark the draft conditional.
 - **Assumptions:** use explicit, reversible drafting assumptions only when they do not decide a core business rule or unsafe action.
+- **New outcomes:** existing code or API responses describe current behavior only. Do not extend an existing error/status response to a newly introduced condition by analogy; leave the outcome as `Unknown` or a question unless an approved contract or explicit user request defines it.
 
 ## Classify claims
 

@@ -8,6 +8,7 @@
 - [ ] Is impact analysis broad enough without overstating impact?
 - [ ] Can a qualified implementer who did not author the Plan follow each task without guessing, and does each step state a concrete action, expected result, and verification?
 - [ ] Are dependencies, blockers, and safe ordering clear?
+- [ ] Is every step compatible with the schema and application versions present at that point? Check producer/consumer and reader/writer ordering, including whether code starts using a new field or constraint before the compatible schema exists.
 - [ ] Are success/error/boundary/concurrency tests appropriate to the Specification?
 - [ ] Are migration/rollout/compatibility/recovery risks addressed?
 - [ ] Is the Definition of Done verifiable, with no item marked `done` before execution?
