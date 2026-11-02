@@ -419,6 +419,7 @@ test("loadSelectionCatalog includes curated local skills in installer choices", 
       "domain-driven-design",
       "generate-flow",
       "git-workflow",
+      "implementation-notes",
       "react-component-generator",
       "review-code",
       "task-creator",
@@ -532,6 +533,18 @@ test("loadSelectionCatalog includes curated local skills in installer choices", 
       description: "Create an evidence-backed flow document when the user asks to trace, map, document, or generate an end-to-end flow for a specific feature. Do not trigger on a generic question about how code works when no document is requested.",
       sourceBranch: "agent-skills",
       sourcePath: "generate-flow",
+      targets: undefined
+    }
+  );
+
+  assert.deepEqual(
+    catalog.skills.find((skill) => skill.id === "implementation-notes"),
+    {
+      id: "implementation-notes",
+      label: "Implementation Notes",
+      description: "Use when coding tasks request implementation notes, a decision log, spec deviations, or review tradeoffs.",
+      sourceBranch: "agent-skills",
+      sourcePath: "implementation-notes",
       targets: undefined
     }
   );

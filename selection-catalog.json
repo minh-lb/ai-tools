@@ -37,6 +37,13 @@
       "sourcePath": "git-workflow"
     },
     {
+      "id": "implementation-notes",
+      "label": "Implementation Notes",
+      "description": "Use when coding tasks request implementation notes, a decision log, spec deviations, or review tradeoffs.",
+      "sourceBranch": "agent-skills",
+      "sourcePath": "implementation-notes"
+    },
+    {
       "id": "react-component-generator",
       "label": "React Component Generator",
       "description": "Create, refactor, or improve a React component or UI block. Use when the requested work is component-level; inspect the target repository and follow its placement, styling, state, testing, and accessibility conventions rather than imposing a new stack.",
