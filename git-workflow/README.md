@@ -1,6 +1,6 @@
 # Git Workflow
 
-Nạp skill trước **mọi thao tác Git**, kể cả `status`, `diff`, `log`, kiểm tra remote và thao tác qua script, IDE, MCP, `gh`/`glab`. Trước mỗi thao tác, xác nhận `SKILL.md` cùng `references/purpose.md` và `references/principles.md` còn trong context; đọc lại nếu chưa nạp hoặc đã mất sau compaction.
+Nạp `SKILL.md` trước **mọi thao tác Git**, kể cả `status`, `diff`, `log` và thao tác qua script, IDE, MCP, `gh`/`glab`. Nếu nội dung đã có trong context thì không đọc lại. **Không bắt buộc** nạp `purpose.md` và `principles.md` chỉ để xem trạng thái/diff; đọc các reference liên quan theo đúng loại thao tác và mức rủi ro. Với commit hoặc PR/MR, mở thêm `references/commit-pr-contracts.md` theo chỉ dẫn trong SKILL.md.
 
 Quy tắc nạp và quyền commit/push áp dụng cho mọi repository. Các hướng dẫn branch/merge/release dành cho GitFlow: production (thường là `main`/`master`), integration (thường là `develop`), `release/*`, `hotfix/*`; phải điều chỉnh theo mô hình thực tế.
 

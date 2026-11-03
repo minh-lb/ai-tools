@@ -4,7 +4,9 @@ Trace một feature từ đầu đến cuối qua codebase và tạo ra một t�
 
 ## Ngôn ngữ output
 
-Toàn bộ text mô tả viết bằng **tiếng Việt**. Các thuật ngữ kỹ thuật giữ nguyên tiếng Anh: field names, file paths, function names, layer labels (API/Service/Repository...), HTTP methods, status codes, event names, code blocks, và Mermaid diagram labels.
+Mặc định text mô tả viết bằng **tiếng Việt**, nhưng phải tuân theo ngôn ngữ người dùng yêu cầu tường minh. Các thuật ngữ kỹ thuật giữ nguyên tiếng Anh: field names, file paths, function names, layer labels (API/Service/Repository...), HTTP methods, status codes, event names, code blocks, và Mermaid diagram labels.
+
+Ví dụ: `Tạo flow cho checkout` cũng là lời gọi hợp lệ; khi không có tham số lệnh, Skill lấy feature từ chính yêu cầu và chỉ hỏi khi còn mơ hồ.
 
 ## Skill tạo ra gì
 
