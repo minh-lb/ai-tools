@@ -46,7 +46,7 @@ Run relevant targeted tests, applicable regression suite, and build/lint/typeche
 **Input:** acceptance criteria, final changed diff (not just summary), pre-task dirty baseline, relevant code/tests, previous finding IDs and fix descriptions. Invoke review-code explicitly in embedded task-delivery mode when available; produce the review in the agent response, not a new file.
 
 **Return:**
-- Finding ID, severity (BLOCKING or NON_BLOCKING), exact file/location, concrete defect/risk, supporting reasoning or repro, minimal remediation.
+- Finding ID, calibrated severity (Critical / High / Medium / Low), separate blocking flag (`true` / `false`), exact file/location, concrete defect/risk, supporting reasoning or repro, minimal remediation. Medium–Critical defects are normally blocking; justify any exception.
 - Requirements gaps, security/performance/compatibility risks that are relevant to the diff.
 - Disposition of every previous blocking finding: RESOLVED, OPEN, or UNVERIFIED.
 - Verdict: **NO_BLOCKING_FINDINGS**, **CHANGES_REQUIRED**, or **REVIEW_INCOMPLETE**.
