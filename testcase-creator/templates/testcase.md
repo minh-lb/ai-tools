@@ -29,13 +29,17 @@ sources: [] # Approved specifications, acceptance criteria, designs, contracts, 
   1. Open <approved test URL + route or app deep link>; verify <starting screen>.
   2. <Name each navigation target/control and resulting screen/URL.>
   3. <Enter exact values, select the named control, and verify each material transition.>
-- **Expected outcome / postcondition:** <approved observable result and persisted read-back when required>
+- **Expected outcome / postcondition:** <exact observable result; read-back and absence of unintended changes if applicable>
 - **Trace:** <every in-scope acceptance-criterion and test-condition ID covered>
 - **Risk / priority rationale (optional):** <brief, evidence-based rationale>
 
 ## Coverage gaps / exclusions (optional; include only when nonempty)
 - **Criterion / condition:** <ID>
   - **Reason / owner:** <why it is uncovered or excluded; who can resolve or accept it>
+
+## Change impact (optional; only when updating an existing suite)
+- **Changed requirement(s):** <source/ID and version>
+- **Case IDs:** <retained/revised, new, retired with reason or replacement link>
 
 ## Pending decisions (optional; include only when nonempty)
 - **Affected case ID:** <...>

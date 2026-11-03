@@ -5,7 +5,7 @@ Keep deterministic E2E testcase design separate from execution results. Testcase
 ## Design readiness
 
 - **Design status:** `draft` → `review` → `approved`; `retired` when no longer applicable. Feature-level status is not execution outcome.
-- **Readiness:** `ready` only when the approved journey/source, setup/data, reproducible user actions, observable oracle, and cleanup/safety are sufficient. `pending-spec` when a required user outcome or contract needs confirmation. `blocked` when environment, permissions, data, or tooling prevent a valid run. `N/A` requires an evidence-based reason.
+- **Design readiness:** `ready` requires an approved source, setup/data, reproducible actions, observable oracle and cleanup. `pending-spec` means an expected result or contract remains unapproved. Runtime/environment failures affect later test execution, not written case design. `N/A` requires an authoritative reason.
 
 ## Reproducibility and safety
 

@@ -11,7 +11,7 @@ Each case entry in the template's E2E scenarios list contains:
 - `Preconditions`: actor/permissions, required starting state, and setup needed before user actions.
 - `Test data`: concrete input values and fixture records, separately from preconditions.
 - `User actions`: numbered actions detailed enough to execute without guessing. Begin at the approved test base URL plus route (or native-app deep link), then name each navigation target/control, exact test value, submit action, and resulting screen/URL. Include explicit sign-in steps when login is part of the tested journey; otherwise state the authenticated session as a precondition. Never include credentials or session tokens—use an approved secret-store alias. Do not invent undocumented URLs or control labels; use approved UI navigation from a known route or record a pending decision if the route is essential. Include fixture resets between parameterized data variants when needed. Each case is a short-ID heading with labeled fields, not a table row.
-- `Expected outcome / postcondition`: approved, observable result. Prefer UI/read-back evidence; add a narrowly scoped read-only backend assertion only if an important in-scope effect cannot otherwise be observed.
+- `Expected outcome / postcondition`: use an approved, observable result (message, state, count, record, navigation or documented read-back). For rejected actions, also verify no unintended state change when required by the test basis; do not invent copy or side effects.
 - `Trace`: every approved acceptance-criterion and test-condition ID covered by this case; the suite must map each in-scope criterion to one or more cases or document a gap.
 - `Risk / priority rationale` (optional): include only when the project format requires it or the case needs a concise, evidence-based priority explanation; keep it separate from source traceability.
 
@@ -19,7 +19,7 @@ Each case entry in the template's E2E scenarios list contains:
 
 Prioritize the approved test basis: specification/acceptance criteria → versioned design and role/ownership rules → API contract when it affects the journey → business/error/edge-case registers → relevant architecture/current implementation. Code is evidence of current behavior, not the source of truth when it conflicts with an approved requirement. Map every in-scope acceptance criterion to case ID(s); link each deterministic case to its source and test conditions. Do not infer UI messages, redirects, status codes, permissions, persistence, retry behavior, or error policy from conventions.
 
-Do not present locally authored examples, generated fixture contracts, or implementation behavior as approved product requirements. Label them illustrative-only, make no product-coverage claim, and keep approval status explicit. If a required user outcome is unresolved, do not invent an oracle: record the journey as `pending-spec` with its owner/source in the optional Pending decisions section. A separate API contract/authentication/database test may be referenced by suite ID, but do not duplicate its direct-request steps in this E2E file.
+Do not present locally authored examples or implementation behavior as approved product requirements. When approved sources conflict, record the conflicting IDs/versions, affected case and owner; do not choose silently. Mark only affected cases `pending-spec` when an oracle is missing, then continue with independent approved cases. Link lower-level suites instead of duplicating direct API/auth/database steps.
 
 ## Cross-layer verification boundaries
 
@@ -32,4 +32,4 @@ Do not present locally authored examples, generated fixture contracts, or implem
 
 - Keep Scope and sources to entry/exit point, approved links, actors/data, environment, cleanup, and material exclusions.
 - Add Pending decisions only when a journey is genuinely blocked on an oracle/source/owner. Do not keep empty gaps or review-summary sections.
-- Exploratory charters are not deterministic pass/fail cases. Record objective, observation focus, scope/data, timebox, safety, and risk/incident trace in the optional charter list. When run, record observations and follow-ups in separate exploratory run notes; never mark a charter passed/failed. Turn findings into defects or deterministic E2E cases with approved oracles.
+- Exploratory observations can suggest risk-based conditions but are not deterministic testcases. If an oracle cannot be approved, record a missing condition as `pending-spec`. Do not create exploratory charters, execution notes or run results with this skill.

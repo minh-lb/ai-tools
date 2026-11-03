@@ -12,7 +12,8 @@
 | [standards-basis](standards-basis.md) | Optional methodology mapping to official ISTQB, ISO/IEC/IEEE, W3C, and OWASP sources |
 | [case-design governance](execution-governance.md) | Approval/readiness, reproducible steps, data safety, and separation from execution outcomes |
 | [large-projects](large-projects.md) | Feature/service ownership, shared suites, release traceability, and regression selection |
-| [testcase template](../templates/testcase.md) | Structured E2E case list and approved-criterion traceability |
+| [change-impact guidance](change-impact.md) | Update existing cases while preserving IDs and avoiding duplicate coverage |
+| [testcase template](../templates/testcase.md) | Structured E2E cases, traceability and optional change-impact summary |
 | [Compact boundary example (EN)](../examples/task-create.en.md), [VI](../examples/task-create.vi.md) | Case-design examples showing feature scope and actions |
 | [Illustrative default-path testcase example](../examples/default-output/docs/testcases/task-create.md), [example contract](../examples/default-output/specs/task-create.md) | Demonstrates document path and requirement traceability; explicitly not approved product requirements |
 | [Testcase document validation](../tests/testcase-document.test.mjs) | Validates default output path, requirement trace, and local Markdown links without automation dependencies |

@@ -23,9 +23,9 @@ Place a cross-service E2E journey in the suite of the user-visible/business init
 
 For large scope, maintain a release-level traceability view (a project tool, index, or generated report) with at least:
 
-`Requirement/AC/risk → feature ID → case ID → owning suite/team → design readiness → release/build → execution run → result/evidence/defect`.
+`Requirement/AC/risk → feature ID → case ID → owning suite/team → design readiness → affected release/change`.
 
-Track unlinked requirements, cases without an accepted source, high risks without a case, cases not selected for the release, and blocked/unrun cases. A percentage is meaningful only with a named denominator and scope. Avoid copying run results into case design rows; keep execution records separate and link by stable case ID.
+Track unlinked requirements, cases without approved sources, high risks without cases, and cases outside release scope. Actual run results and evidence belong to another testing workflow. State the denominator of any coverage percentage.
 
 ## 4. Dependency and variant matrices
 
@@ -41,7 +41,7 @@ Use pairwise or higher-strength combinations for low-risk independent factors. F
 
 Define environment tiers and purpose (local/component, shared integration, staging/pre-release, production monitoring only), ownership, refresh/reset strategy, provider sandboxes, network boundaries, secrets handling, and permitted destructive actions. Document synthetic/masked data creation, referential dependencies, tenant isolation, unique identifiers, cleanup/retention, and parallel-run collision avoidance. Never place real credentials or unnecessary PII in suites or evidence.
 
-For non-deterministic dependencies, specify whether the case uses a contract stub, deterministic simulator, or real sandbox and what that proves. A mocked service test does not prove real integration. Record test limitations and run the smallest safe end-to-end smoke set against integrated environments.
+For non-deterministic dependencies, specify whether the case uses a contract stub, deterministic simulator, or real sandbox and what that proves. A mocked service test does not prove real integration. Document the limitation and identify which integrated-environment smoke cases would be necessary; actual execution belongs to the separate testing workflow.
 
 ## 6. Change-impact and regression selection
 
@@ -53,8 +53,8 @@ For each release/change, map changed requirements, components/contracts, schemas
 4. High-risk regression paths (data integrity, permissions, payments, retries, migration, rollback, recovery).
 5. A risk-based smoke set for deployment; full regression as required by release policy.
 
-Record why relevant cases were excluded, who accepted residual risk, and the evidence/build for the selected run. Recompute impact when a dependency, schema, feature flag, or deployment topology changes; do not select regression solely by filename or recent failures.
+Document why relevant IDs were excluded and who owns unresolved risks. Recompute impact when dependencies, schemas, flags or deployment topology change; do not select cases solely by filename.
 
 ## Worked traceability example (illustrative; replace with real IDs and rules)
 
-A purchase requirement `REQ-42` says an authorized buyer can place an order; API contract `API-ORD-POST-v3` creates one order; payment provider `PAY-SBX` may timeout. Feature suite `checkout.md` owns the initiating E2E journey and asserts the user-visible order plus any critical approved read-back. It links (without copying) to the canonical API authorization suite and `payment-integration.md` provider-failure cases. Those lower-level suites assert response and persisted order/payment/outbox states using approved `BR-18`, `E-7`, and `EC-3`; unresolved timeout semantics stay pending-spec. Release `R-2026.10` records selected case IDs, build, provider mode, run IDs, results, redacted trace IDs, and defects. If the payment client or outbox changes, the impact map selects checkout E2E and linked payment/idempotency/transaction regression. These identifiers and behaviors are examples, not defaults for another project.
+A purchase requirement `REQ-42` says an authorized buyer can place an order; API contract `API-ORD-POST-v3` creates one order; payment provider `PAY-SBX` may timeout. Feature suite `checkout.md` owns the initiating E2E journey and asserts the user-visible order plus any critical approved read-back. It links (without copying) to the canonical API authorization suite and `payment-integration.md` provider-failure cases. Those lower-level suites assert response and persisted order/payment/outbox states using approved `BR-18`, `E-7`, and `EC-3`; unresolved timeout semantics stay pending-spec. Release `R-2026.10` records affected case IDs and selection rationale, while a separate testing process owns any execution evidence. If the payment client or outbox changes, the impact map selects checkout E2E and linked payment/idempotency/transaction regression. These identifiers and behaviors are examples, not defaults for another project.
