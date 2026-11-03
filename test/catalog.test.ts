@@ -423,6 +423,7 @@ test("loadSelectionCatalog includes curated local skills in installer choices", 
       "react-component-generator",
       "review-code",
       "task-creator",
+      "task-delivery",
       "team-mini",
       "testcase-creator",
       "testing-rule"
@@ -446,7 +447,7 @@ test("loadSelectionCatalog includes curated local skills in installer choices", 
     {
       id: "document-rule",
       label: "Document Rule",
-      description: "Use when creating, editing, reviewing, displaying, or exporting software documentation (specifications, plans, runbooks, ADRs, READMEs), including mixed technical and nontechnical audiences.",
+      description: "Use when creating, editing, reviewing, displaying, or exporting software docs.",
       sourceBranch: "agent-skills",
       sourcePath: "document-rule",
       targets: undefined
@@ -470,7 +471,7 @@ test("loadSelectionCatalog includes curated local skills in installer choices", 
     {
       id: "testcase-creator",
       label: "Testcase Creator",
-      description: "Create compact, traceable end-to-end (E2E) test case suites and linked Playwright automation from approved feature evidence. Use when asked to write E2E test cases, user-flow scenarios, Playwright E2E tests, or a feature-level E2E test plan.",
+      description: "Use when the user asks to write feature-level E2E test cases, manual user-flow test scenarios, or E2E test plans from approved feature requirements. This skill authors testcase documentation only.",
       sourceBranch: "agent-skills",
       sourcePath: "testcase-creator",
       targets: undefined
@@ -494,7 +495,7 @@ test("loadSelectionCatalog includes curated local skills in installer choices", 
     {
       id: "team-mini",
       label: "Team Mini",
-      description: "Coordinate a bounded Claude Code/Codex agent team when the user explicitly asks for team-mini or a multi-agent implementation/review workflow. Do not trigger merely because a coding task is complex.",
+      description: "Use when the user explicitly requests team-mini, /team-mini, or booting a persistent Claude Code/Codex agent team, rather than simply asking an AI to complete a software task.",
       sourceBranch: "agent-skills",
       sourcePath: "team-mini",
       targets: undefined
@@ -506,9 +507,21 @@ test("loadSelectionCatalog includes curated local skills in installer choices", 
     {
       id: "review-code",
       label: "Review code",
-      description: "Use when explicitly invoked as $review-code, @review-code, /review-code, or directly requested by name for backend or browser frontend review.",
+      description: "Use when explicitly invoked as $review-code, @review-code, /review-code, or by name, including a deliberate independent-review handoff from an activated task-delivery workflow, for backend or browser frontend code.",
       sourceBranch: "agent-skills",
       sourcePath: "review-code",
+      targets: undefined
+    }
+  );
+
+  assert.deepEqual(
+    catalog.skills.find((skill) => skill.id === "task-delivery"),
+    {
+      id: "task-delivery",
+      label: "Task Delivery",
+      description: "Use when the user asks an AI agent to complete a software task end-to-end in the current local checkout, especially when implementation must be followed by automated testing, independent code review, bounded bug-fix loops, and a human-readable handoff.",
+      sourceBranch: "agent-skills",
+      sourcePath: "task-delivery",
       targets: undefined
     }
   );
@@ -566,7 +579,7 @@ test("loadSelectionCatalog includes curated local skills in installer choices", 
     {
       id: "testing-rule",
       label: "Testing Rule",
-      description: "Use when running, writing, reviewing, or debugging E2E tests and frontend journeys, including forms, async UI, responsive/accessibility checks, smoke/regression runs, and flaky failures. Not for unit-only testing or test case documentation alone.",
+      description: "Use when executing, diagnosing, or evaluating existing E2E tests and interactive browser/frontend journeys, including smoke/regression runs, UI forms, accessibility checks, and flaky failures. For writing an E2E testcase document, use testcase-creator. Automated test code belongs to a separate implementation task.",
       sourceBranch: "agent-skills",
       sourcePath: "testing-rule",
       targets: undefined
