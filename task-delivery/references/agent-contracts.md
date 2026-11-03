@@ -31,7 +31,7 @@ Implement the smallest correction for each validated finding. Do not broaden sco
 
 ## Tester — independent evidence, no source editing
 
-**Input:** stable task diff, acceptance criteria, known local test commands, local safety constraints, unresolved test failures. Use testing-rule only for relevant E2E journeys; choose testcase-creator's cases-only or automation output only when new test artifacts are explicitly in scope.
+**Input:** stable task diff, acceptance criteria, known local test commands, local safety constraints, unresolved test failures. Use testing-rule only for relevant E2E journeys; use testcase-creator only when E2E testcase documents are explicitly in scope; route automated test code to a separate implementation step.
 
 **Return:**
 - Check | command | exit code | result (PASS/FAIL/BLOCKED/SKIPPED/FLAKY) | scope/evidence.

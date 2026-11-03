@@ -6,15 +6,13 @@ display_language: "<User/project language>"
 status: draft # Use the repository's testcase lifecycle if established.
 updated: YYYY-MM-DD
 sources: [] # Approved specifications, acceptance criteria, designs, contracts, and rules. Do not list locally authored demos or fixtures as approved sources.
-# playwright_automation: "<relative path to paired Playwright file>" # In cases-and-automation mode, uncomment and fill; omit in cases-only mode.
 ---
 
-<!-- Remove instructional comments and unused optional sections in generated files. Preserve existing file language; do not translate IDs, schema keys, API names, or literal UI copy. In cases-and-automation mode, add the automation frontmatter property and a real reciprocal relative link; in cases-only mode, omit both. If no approved requirement basis is available, say so; do not promote local examples, fixtures, or implementation into approved sources. -->
+<!-- Remove instructional comments and unused optional sections in generated files. Preserve existing file language and IDs, schema keys, API names, and literal UI copy. If no approved requirement basis is available, state the gap; do not promote local examples or implementation behavior into approved sources. This template produces testcase documentation only. -->
 
 # <Feature name> — E2E Test Cases
 
 ## Scope and sources
-<!-- Cases-and-automation mode only: - **Playwright automation:** <relative Markdown link to paired file under docs/autotests/>. Remove this comment and include a real link when paired; omit the line entirely in cases-only mode. -->
 - **E2E boundary:** <user goal; product entry → observable end state>
 - **Approved sources:** <links/IDs and versions>
 - **Actors / environment:** <roles, supported client, approved URL or app deep link>
@@ -44,22 +42,3 @@ sources: [] # Approved specifications, acceptance criteria, designs, contracts, 
   - **Unresolved oracle / evidence:** <...>
   - **Owner / source needed:** <...>
 
-## Exploratory charters (optional; separate from deterministic pass/fail cases)
-### <charter-id> — <Objective>
-- **Observation focus:** <...>
-- **Scope, data, and setup:** <...>
-- **Timebox / safety / cleanup:** <...>
-- **Risk / incident trace:** <...>
-
-## Exploratory run notes (optional; after charter execution only)
-### Run notes — <charter-id>
-- **Date / tester / environment:** <...>
-- **Observations / evidence:** <...>
-- **Follow-up defects or E2E case IDs:** <...>
-
-## Execution records (optional; deterministic cases only)
-### Run <run-ID> — <case-id>
-- **Date / tester / build / environment:** <...>
-- **Result:** <approved project value>
-- **Actual result / redacted evidence:** <...>
-- **Defect / follow-up:** <...>

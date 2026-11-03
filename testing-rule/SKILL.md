@@ -1,13 +1,13 @@
 ---
 name: testing-rule
-description: Use when executing, diagnosing, or evaluating existing E2E tests and interactive browser/frontend journeys, including smoke/regression runs, UI forms, accessibility checks, and flaky failures. For writing a new testcase suite or Playwright automation, use testcase-creator.
+description: Use when executing, diagnosing, or evaluating existing E2E tests and interactive browser/frontend journeys, including smoke/regression runs, UI forms, accessibility checks, and flaky failures. For writing an E2E testcase document, use testcase-creator. Automated test code belongs to a separate implementation task.
 metadata:
   author: Minh Luu
 ---
 
 # Testing Rule
 
-Verify user goals through the product's real entry point. Match conclusions to executed evidence and tested boundaries. This skill owns **execution/diagnosis**; use **testcase-creator** for authoring a new E2E testcase suite or Playwright automation, invoking this skill later only when actually running or debugging that suite.
+Verify user goals through the product's real entry point. Match conclusions to executed evidence and tested boundaries. This skill owns **execution/diagnosis**; use **testcase-creator** only for authoring E2E testcase documents, invoking this skill later only when actually running or debugging that suite.
 
 ## Workflow
 
