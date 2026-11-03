@@ -6,15 +6,15 @@ display_language: "<User/project language>"
 status: draft # Use the repository's testcase lifecycle if established.
 updated: YYYY-MM-DD
 sources: [] # Approved specifications, acceptance criteria, designs, contracts, and rules. Do not list locally authored demos or fixtures as approved sources.
-playwright_automation: "<relative path to the paired Playwright file>"
+# playwright_automation: "<relative path to paired Playwright file>" # In cases-and-automation mode, uncomment and fill; omit in cases-only mode.
 ---
 
-<!-- Remove instructional comments and unused optional sections in generated files. Preserve existing file language; do not translate IDs, schema keys, API names, or literal UI copy. Replace the automation placeholder with an actual relative Markdown link to the paired file. If no approved requirement basis is available, say so; do not promote local examples, fixtures, or implementation into approved sources. -->
+<!-- Remove instructional comments and unused optional sections in generated files. Preserve existing file language; do not translate IDs, schema keys, API names, or literal UI copy. In cases-and-automation mode, add the automation frontmatter property and a real reciprocal relative link; in cases-only mode, omit both. If no approved requirement basis is available, say so; do not promote local examples, fixtures, or implementation into approved sources. -->
 
 # <Feature name> — E2E Test Cases
 
 ## Scope and sources
-- **Playwright automation:** `<relative Markdown link to paired file under docs/autotests/>`
+<!-- Cases-and-automation mode only: - **Playwright automation:** <relative Markdown link to paired file under docs/autotests/>. Remove this comment and include a real link when paired; omit the line entirely in cases-only mode. -->
 - **E2E boundary:** <user goal; product entry → observable end state>
 - **Approved sources:** <links/IDs and versions>
 - **Actors / environment:** <roles, supported client, approved URL or app deep link>

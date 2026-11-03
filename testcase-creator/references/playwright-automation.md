@@ -1,6 +1,6 @@
 # Playwright Automation for E2E Test Cases
 
-Generate one paired Playwright file whenever this skill creates or updates a deterministic testcase suite.
+Use this reference only in **cases-and-automation** mode, when the user explicitly requests executable Playwright tests or the testcase/automation pair. In **cases-only** mode, generate no Playwright file and no reciprocal automation link.
 
 ## Inspect the target project first
 
@@ -20,5 +20,5 @@ Generate one paired Playwright file whenever this skill creates or updates a det
 ## Output and execution
 
 - Unless the user specifies another location, write the testcase to `docs/testcases/<id_short_description>.md` and the same-stem automation file under `docs/autotests/`. Use the project's existing Playwright extension convention; default to `.spec.ts` when none exists.
-- Generate both files in the same task and verify the reciprocal links, every case ID, action-to-step mapping, and assertion-to-oracle mapping.
+- In cases-and-automation mode, generate both files in the same task and verify the reciprocal links, every case ID, action-to-step mapping, and assertion-to-oracle mapping.
 - State the project's exact Playwright command when known. Run tests only when requested and a valid, approved test environment is available; report blockers rather than implying a skipped or unrun test passed.

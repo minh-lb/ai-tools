@@ -10,7 +10,7 @@ Responsibilities:
 1. Capture baseline: branch, git status, baseline diff, task-owned change scope. Avoid confusing pre-existing dirty edits with new task changes.
 2. Define outcome-oriented acceptance criteria and safe verification plan.
 3. Provide each subagent its own bounded context: task, current requirements, relevant paths, explicit prohibitions, expected return fields. Avoid flooding contexts with irrelevant prior conversation.
-4. Serialize application-file writes. Freeze changes while Tester or Reviewer reads them. If another process modifies files, invalidate evidence and rerun gates.
+4. Serialize application-file writes. Freeze changes while Tester or Reviewer reads them. If application code, test or runtime config changes, invalidate the affected evidence and rerun gates. Purely narrative notes/review-report edits do not invalidate runtime evidence when confirmed unrelated to behavior.
 5. Track the correction counter starting at zero. Increment it when a new fix attempt is assigned after initial implementation. Stop automatically before round four.
 6. Judge findings and conflicting evidence, request user decisions as needed, deliver one consolidated final response.
 
@@ -18,7 +18,7 @@ Subagents are logical roles, not promises about a particular model/CLI. Inspect 
 
 ## Coder — only application-file writer
 
-**Assignment must include:** acceptance criteria; allowed paths/scope; baseline/dirty-file warnings; tests to add/run; local-only constraints; spec/decision note expectations; outstanding finding IDs in fix rounds.
+**Assignment must include:** acceptance criteria; allowed paths/scope; baseline/dirty-file warnings; tests to add/run; local-only constraints; applicable coding-rule/specialist guidance; spec/decision note expectations; outstanding finding IDs in fix rounds.
 
 **Return:**
 - Changed paths and behavioral summary, linked to requirements.
@@ -31,7 +31,7 @@ Implement the smallest correction for each validated finding. Do not broaden sco
 
 ## Tester — independent evidence, no source editing
 
-**Input:** stable task diff, acceptance criteria, known local test commands, local safety constraints, unresolved test failures.
+**Input:** stable task diff, acceptance criteria, known local test commands, local safety constraints, unresolved test failures. Use testing-rule only for relevant E2E journeys; choose testcase-creator's cases-only or automation output only when new test artifacts are explicitly in scope.
 
 **Return:**
 - Check | command | exit code | result (PASS/FAIL/BLOCKED/SKIPPED/FLAKY) | scope/evidence.
@@ -43,7 +43,7 @@ Run relevant targeted tests, applicable regression suite, and build/lint/typeche
 
 ## Reviewer — independent read-only quality gate
 
-**Input:** acceptance criteria, final changed diff (not just summary), relevant code/tests, previous finding IDs and fix descriptions.
+**Input:** acceptance criteria, final changed diff (not just summary), pre-task dirty baseline, relevant code/tests, previous finding IDs and fix descriptions. Invoke review-code explicitly in embedded task-delivery mode when available; produce the review in the agent response, not a new file.
 
 **Return:**
 - Finding ID, severity (BLOCKING or NON_BLOCKING), exact file/location, concrete defect/risk, supporting reasoning or repro, minimal remediation.
@@ -65,7 +65,7 @@ When an actionable test failure or blocking review finding occurs:
 3. Increment rounds and dispatch Coder with exact finding IDs and reproduction.
 4. Freeze writes; Tester reruns all newly impacted gates and the applicable regression suite.
 5. Reviewer re-examines the updated diff and previous findings independently.
-6. If any file changes after these gates, invalidate the previous results and return to verification. Do not claim clean based on stale evidence.
+6. If code, tests, or runtime configuration change after these gates, invalidate affected results and return to verification. A report-only change is not a reason to rerun the suite; confirm it has no effect on runtime/tests. Do not claim clean based on stale evidence.
 
 Stop for NEEDS_INPUT/BLOCKED whenever continuing requires a consequential user decision or unsafe action. Non-blocking suggestions are recorded for human consideration and do not force endless polishing.
 

@@ -2,7 +2,7 @@
 
 ## When to use worktrees
 
-Use a separate worktree when you need parallel task execution without constantly stashing or switching branches.
+A worktree is **optional isolation for separate writable tasks**, not a prerequisite for AI agents or sessions. Use one only when independent tasks truly need concurrent write isolation, the repository supports testing from the new checkout, and the user/workflow permits it. A single task's sequential Coder → Tester → Reviewer subagents may share the current working directory: serialize source edits and keep Tester/Reviewer read-only. If the user forbids worktrees or the local test setup requires the current checkout, stay in that checkout.
 
 Typical cases:
 
@@ -18,14 +18,7 @@ Verify the repository's configured integration branch and confirm the target wor
 git worktree add worktrees/payment-webhook -b feature/payment-webhook develop
 ```
 
-Follow this mapping strictly:
-
-- one task per branch
-- one branch per worktree
-- one worktree per AI session
-- one PR per branch
-
-Deviating from this (e.g. multiple tasks in one worktree) breaks the "one task equals one branch" principle and makes parallel work harder to review and merge.
+When isolation is authorized and chosen, keep each **concurrently writable independent task** in its own branch/worktree. Multiple sequential roles on the *same task* can share that task's checkout; a subagent context is not automatically another worktree. Create a PR only when explicitly requested. Do not use worktrees to evade dirty-tree safety, a user's no-worktree choice, or an environment that cannot run its tests there.
 
 ## Inspect and clean up
 

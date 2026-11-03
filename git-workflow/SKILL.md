@@ -11,7 +11,7 @@ Use this skill to keep Git history clean, collaboration predictable, and AI-assi
 
 ## When To Use
 
-Load this skill before each Git action. If it is absent from the current context, including after context compaction, read it before acting. This includes read-only commands (`status`, `diff`, `log`, `show`, remote inspection), write commands, and Git operations through scripts, IDEs, MCP, `gh`, or `glab`. Do not assume keyword matching guarantees activation. Host instructions must enforce this preflight; metadata alone cannot guarantee loading.
+Load this skill before each Git action. If it is absent from the current context, including after context compaction, read it before acting. When invoked inside **task-delivery**, keep its selected current checkout and no-worktree/no-automatic-commit boundaries; this skill does not override user or orchestrator constraints. This includes read-only commands (`status`, `diff`, `log`, `show`, remote inspection), write commands, and Git operations through scripts, IDEs, MCP, `gh`, or `glab`. Do not assume keyword matching guarantees activation. Host instructions must enforce this preflight; metadata alone cannot guarantee loading.
 
 - **Inspection:** inspect the working tree, staged changes, history, refs, or remotes.
 - **Commit:** commit, amend, review a commit message, prepare a squash message, or split staged changes.
@@ -31,7 +31,7 @@ Confirm branch roles and repository policy before applying a recipe. Follow GitF
 
 - Never create a commit or push without explicit user permission for that action and scope. “Review,” “fix,” “prepare a commit,” “create a PR/MR,” or release/conflict work is not implicit commit or push permission. Commit permission does not authorize push. This applies to tags, amendments, auto-committing merges/reverts/cherry-picks, continuation commands, and tools that commit or push indirectly.
 - Before committing, inspect branch suitability, staged diff scope, and intent. Follow the repository's message format and history; do not impose a scope, syntax, or length rule the project does not use.
-- Use a task branch by default. Before creating a code commit on a verified production or integration branch, ask for explicit confirmation. Confirmation does not bypass branch protection or separate push/merge policies.
+- Prefer a task branch when a new branch is in scope and permitted. If the user or active workflow requires the current branch and checkout, do not create/switch branches. Before creating a code commit on a verified production or integration branch, ask for explicit confirmation. Confirmation does not bypass branch protection or separate push/merge policies.
 - Never force-push. Before a push, run `git remote get-url --push --all <push-remote>` and proceed only with exactly one approved destination. Stop if the command fails, returns none or multiple destinations, or the project is unclear. Recheck immediately before the push. This applies to source-branch preparation for PR/MR creation too; see `references/principles.md`.
 - Follow repository policy for branch updates. Do not rewrite history or run `git reset --hard`. Do not discard uncommitted or untracked work with `git clean`, `git checkout -- <path>`, `git restore <path>` without `--staged`, or forced worktree removal. Do not auto-stash or change the staged set when intent is unclear.
 - Before merging, confirm the working tree is clean and no operation is active. Respect branch protection. Never use `git worktree remove --force` to discard a dirty worktree.

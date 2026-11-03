@@ -1,6 +1,6 @@
 ---
 name: team-mini
-description: Coordinate a bounded Claude Code/Codex agent team when the user explicitly asks for team-mini or a multi-agent implementation/review workflow. Do not trigger merely because a coding task is complex.
+description: Use when the user explicitly requests team-mini, /team-mini, or booting a persistent Claude Code/Codex agent team, rather than simply asking an AI to complete a software task.
 metadata:
   author: Minh Luu
 ---
@@ -11,11 +11,11 @@ Boot a coordinated team and wait for the user to provide a task. Booting is not 
 
 ## Activation
 
-Use when the user explicitly requests `/team-mini`, a Claude Code + Codex team, or equivalent multi-agent coordination. Do not auto-apply to ordinary implementation, debugging, or single-agent work.
+Use when the user explicitly requests `/team-mini`, booting a Claude Code + Codex team, or persistent team coordination. Do not auto-apply to an ordinary implementation request or a single task using Coder/Tester/Reviewer subagents; that belongs to **task-delivery** when activated. If both skills are explicitly requested, establish **one** owning orchestrator before spawning agents; do not create a nested Leader/team. Ask for the owner's choice only if it is materially ambiguous.
 
 ## Boot sequence
 
-1. Inspect available team, agent, and messaging capabilities. Check whether the Codex adapter named by the local environment is actually available; do not assume a model alias, provider, CLI, skill, or tool exists.
+1. Confirm that this is a team boot request and no task-delivery orchestrator is already owning the task. Inspect available team, agent, and messaging capabilities. Check whether the Codex adapter named by the local environment is actually available; do not assume a model alias, provider, CLI, skill, or tool exists.
 2. If persistent team tools are available, create the team and spawn a **Leader** coordinator and a **Coder** implementation agent using the host's supported defaults. Do not hard-code model names. Provide `references/leader.md` to the Leader and `references/coder.md` to the Coder. Load/pass `references/reviewer.md` only if an independent review lane is used.
 3. If persistent teams are unavailable but bounded subagents are available and permitted, explain the limitation and offer a bounded coordinator/worker handoff instead of claiming a persistent team was created. If no delegation is available, report the limitation and ask whether the user wants single-agent work.
 4. Do not start the user's task during boot. Report exactly which roles/tools are ready and wait for the task.
