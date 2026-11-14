@@ -32,16 +32,9 @@
     {
       "id": "git-workflow",
       "label": "Git workflow",
-      "description": "Load before every Git operation, including read-only checks and PR/MR tasks; require user permission to commit or push.",
+      "description": "Use when handling Git branches, commits, pushes, PR/MRs, merges, conflicts, releases, or worktrees. Load before every Git operation, including read-only checks; require explicit permission for commits and pushes.",
       "sourceBranch": "agent-skills",
       "sourcePath": "git-workflow"
-    },
-    {
-      "id": "implementation-notes",
-      "label": "Implementation Notes",
-      "description": "Use when coding tasks request implementation notes, a decision log, spec deviations, or review tradeoffs.",
-      "sourceBranch": "agent-skills",
-      "sourcePath": "implementation-notes"
     },
     {
       "id": "react-component-generator",
@@ -51,11 +44,11 @@
       "sourcePath": "react-component-generator"
     },
     {
-      "id": "review-code",
-      "label": "Review code",
-      "description": "Use when explicitly invoked as $review-code, @review-code, /review-code, or by name, including a deliberate independent-review handoff from an activated task-delivery workflow, for backend or browser frontend code.",
+      "id": "reviewer",
+      "label": "Reviewer",
+      "description": "Use when reviewer is explicitly requested for code or technical documentation, including a named workflow handoff.",
       "sourceBranch": "agent-skills",
-      "sourcePath": "review-code"
+      "sourcePath": "reviewer"
     },
     {
       "id": "task-creator",
@@ -63,20 +56,6 @@
       "description": "Draft and create a new backlog task, ticket, or issue in a task tracker or an explicitly requested local file. Use when the user asks to create, log, or file new work; do not trigger for ordinary implementation requests or updates to an existing task.",
       "sourceBranch": "agent-skills",
       "sourcePath": "task-creator"
-    },
-    {
-      "id": "task-delivery",
-      "label": "Task Delivery",
-      "description": "Use when the user asks an AI agent to complete a software task end-to-end in the current local checkout, especially when implementation must be followed by automated testing, independent code review, bounded bug-fix loops, and a human-readable handoff.",
-      "sourceBranch": "agent-skills",
-      "sourcePath": "task-delivery"
-    },
-    {
-      "id": "team-mini",
-      "label": "Team Mini",
-      "description": "Use when the user explicitly requests team-mini, /team-mini, or booting a persistent Claude Code/Codex agent team, rather than simply asking an AI to complete a software task.",
-      "sourceBranch": "agent-skills",
-      "sourcePath": "team-mini"
     },
     {
       "id": "testcase-creator",

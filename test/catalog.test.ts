@@ -419,12 +419,9 @@ test("loadSelectionCatalog includes curated local skills in installer choices", 
       "domain-driven-design",
       "generate-flow",
       "git-workflow",
-      "implementation-notes",
       "react-component-generator",
-      "review-code",
+      "reviewer",
       "task-creator",
-      "task-delivery",
-      "team-mini",
       "testcase-creator",
       "testing-rule"
     ]
@@ -483,7 +480,7 @@ test("loadSelectionCatalog includes curated local skills in installer choices", 
     {
       id: "git-workflow",
       label: "Git workflow",
-      description: "Load before every Git operation, including read-only checks and PR/MR tasks; require user permission to commit or push.",
+      description: "Use when handling Git branches, commits, pushes, PR/MRs, merges, conflicts, releases, or worktrees. Load before every Git operation, including read-only checks; require explicit permission for commits and pushes.",
       sourceBranch: "agent-skills",
       sourcePath: "git-workflow",
       targets: undefined
@@ -491,37 +488,13 @@ test("loadSelectionCatalog includes curated local skills in installer choices", 
   );
 
   assert.deepEqual(
-    catalog.skills.find((skill) => skill.id === "team-mini"),
+    catalog.skills.find((skill) => skill.id === "reviewer"),
     {
-      id: "team-mini",
-      label: "Team Mini",
-      description: "Use when the user explicitly requests team-mini, /team-mini, or booting a persistent Claude Code/Codex agent team, rather than simply asking an AI to complete a software task.",
+      id: "reviewer",
+      label: "Reviewer",
+      description: "Use when reviewer is explicitly requested for code or technical documentation, including a named workflow handoff.",
       sourceBranch: "agent-skills",
-      sourcePath: "team-mini",
-      targets: undefined
-    }
-  );
-
-  assert.deepEqual(
-    catalog.skills.find((skill) => skill.id === "review-code"),
-    {
-      id: "review-code",
-      label: "Review code",
-      description: "Use when explicitly invoked as $review-code, @review-code, /review-code, or by name, including a deliberate independent-review handoff from an activated task-delivery workflow, for backend or browser frontend code.",
-      sourceBranch: "agent-skills",
-      sourcePath: "review-code",
-      targets: undefined
-    }
-  );
-
-  assert.deepEqual(
-    catalog.skills.find((skill) => skill.id === "task-delivery"),
-    {
-      id: "task-delivery",
-      label: "Task Delivery",
-      description: "Use when the user asks an AI agent to complete a software task end-to-end in the current local checkout, especially when implementation must be followed by automated testing, independent code review, bounded bug-fix loops, and a human-readable handoff.",
-      sourceBranch: "agent-skills",
-      sourcePath: "task-delivery",
+      sourcePath: "reviewer",
       targets: undefined
     }
   );
@@ -546,18 +519,6 @@ test("loadSelectionCatalog includes curated local skills in installer choices", 
       description: "Create an evidence-backed flow document when the user asks to trace, map, document, or generate an end-to-end flow for a specific feature. Do not trigger on a generic question about how code works when no document is requested.",
       sourceBranch: "agent-skills",
       sourcePath: "generate-flow",
-      targets: undefined
-    }
-  );
-
-  assert.deepEqual(
-    catalog.skills.find((skill) => skill.id === "implementation-notes"),
-    {
-      id: "implementation-notes",
-      label: "Implementation Notes",
-      description: "Use when coding tasks request implementation notes, a decision log, spec deviations, or review tradeoffs.",
-      sourceBranch: "agent-skills",
-      sourcePath: "implementation-notes",
       targets: undefined
     }
   );
