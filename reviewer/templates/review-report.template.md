@@ -48,6 +48,6 @@ minimal reproduction steps materially clarify the issue. Cách kiểm tra is a
 proposed check with expected results, not a claim it has already passed. -->
 
 - **📄 File:** {{verified path:line or document section/page; source side}}
-- **🔎 Lý do:** {{dimension, evidence, trigger, impact; or missing evidence for UNVERIFIED}}
+- **🔎 Lý do:** {{dimension, evidence, trigger, impact; design mismatch: cite design requirement/location and code behavior; UNVERIFIED: missing evidence}}
 - **🛠️ Đề xuất chỉnh sửa:** {{practical remediation; do not repeat verification steps here}}
 - **🧪 Cách kiểm tra:** {{specific test/manual check and expected result; evidence needed if UNVERIFIED; distinguish proposed checks from actual results}}

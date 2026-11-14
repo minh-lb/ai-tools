@@ -6,6 +6,8 @@ Review whether the in-scope code (and, in `git-diff` mode, the proposed change) 
 
 ## Inspect
 
+Apply [design alignment](design-alignment.md) for code review: cite applicable accepted design constraints and implementation evidence; distinguish justified deviations from undocumented drift.
+
 - Layer boundaries between transport, domain, persistence, and infrastructure
 - Module ownership and dependency direction
 - Domain modeling, invariants, and composition points

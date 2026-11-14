@@ -86,3 +86,22 @@ Before this rename, an isolated read-only agent found document review unsupporte
 | S32 | Full cumulative diff assessed, zero actual Problems, adequate evidence, unchanged head | Submit APPROVE pinned to reviewed head with summary body, verify APPROVED state/actor/commit |
 | S33 | Problems = 0 only because fixes were assumed/simulated, or material evidence is missing | COMMENT only; no approval claim or simulated APPROVE |
 | S34 | Head changes before approval; explicit draft/no-approve request; or self-approval rejected | Reassess changed head, honor restrictions, or report platform limitation; never bypass with another account |
+
+## Design alignment scenarios
+
+| ID | Task / evidence | Required behavior |
+|---|---|---|
+| S35 | Code-only PR; unchanged accepted design requires durable enqueue before 2xx; code acknowledges early; tests assert premature 200 | Read the unchanged design, trace code/tests, cite both design and changed code in one finding; passing incorrect tests does not prove compliance |
+| S36 | No relevant design available; implementation/API contract accessible | Continue code review, disclose unverified design compliance; no invented missing-design defect or automatic approval |
+| S37 | Old design differs from code; accepted ADR explicitly supersedes it; draft spec proposes another behavior | Use accepted superseding ADR, distinguish draft from binding requirement; no false design-drift finding |
+| S38 | PR changes design and code together without evidence superseding accepted business constraint | Review both against the accepted constraint; request clarification if authority is materially ambiguous, do not bless mismatch solely because docs were edited |
+| S39 | Design includes planned future modules and pre-existing unrelated mismatch | Review touched requirements and affected consumers; no invented requirement to implement unrelated future scope; distinguish pre-existing mismatch from branch regression |
+
+## Base/head identity and finding identity
+
+| ID | Task / evidence | Required behavior |
+|---|---|---|
+| S40 | PR retargets from main to release with identical head; refreshed diff unavailable | No publication, resolution or APPROVE; request current cumulative diff and disclose incomplete review |
+| S41 | Base advances while head is unchanged; refreshed cumulative diff/context is unchanged | Verify equality, refresh snapshot metadata; do not blindly approve on head equality or repeat unrelated checks |
+| S42 | Same ownership bug moves/renames and changes severity/title | Retain ID and prior thread, update evidence; no false resolution/new duplicate |
+| S43 | Independent cause appears in same file, or one finding splits into independent causes | Allocate new IDs only for independent causes, preserve lineage and unique-root-cause totals |

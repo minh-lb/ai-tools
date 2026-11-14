@@ -13,7 +13,7 @@ Record intent/acceptance criteria if available; otherwise state only assumptions
 
 ## 2. Trace behavior and impact
 
-For documents, trace requirements, guarantees, examples and operational steps using the document reference. For code, inspect human-authored changed lines in their containing functions and relevant context. For codebase review, map entry points and prioritize auth, money, writes, migrations, public contracts and critical user journeys. Follow callers/consumers as well as callees; check return shapes, nullability, errors, side effects and stored data assumptions. Read beyond the diff where needed.
+For documents, trace requirements, guarantees, examples and operational steps using the document reference. For code, first [map design → implementation → tests](design-alignment.md), then inspect changed lines in context. For codebase review, map entry points and prioritize auth, money, writes, migrations, public contracts and critical user journeys. Follow callers/consumers as well as callees; check return shapes, nullability, errors, side effects and stored data assumptions. Read beyond the diff where needed.
 
 For each distinct behavior, trace materially different scenarios, grouping equivalent cases rather than taking a Cartesian product:
 
@@ -36,7 +36,7 @@ Check all 14 dimensions for applicability, including indirectly affected consume
 
 Run relevant safe project checks after inspecting commands/hooks, configs and external dependencies. Do not install packages or start services merely to satisfy a checklist. Record command, environment, tested revision and result, or the reason not run. Distinguish pre-existing failures from regressions only when evidence supports that distinction. Review tests for whether they detect the actual failure; missing tests alone do not prove broken behavior. Browser/assistive-technology checks are needed for runtime claims; static review or automated scans cannot certify WCAG conformance.
 
-Available CI, browser or specialist tools can add evidence; absence never blocks static review. Delegation is optional only when explicitly requested/authorized by the user or applicable project instructions and supported by the host. All reviewers must share scope and snapshot; coordinator verifies candidates, cross-layer seams and duplicates, then writes one report. Do not imply a delegated pass or check occurred without evidence.
+Extra tools are optional; static review can continue without them. Delegate only when authorized. Reviewers share scope/snapshot; the coordinator verifies findings, seams and duplicates. Claim only checks actually performed.
 
 ## 4. Calibrate evidence and report
 
@@ -44,7 +44,7 @@ A finding needs a reachable trigger, exact source location, concrete incorrect b
 
 Merge findings sharing a root cause and remediation, including across dimensions. Missing regression coverage for a reported bug belongs in that finding's remediation; use a separate TEST finding only for an independent coverage risk. Keep unverified hypotheses (including runtime-only suspicions) in verification gaps with the needed check. A static proof or actual runtime observation can establish a finding; cite the evidence and environment.
 
-Use [severity](severity-model.md) for each finding. Internally, dimension severity is the worst independent finding in that dimension. `✅ Đạt` means assessed with no finding in this scope, not certified safe. `⚪ Chưa xác minh` means applicability is established but assessment is materially incomplete; explain why. `— N/A` means no relevant surface, never “not inspected.” A dimension may have both a confirmed finding and an assessment gap; disclose relevant gaps in that finding’s Detail.
+Use [severity](severity-model.md). Internally distinguish assessed/no finding, unverified and N/A (no relevant surface, not “unread”). Confirmed findings can coexist with coverage gaps; disclose material gaps without inventing defects.
 
 Disposition:
 
@@ -52,4 +52,4 @@ Disposition:
 - **Needs verification:** no established material defect, but missing evidence/coverage prevents a reliable scope decision.
 - **Ready:** no material defect and verification adequate for the stated scope. Low nonblocking findings may remain; state them. Review readiness is not deployment approval or proof of absence of bugs.
 
-State when there are no findings. Keep coverage assessment internal; put material evidence, actual check results and limitations in the relevant Detail. Do not append scope/verification or checklist sections. If a material gap affects the whole review and no Detail applies, add one brief limitation note instead of implying a complete assessment. Use the bundled template. Follow [round/status rules](review-history.md). Save local reviews under `docs/reviewer/YYYY-MM-DD_<description>.md`; post PR summaries with inline details per [delivery](pull-request.md). After verification, return the artifact/comment link and brief outcome. Embedded handoffs also return the structured verdict and previous finding dispositions. All modes retain the same applicability and evidence standards.
+Publish using [output rules](output-delivery.md) and [round/status rules](review-history.md). PR writes also require [snapshot checks](review-snapshot.md) and [PR delivery](pull-request.md). Read back results before reporting success.
