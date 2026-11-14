@@ -1,6 +1,6 @@
 # reviewer
 
-Skill review **tài liệu kỹ thuật** (design, spec, ADR, API docs, runbook, README) và **code**. Báo cáo bằng tiếng Việt, tập trung lỗi có bằng chứng và cách sửa. Chỉ kích hoạt khi gọi rõ `$reviewer`, `@reviewer`, `/reviewer`, tên skill hoặc handoff chỉ định skill từ workflow đang hoạt động. Giữ policy explicit-only hiện có.
+Review tài liệu thiết kế/kỹ thuật và code, báo cáo bằng tiếng Việt. Chỉ kích hoạt khi gọi rõ `$reviewer`, `@reviewer`, `/reviewer`, tên skill hoặc handoff chỉ định; giữ policy explicit-only. Copy nguyên thư mục này vào nơi host đọc skills; local review không bắt buộc MCP, network hay subagent.
 
 ## Dùng nhanh
 
@@ -12,38 +12,17 @@ Skill review **tài liệu kỹ thuật** (design, spec, ADR, API docs, runbook,
 /reviewer git-diff https://github.com/OWNER/REPO/pull/42
 ```
 
-`documents` đánh giá tính nhất quán, contract, failure paths, tính khả thi và khả năng xác minh của tài liệu. Phân biệt đề xuất với hành vi đã triển khai. `codebase` đánh giá hành vi hiện tại; mặc định code/tests/config của repo. `git-diff` review code và tài liệu trong source được chỉ định; chỉ báo lỗi mới hoặc bị làm nặng hơn.
+Review nhánh/PR xét **toàn bộ merge-base → HEAD**, kể cả khi review lại. Base lấy từ PR target hoặc yêu cầu/quy ước project; không đoán từ tracking branch. Code phải đối chiếu **thiết kế → implementation → tests**. Thiếu tài liệu hoặc bằng chứng thì ghi giới hạn, không tạo lỗi giả hay tự suy ra an toàn.
 
-Review nhánh/PR mặc định xét **toàn bộ thay đổi của nhánh hiện tại so với nhánh gốc**, tương đương `git diff <base>...HEAD` (merge-base → HEAD), bao gồm thay đổi từ mọi commit trước đó. Review lại cũng dùng toàn bộ diff này và đối chiếu findings cũ. SHA HEAD chỉ xác định snapshot/gắn inline comment, không giới hạn vào commit mới nhất. Trước đăng/resolve/approve phải kiểm tra lại cả repository/ref/SHA của base và HEAD; nếu đổi target hoặc base tiến lên, tính lại merge-base/diff và đánh giá phần bị ảnh hưởng. Không có diff mới thì dừng ghi PR, trả draft và giới hạn. Base lấy từ target branch của PR, yêu cầu rõ hoặc quy ước project; không tự coi tracking branch hay `main` là base. Chỉ review riêng commit/patch/staged/working tree khi được yêu cầu rõ. Pin SHAs, không checkout hoặc trộn dirty changes. Thiếu source/ref thì hỏi phần còn thiếu. Review chỉ đọc source, không tự sửa code/tài liệu.
+## Kết quả
 
-## Đối chiếu code với thiết kế
+- **Local:** `docs/reviewer/YYYY-MM-DD_description.md` tại gốc project, không ghi đè. Ví dụ `2026-11-14_checkout-design.md`.
+- **PR:** tổng hợp gồm lần review/thời gian, Resolved/Problems và ưu tiên; không có Detail. Mỗi vấn đề có inline comment với Lý do, Đề xuất chỉnh sửa, Cách kiểm tra; Problems liên kết tới comment. Cần connector/CLI đã xác thực. Ghi rõ `draft`/`không đăng` nếu chỉ muốn xem trước.
+- **Review lại:** giữ ID theo nguyên nhân dù đổi file/dòng. Xác minh fix → reply thread cũ → resolve và kiểm tra trạng thái; lỗi chưa sửa/chưa xác minh giữ mở. Recheck cả base/HEAD trước ghi.
+- **Approve:** chỉ khi review thực tế không còn Problems và đủ bằng chứng; giả định/mô phỏng không đủ điều kiện. Không tự merge. GitHub không cho tác giả tự approve PR của mình.
 
-Mọi review code (`codebase`, `git-diff`, PR và review lại) phải tìm và đọc phần tài liệu thiết kế/spec/ADR/contract liên quan, kể cả tài liệu không đổi trong diff. Đối chiếu **thiết kế → implementation → tests** theo yêu cầu nằm trong scope: nghiệp vụ, phân quyền, API/data, trạng thái, lỗi/retry/concurrency và ràng buộc kiến trúc.
+[Template](templates/review-report.template.md) · [Ví dụ local](examples/review-report.example.md) · [Ví dụ PR](examples/document-review.example.md)
 
-Finding sai lệch phải dẫn cả vị trí tài liệu lẫn code, giải thích hành vi yêu cầu/thực tế và tác động; Cách kiểm tra nêu kết quả mong đợi. Mapping phục vụ quá trình review, không thêm bảng hoặc mục mới vào report. Thiếu tài liệu thì vẫn review code và ghi giới hạn; tài liệu draft/lỗi thời/mâu thuẫn phải xác định nguồn có hiệu lực, không tự chọn theo code. Thiếu bằng chứng quan trọng thì không approve dù Problems = 0. Xem [hướng dẫn đối chiếu](references/design-alignment.md).
+## Hướng dẫn theo tình huống
 
-## Kết quả review
-
-- **Local:** tạo `docs/reviewer/<YYYY-MM-DD_description>.md` tại project root (Git root nếu có); không có repo thì dùng thư mục gọi ban đầu. Ví dụ: `docs/reviewer/2026-11-14_checkout-design.md`. Dùng ngày local, description ASCII kebab-case; mặc định `code-review` hoặc `document-review`. Nếu trùng, thêm `-2`, `-3` vào description, không ghi đè. Kiểm tra boundary/symlink và đọc lại file trước khi trả link.
-- **Pull request:** đăng comment tổng hợp trên đúng PR, kèm reviewed head SHA; phần Detail của từng vấn đề là inline comment tại dòng code/tài liệu tương ứng. Danh sách Problems liên kết tới các inline comments; trả link tổng hợp sau khi xác minh. Comment tổng hợp không có mục Detail; nếu không thể gắn dòng trong diff, ghi ngắn gọn tình trạng chưa đăng ở Problems và trả chi tiết chưa đăng trong chat. Gọi skill review PR bao gồm yêu cầu đăng comment; nếu muốn chỉ xem trước, ghi rõ “draft” hoặc “không đăng comment”. Review lại phải kiểm tra từng finding cũ trên source hiện tại: nếu đã sửa, reply xác nhận với bằng chứng rồi resolve đúng thread và kiểm tra trạng thái. Resolved liên kết tới reply xác nhận; OPEN/UNVERIFIED giữ mở. Không resolve chỉ vì tác giả nói đã sửa hoặc dòng diff đã outdated. Nếu chưa sửa thì phản hồi ngắn lý do vẫn mở, giữ ID/link cũ. Khi review thực tế có Problems = 0, không còn thiếu bằng chứng quan trọng và đã kiểm tra HEAD không đổi, tự gửi review APPROVE kèm nội dung tổng hợp. Không approve dựa trên giả định/mô phỏng đã sửa. Nếu còn vấn đề hoặc chưa đủ bằng chứng thì gửi COMMENT. Tôn trọng yêu cầu draft/không approve; nếu GitHub không cho approve (ví dụ PR của chính tài khoản reviewer), ghi rõ hạn chế. Không tự request changes bằng platform action, merge hay resolve thảo luận không liên quan. Không tạo file local trừ khi yêu cầu thêm.
-- **Bị chặn ghi/đăng:** trả đầy đủ report inline và nói rõ chưa lưu/chưa đăng cùng nguyên nhân. Không coi file local là đã hoàn thành yêu cầu comment PR.
-
-Dùng chung [template](templates/review-report.template.md) cho file và PR comment. Có [ví dụ review code local](examples/review-report.example.md) và [ví dụ review tài liệu trên PR](examples/document-review.example.md); cả hai đều là tình huống hư cấu.
-
-Report mở đầu bằng `Review lần N - YYYY/MM/DD HH:mm`, tổng `Resolved`, `Problems` và ưu tiên `High`, `Medium`, `Low` (thêm `Critical` khi có). Sau đó là danh sách Resolved, Problems và Detail với `📄 File`, `🔎 Lý do`, `🛠️ Đề xuất chỉnh sửa`, `🧪 Cách kiểm tra`. Cách kiểm tra nêu thao tác/test và kết quả mong đợi, tách khỏi hướng sửa; không coi test đề xuất là đã chạy. Có thể bỏ File trên PR khi inline anchor đã đủ rõ. Thêm `🔁 Tái hiện` trước Đề xuất chỉnh sửa khi cần các bước tối thiểu để hiểu lỗi. Local giữ Detail trong file; PR chuyển Detail thành inline comments. Gộp cùng root cause, giữ finding ID qua các vòng kể cả đổi file/dòng/tiêu đề/severity, và xếp severity giảm dần. Ghép ID theo yêu cầu bị vi phạm, trigger và hướng sửa; không đếm rename thành resolved cũ + lỗi mới. Nguyên nhân độc lập dùng ID mới; trường hợp split/merge phải giữ lineage và tránh đếm trùng. Resolved chỉ gồm lỗi từ vòng trước đã xác minh sửa; Problems gồm lỗi mở và lỗi cũ `UNVERIFIED` được ghi rõ. Thống kê ưu tiên chỉ tính Problems. Xem [quy tắc đối chiếu](references/review-history.md). Đánh giá 14 dimensions trong quá trình review, không xuất bảng checklist hay phần Phạm vi và xác minh riêng. Bằng chứng hoặc giới hạn cần thiết nằm trong Detail của vấn đề liên quan; không suy ra deployment readiness. Không có findings cũng phải ghi rõ. Embedded handoff dùng cùng cách xuất report, đồng thời trả finding IDs/verdict cho orchestrator.
-
-## Độc lập và tiết kiệm token
-
-Copy nguyên thư mục `reviewer/` vào nơi host đọc skills. Local review không bắt buộc MCP, browser, network, subagent hay package ngoài. Git cần cho diff repository; PR comment cần connector hoặc CLI đã xác thực có quyền ghi comment. Thiếu runtime chỉ review tĩnh và ghi rõ giới hạn.
-
-Nạp entrypoint + process + severity; tài liệu chuyên đề theo rủi ro, hướng dẫn document/PR theo chế độ, template khi xuất kết quả, examples khi cần. Đánh giá applicability của đủ 14 dimensions; `N/A` không có nghĩa là chưa đọc.
-
-## Xác minh skill
-
-```sh
-python3 -B -m unittest discover -s reviewer/tests -v
-```
-
-Checks offline kiểm tra metadata, links và ngân sách từ. Chạy riêng [fixture suite](tests/behavioral-suite.md) để kiểm tra hành vi bằng agent trong workspace tạm: lỗi thực/negative control, tài liệu mâu thuẫn, giữ ID qua rename, base drift và lỗi đăng PR. Local phải tạo report thật trong fixture; PR chỉ mô phỏng quyết định, không gọi dịch vụ thật. [Kết quả mẫu đã chạy](tests/behavioral-results.md) ghi rõ quan sát và giới hạn. [Scenarios](tests/scenarios.md) là catalog mở rộng; không coi catalog hay static checks là bằng chứng đã chạy agent/live API.
-
-[Instructions](SKILL.md) · [Process](references/review-process.md) · [Severity](references/severity-model.md) · [Document review](references/technical-documents.md) · [PR delivery](references/pull-request.md)
+[Quy trình](references/review-process.md) · [Severity](references/severity-model.md) · [Đối chiếu thiết kế](references/design-alignment.md) · [Tài liệu kỹ thuật](references/technical-documents.md) · [Xuất report](references/output-delivery.md) · [Finding và review lại](references/review-history.md) · [Đăng PR](references/pull-request.md) · [Snapshot](references/review-snapshot.md)

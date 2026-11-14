@@ -32,7 +32,13 @@ For large scopes, inspect high-risk paths first. Sample repetitive changes only 
 
 ## 3. Evaluate and validate
 
-Check all 14 dimensions for applicability, including indirectly affected consumers. No schema change does not make DB N/A when query/write behavior changed. No API shape change does not make API N/A when error/retry semantics changed. Prefer focused searches/reads and reuse evidence across dimensions.
+Assess all 14 dimensions for applicability, including indirect consumers; load only references relevant to actual risk:
+
+- Behavior/trust: [CORR](correctness.md), [SEC](security.md), [API](api.md), [DB](database.md), [CONC](concurrency.md).
+- Experience: [UI](frontend.md), [A11Y](accessibility.md), [COMPAT](backward-compatibility.md). Assess UI/A11Y for UI changes.
+- Quality/operations: [PERF](performance.md), [ARCH](architecture.md), [TEST](testing.md), [MAINT](maintainability.md), [OBS](observability.md), [INFRA](infrastructure.md).
+
+ No schema change does not make DB N/A when query/write behavior changed. No API shape change does not make API N/A when error/retry semantics changed. Prefer focused searches/reads and reuse evidence across dimensions.
 
 Run relevant safe project checks after inspecting commands/hooks, configs and external dependencies. Do not install packages or start services merely to satisfy a checklist. Record command, environment, tested revision and result, or the reason not run. Distinguish pre-existing failures from regressions only when evidence supports that distinction. Review tests for whether they detect the actual failure; missing tests alone do not prove broken behavior. Browser/assistive-technology checks are needed for runtime claims; static review or automated scans cannot certify WCAG conformance.
 
