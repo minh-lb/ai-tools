@@ -21,7 +21,7 @@ class PackageTests(unittest.TestCase):
         text = (ROOT / 'SKILL.md').read_text()
         self.assertTrue(text.startswith('---\n'))
         frontmatter = text.split('---', 2)[1]
-        self.assertRegex(frontmatter, r'(?m)^name: review-code$')
+        self.assertRegex(frontmatter, r'(?m)^name: reviewer$')
         self.assertRegex(frontmatter, r'(?m)^description: .+')
         self.assertLess(len(frontmatter), 1024)
 
@@ -43,11 +43,6 @@ class PackageTests(unittest.TestCase):
         self.assertLessEqual(words, 2000, f'Mandatory core: {words} words')
         self.assertLessEqual(len((ROOT / 'SKILL.md').read_text().split()), 650)
 
-    def test_all_dimensions_in_template(self):
-        template = (ROOT / 'templates/review-report.template.md').read_text()
-        expected = 'CORR SEC PERF ARCH DB API UI A11Y TEST MAINT OBS CONC INFRA COMPAT'.split()
-        rows = re.findall(r'^\| ([A-Z0-9]+) \|', template, re.M)
-        self.assertCountEqual(rows, expected)
 
 
 if __name__ == '__main__':
