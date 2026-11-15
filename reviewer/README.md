@@ -1,6 +1,6 @@
 # reviewer
 
-Review tài liệu thiết kế/kỹ thuật và code, báo cáo bằng tiếng Việt. Chỉ kích hoạt khi gọi rõ `$reviewer`, `@reviewer`, `/reviewer`, tên skill hoặc handoff chỉ định; giữ policy explicit-only. Copy nguyên thư mục này vào nơi host đọc skills; local review không bắt buộc MCP, network hay subagent.
+Review code và tài liệu kỹ thuật bằng tiếng Việt; chỉ kích hoạt khi gọi rõ `$reviewer`, `@reviewer`, `/reviewer`, tên skill hoặc handoff chỉ định.
 
 ## Dùng nhanh
 
@@ -10,19 +10,28 @@ Review tài liệu thiết kế/kỹ thuật và code, báo cáo bằng tiếng 
 /reviewer git-diff main...feature/orders
 /reviewer git-diff staged
 /reviewer git-diff https://github.com/OWNER/REPO/pull/42
+/reviewer git-diff https://gitlab.com/GROUP/REPO/-/merge_requests/42
 ```
 
-Review nhánh/PR xét **toàn bộ merge-base → HEAD**, kể cả khi review lại. Base lấy từ PR target hoặc yêu cầu/quy ước project; không đoán từ tracking branch. Code phải đối chiếu **thiết kế → implementation → tests**. Thiếu tài liệu hoặc bằng chứng thì ghi giới hạn, không tạo lỗi giả hay tự suy ra an toàn.
+PR/MR review xét **toàn bộ merge-base → HEAD** kể cả khi review lại. Base lấy từ target thực, không đoán theo tracking branch. Đối chiếu **design → implementation → tests**. Thiếu bằng chứng là verification gap, không phải defect tự suy diễn.
 
-## Kết quả
+## Quy tắc kết quả
 
-- **Local:** `docs/reviewer/YYYY-MM-DD_description.md` tại gốc project, không ghi đè. Ví dụ `2026-11-14_checkout-design.md`.
-- **PR:** tổng hợp gồm lần review/thời gian, Resolved/Problems và ưu tiên; không có Detail. Mỗi vấn đề có inline comment với Lý do, Đề xuất chỉnh sửa, Cách kiểm tra; Problems liên kết tới comment. Cần connector/CLI đã xác thực. Ghi rõ `draft`/`không đăng` nếu chỉ muốn xem trước.
-- **Review lại:** giữ ID theo nguyên nhân dù đổi file/dòng. Xác minh fix → reply thread cũ → resolve và kiểm tra trạng thái; lỗi chưa sửa/chưa xác minh giữ mở. Recheck cả base/HEAD trước ghi.
-- **Approve:** chỉ khi review thực tế không còn Problems và đủ bằng chứng; giả định/mô phỏng không đủ điều kiện. Không tự merge. GitHub không cho tác giả tự approve PR của mình.
+- **Local:** báo cáo mới `docs/reviewer/YYYY-MM-DD_description.md`, không ghi đè.
+- **PR GitHub / MR GitLab:** mặc định **read-only**. Trước mọi thao tác comment/reply/resolve/approve, phải preview target, snapshot, verdict, nguyên văn comment/reply, file/line/discussion và xin xác nhận tường minh **theo loại hành động**. Yêu cầu “review PR/MR” không phải quyền đăng comment.
+- **Fallback:** không anchor được inline finding thì chỉ đăng general comment/discussion đầy đủ chi tiết nếu người dùng xác nhận riêng fallback đó.
+- **Review lại:** giữ ID theo root cause; reply/resolve thread cũ sau khi chứng minh fix và được xác nhận từng hành động.
+- **Approve:** Ready có thể còn Low nonblocking findings; không tự APPROVE. Cần quyền approve riêng.
+- **Embedded:** kết luận review không cấp quyền xuất bản cho orchestrator.
 
-[Template](templates/review-report.template.md) · [Ví dụ local](examples/review-report.example.md) · [Ví dụ PR](examples/document-review.example.md)
+[Template](templates/review-report.template.md) · [Ví dụ local](examples/review-report.example.md) · [Ví dụ PR/MR](examples/document-review.example.md)
 
-## Hướng dẫn theo tình huống
+[Quy trình](references/review-process.md) · [Severity](references/severity-model.md) · [Đối chiếu thiết kế](references/design-alignment.md) · [Báo cáo](references/output-delivery.md) · [Review rounds](references/review-history.md) · [Preview/xác nhận](references/publication-consent.md) · [PR/MR](references/pull-request.md) · [Snapshot](references/review-snapshot.md)
 
-[Quy trình](references/review-process.md) · [Severity](references/severity-model.md) · [Đối chiếu thiết kế](references/design-alignment.md) · [Tài liệu kỹ thuật](references/technical-documents.md) · [Xuất report](references/output-delivery.md) · [Finding và review lại](references/review-history.md) · [Đăng PR](references/pull-request.md) · [Snapshot](references/review-snapshot.md)
+## Kiểm thử contract
+
+```bash
+node --test reviewer/tests/*.test.mjs
+```
+
+Các test này kiểm tra hợp đồng hướng dẫn tĩnh, không thay thế benchmark hành vi agent hoặc đo token.

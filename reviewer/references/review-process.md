@@ -9,7 +9,7 @@ Record intent/acceptance criteria if available; otherwise state only assumptions
 - **Branches:** pin base/head SHAs and merge-base. Review the full cumulative merge-base → head diff across all commits, including on re-review. HEAD SHA identifies the snapshot/inline anchors, not HEAD-only scope. Tip-to-tip requires an explicit request. Missing/ambiguous refs or no common ancestor require clarification. Read head source via `git show <sha>:<path>`, deleted source from merge-base; never checkout.
 - **Commit/range:** a single ordinary commit compares parent → commit; root commit compares empty tree → commit. For a merge commit, ask which parent/comparison unless specified. Preserve explicit two-dot/tip comparison; record actual endpoints and semantics.
 - **Working tree/staged:** include only the requested layers, identify comparison base, and list included untracked files. For embedded task-delivery reviews, use the orchestrator's captured pre-task dirty baseline to distinguish task changes from user-owned edits; ask when the task diff cannot be isolated safely. For any checkout-based review, recheck state before finalizing; if it changed, reassess affected paths or disclose snapshot drift.
-- **PR/patch:** PR base is its target; read the complete paginated PR diff, never just the latest commit. Local base requires explicit input/project policy; tracking branch need not be the target. Partial patches permit bounded review with patch coordinates and disclosed gaps. Request inaccessible source; never attribute another checkout’s tests to this revision.
+- **PR/MR/patch:** GitHub PR and GitLab MR use the actual target/base and the complete paginated merge-base → head diff, including earlier reviews, with pinned endpoint IDs/SHAs and diff refs. Review is read-only until [preview and explicit consent](publication-consent.md) for specific publication actions. Partial patches permit bounded review with patch coordinates and disclosed gaps. Never attribute another checkout's tests to this revision.
 
 ## 2. Trace behavior and impact
 
@@ -56,6 +56,6 @@ Disposition:
 
 - **Changes requested:** at least one material defect (normally Medium–Critical); mention concurrent verification gaps.
 - **Needs verification:** no established material defect, but missing evidence/coverage prevents a reliable scope decision.
-- **Ready:** no material defect and verification adequate for the stated scope. Low nonblocking findings may remain; state them. Review readiness is not deployment approval or proof of absence of bugs.
+- **Ready:** no established material blocking defects and adequate verification for reviewed scope. Evidenced Low nonblocking findings may remain in Problems. Readiness is not platform approval or proof of no bugs; PR/MR APPROVE requires separately previewed explicit consent.
 
 Publish using [output rules](output-delivery.md) and [round/status rules](review-history.md). PR writes also require [snapshot checks](review-snapshot.md) and [PR delivery](pull-request.md). Read back results before reporting success.

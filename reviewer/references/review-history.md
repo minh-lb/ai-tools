@@ -16,21 +16,21 @@ Resolved counts only newly verified resolutions; Problems counts unique OPEN + U
 
 ## Publish
 
-Local rounds create a new report file with the normal collision suffix; preserve prior files. PR rounds create a new summary plus inline details for current problems per PR delivery guidance; preserve prior comments. Link existing matching inline discussion for an unchanged finding rather than repeating the same detail. A materially changed finding may receive an updated follow-up at a valid current anchor. For a verified fix on PR re-review, reply to its original thread with confirmation and current evidence, then resolve that exact thread and verify the platform state. Follow the PR delivery rules below; keep OPEN/UNVERIFIED threads unresolved.
+Local rounds create a new report file with collision suffix and preserve prior files. PR/MR rounds prepare a new summary and details while preserving prior discussions. Publishing requires [preview and explicit consent](publication-consent.md). Link prior matching discussion instead of duplicating. Verified fixes may be replied to/resolved only after action-specific REPLY/RESOLVE THREADS permission; keep OPEN/UNVERIFIED discussions open.
 
-## PR re-review confirmation
+## PR/MR re-review confirmation
 
 Reassess the full cumulative branch diff and inspect every previous finding in the current snapshot. Match stable finding IDs to actual original comments/threads; an outdated diff anchor or author “fixed” message alone is insufficient.
 
 For each verified fix:
 
-1. Reply to the original finding: `✅ R-001 — Đã xác minh giải quyết ở <head SHA>.` Name the changed path/lines or mechanism that removes the root cause, actual checks/results, and any runtime checks not run. A static proof may suffice; never describe proposed tests as executed.
-2. Resolve only that finding’s thread after the confirmation reply succeeds. Use the GraphQL thread ID, not an issue/comment/review ID; verify the returned/read-back `is_resolved` state. If multiple independent issues share a thread, resolve it only when all are verified fixed.
-3. Include the finding in this round’s Resolved list with a link to the confirmation. If reply/resolve is blocked, distinguish “fix verified” from “thread not resolved”; do not claim the platform operation succeeded.
+1. Prepare reply to original finding: `✅ R-001 — Đã xác minh giải quyết ở <head SHA>.` Include current evidence, actual checks and gaps. Show full reply in preview; post it only after **REPLY consent**.
+2. Prepare resolution of exactly the verified-fixed discussion. GitHub uses review thread ID, GitLab uses MR discussion ID. Resolve only after **RESOLVE THREADS consent** and verify provider state. A shared discussion stays open if other issues remain.
+3. Include finding in this round's Resolved list; link confirmation only after it is posted. Otherwise mark reply/resolution as not published. Never claim a thread was resolved without checking provider state.
 
-For an OPEN finding, keep it in Problems, retain its existing inline link and reply once with why it remains open when useful for this re-review. For UNVERIFIED, state missing evidence and keep the thread open; do not mark it resolved to demonstrate the workflow. Do not reopen an already-resolved thread without authorization; disclose conflicting state.
+For OPEN, keep it in Problems and retain original discussion link; optional follow-up reply requires preview and **REPLY consent**. UNVERIFIED remains open with explicit gaps. Do not reopen previously resolved discussion without authorization.
 
-PR review invocation includes confirmation replies and resolving verified-fixed finding threads. Explicit draft/read-only/no-resolve instructions override this. This does not authorize blanket resolution of unrelated discussions, merging or source edits. Approval follows the eligibility and verification rules in [PR delivery](pull-request.md#approve-when-no-issues-remain). Preserve prior summaries/comments. Before retrying uncertain writes, inspect existing replies and thread state to avoid duplicate confirmations. Apply [snapshot checks](review-snapshot.md) to both base and head before confirmation/resolution; reassess affected findings if either changes.
+PR/MR reviews default to read-only. Full [preview](publication-consent.md) and **separate user consent** are mandatory before comment, reply, resolve or approve. Embedded handoff and earlier consent do not grant permission. No blanket resolution, merge or source edit. Follow [approval readiness](pull-request.md#approval-readiness), and recheck base/head before authorized writes.
 
 ## Identity across moves and revisions
 

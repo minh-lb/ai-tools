@@ -6,6 +6,13 @@ Ví dụ hư cấu về review patch webhook, không phải kết quả review h
 
 Ưu tiên: 🔴 High (0), 🟠 Medium (1), 🟡 Low (0)
 
+### 🔎 Scope & Verification
+
+- **Nguồn/snapshot:** Ví dụ hư cấu; không có commit hay PR/MR thật.
+- **Đã kiểm tra:** Chỉ minh họa lập luận tĩnh; chưa chạy test/runtime.
+- **Giới hạn:** Chưa xác minh repo/PR thực tế.
+- **Kết luận:** Needs verification
+
 ---
 
 ### ✅ Resolved: 0

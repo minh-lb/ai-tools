@@ -4,50 +4,41 @@
 
 Ưu tiên: 🔴 High ({{high_count}}), 🟠 Medium ({{medium_count}}), 🟡 Low ({{low_count}})
 
-<!-- Counts are unique finding IDs. Priority counts cover Problems only.
-Severity emoji mapping: 🚨 Critical, 🔴 High, 🟠 Medium, 🟡 Low.
-Always retain the text label alongside its emoji.
-Add 🚨 Critical (n) when nonzero; never downgrade Critical to fit this line.
-Problems includes OPEN and UNVERIFIED; label UNVERIFIED explicitly.
-First review: round 1, Resolved 0; do not invent prior findings.
-PR: actual zero Problems plus adequate evidence and unchanged head → submit
-APPROVE with this summary body; simulated zero counts never qualify.
-Remove all authoring comments and replace all placeholders before delivery. -->
+<!-- Unique finding IDs. Add 🚨 Critical when nonzero. PR/MR always preview and
+confirm exact action types before posting; Ready never authorizes approve. -->
+
+### 🔎 Scope & Verification
+
+- **Nguồn/snapshot:** {{source/provider + repository/PR-MR and base/head SHAs or file snapshot}}
+- **Đã kiểm tra:** {{actual commands/results or "Chưa chạy kiểm thử runtime"}}
+- **Giới hạn:** {{material uninspected areas or "Không có giới hạn đáng kể"}}
+- **Kết luận:** {{Changes requested | Needs verification | Ready}}
 
 ---
 
 ### ✅ Resolved: {{resolved_count}}
 
-- [{{severity_emoji}} {{Severity}}] {{R-ID}} — {{title}}. Xác minh: {{current source/check proving the fix}}.
+- [{{severity_emoji}} {{Severity}}] {{R-ID}} — {{title}}. Xác minh: {{current source/check proving fix}}.
 
-<!-- If none, write “Không có.” Preserve previous IDs and severity.
-PR re-review: reply to the original finding with verified fix evidence, resolve
-that thread, verify state, and link the confirmation here. If platform writes
-fail, state “fix verified; thread not resolved” rather than claiming success. -->
+<!-- If none say "Không có". Keep stable prior IDs. For PR/MR resolved threads,
+show confirmation link only after authorized reply/resolve and actual readback. -->
 
 ### ⚠️ Problems: {{problem_count}}
 
-- [{{severity_emoji}} {{Severity}}] {{R-ID}} — {{title}} ({{OPEN | UNVERIFIED; explain missing evidence when unverified}})
+- [{{severity_emoji}} {{Severity}}] {{R-ID}} — {{title}} ({{OPEN | UNVERIFIED}})
 
-<!-- PR: link each entry to its verified inline comment or prior thread.
-If none, explicitly say so. UNVERIFIED is not a confirmed current defect. -->
+<!-- If none say "Không có". PR/MR: link to verified posted inline/fallback
+discussion or say "chưa đăng", giving unpublished details in preview.
+Evidenced nonblocking Low findings can remain with Ready. -->
 
-<!-- LOCAL ONLY: include the Detail heading and sections below in local reports.
-PR summary ends above: omit the Detail heading and all detail content. Publish
-each detail as an inline comment and link it from Problems. If no valid anchor
-or inline tool is available, mark the Problem detail as unposted and explain
-the limitation; return the unposted detail in chat, not in the PR summary. -->
+<!-- LOCAL ONLY: include Detail. PR/MR summary ends after Problems. Each detail
+is separately previewed and published only after action-specific user consent. -->
 
 ### 📝 Detail
 
 #### [{{severity_emoji}} {{Severity}}] {{R-ID}} — {{title}}
 
-<!-- File is required locally; omit on PR when the inline anchor provides the
-exact location. Add 🔁 Tái hiện between Lý do and Đề xuất chỉnh sửa only when
-minimal reproduction steps materially clarify the issue. Cách kiểm tra is a
-proposed check with expected results, not a claim it has already passed. -->
-
-- **📄 File:** {{verified path:line or document section/page; source side}}
-- **🔎 Lý do:** {{dimension, evidence, trigger, impact; design mismatch: cite design requirement/location and code behavior; UNVERIFIED: missing evidence}}
-- **🛠️ Đề xuất chỉnh sửa:** {{practical remediation; do not repeat verification steps here}}
-- **🧪 Cách kiểm tra:** {{specific test/manual check and expected result; evidence needed if UNVERIFIED; distinguish proposed checks from actual results}}
+- **📄 File:** {{verified path:line, source side or document section/page}}
+- **🔎 Lý do:** {{concrete evidence, reachable trigger and impact; or UNVERIFIED gap}}
+- **🛠️ Đề xuất chỉnh sửa:** {{practical remediation}}
+- **🧪 Cách kiểm tra:** {{proposed test and expected result; never imply it passed}}

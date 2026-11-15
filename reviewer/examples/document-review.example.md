@@ -6,6 +6,13 @@ Ví dụ hư cấu: comment tổng hợp và inline comment được minh họa 
 
 Ưu tiên: 🔴 High (1), 🟠 Medium (0), 🟡 Low (0)
 
+### 🔎 Scope & Verification
+
+- **Nguồn/snapshot:** Ví dụ hư cấu; không có commit hay PR/MR thật.
+- **Đã kiểm tra:** Chỉ minh họa lập luận tĩnh; chưa chạy test/runtime.
+- **Giới hạn:** Chưa xác minh repo/PR thực tế.
+- **Kết luận:** Needs verification
+
 ---
 
 ### ✅ Resolved: 1
@@ -37,4 +44,4 @@ Anchor giả định hợp lệ trong PR diff: head `222222222222222222222222222
 
 Mục Retry tại `docs/design/payment.md:12-16` đã quy định tối đa 3 lần và chuyển sang đối soát thủ công khi hết lượt, khắc phục thiếu giới hạn của vòng 1. Đã đối chiếu tĩnh tài liệu giữa hai vòng trong tình huống minh họa; chưa chạy implementation/test runtime.
 
-Sau reply này, resolve đúng thread R-001 và đọc lại trạng thái trước khi ghi nhận thành công. Đây là ví dụ hư cấu; chưa reply hay resolve PR thật. R-002 vẫn OPEN và không được resolve.
+Chỉ sau khi người dùng xem preview và xác nhận riêng REPLY/RESOLVE mới reply, resolve đúng thread R-001, rồi đọc lại trạng thái trước khi ghi nhận thành công. Đây là ví dụ hư cấu; chưa reply hay resolve PR thật. R-002 vẫn OPEN và không được resolve.
