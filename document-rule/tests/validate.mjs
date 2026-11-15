@@ -15,6 +15,9 @@ const required = [
   'eval/cases.json',
   'eval/run.mjs',
   'tests/eval-runner.mjs',
+  'tests/live.test.mjs',
+  'eval/live.mjs',
+  'eval/live-guide.md',
 ];
 const files = [];
 function walk(dir) {

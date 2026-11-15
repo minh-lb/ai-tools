@@ -50,3 +50,7 @@ node document-rule/eval/run.mjs --input /path/to/new-responses.json --output /pa
 ```
 
 This workflow does not require a particular model provider or paid evaluation service; it processes **actual model outputs collected separately**. The runner does not generate model responses, does not treat human scores as automatic truth, and does not publish reports to the repository by default.
+
+## Live model A/B test
+
+Use [the live evaluation guide](live-guide.md) to compare baseline and explicitly loaded skill responses. Unlike the mocked tests, this requires real API credentials and outbound network access.
