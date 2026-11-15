@@ -2,23 +2,20 @@
 
 uses(Tests\TestCase::class, Illuminate\Foundation\Testing\RefreshDatabase::class);
 
-test('{name} returns the approved response for a valid request', function (): void {
-    // Authenticate/authorize according to this endpoint's actual access policy.
-    $response = $this->postJson('{api_route}', [
-        // Add a valid payload matching the request contract.
-    ]);
-
-    $response->assertStatus({success_status});
-    // Assert only response fields defined by the existing API contract.
-    // Add persistence/event assertions when those effects are part of this request.
+test('{name} returns the approved response and persists the expected behavior', function (): void {
+    // Arrange a real authorized actor, tenant context, and necessary data.
+    // Call the actual route with approved payload; verify response AND read-back.
+    $this->markTestIncomplete('Replace with a concrete authorized API test.');
 });
 
-test('{name} rejects invalid input according to the request contract', function (): void {
-    // Authenticate as needed so this assertion tests validation, not an auth failure.
-    $response = $this->postJson('{api_route}', [
-        // Omit or invalidate a field that the approved contract requires.
-    ]);
-
-    $response->assertStatus({validation_status});
-    // Assert the project's actual validation-error response shape.
+test('{name} rejects invalid input with no unintended state change', function (): void {
+    // Assert the project's validation error contract and unchanged state.
+    $this->markTestIncomplete('Replace with a concrete invalid-input API test.');
 });
+
+test('{name} rejects unauthorized or foreign-tenant access when applicable', function (): void {
+    // Cover 401/403/404 semantics from the approved API contract.
+    $this->markTestIncomplete('Replace with the actual authorization/isolation scenario.');
+});
+
+// Remove non-applicable cases and all incomplete markers before completion.

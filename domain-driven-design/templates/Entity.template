@@ -2,13 +2,19 @@
 
 namespace Modules\{Module}\Domain\Entities;
 
+/**
+ * Aggregate root or entity skeleton. Decide its real identity type and invariants
+ * from the business model; this example string ID is not a mandatory convention.
+ */
 class {Entity}
 {
     public function __construct(
         public readonly string $id,
     ) {}
 
-    // Add only state and domain behavior needed by the actual invariant.
-    // Prefer transitions that return a new entity/state rather than mutating a
-    // shared instance. Keep framework and persistence concerns out of this class.
+    // Add only the approved domain state, kept private/guarded as appropriate.
+    // Expose meaningful transitions (e.g. activate(), close(), approve())
+    // that enforce invariants and reject illegal states without partial mutation.
+    // Mutable or immutable implementations are both valid; follow the project.
+    // Never depend on HTTP requests, Eloquent, or a service container here.
 }

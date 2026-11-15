@@ -4,11 +4,14 @@ namespace Modules\{Module}\Domain\Events;
 
 use DateTimeImmutable;
 
+/**
+ * Internal domain fact. Do not expose this PHP class as a cross-context public
+ * contract by default; publish a separately mapped, versioned integration event.
+ */
 final class {EventName}
 {
     public function __construct(
-        // Stable for this logical event across serialization, retries, and redelivery.
-        // Generate once at the producer boundary and preserve it when reconstructing the event.
+        // Generate once at the producer boundary; preserve across retries.
         public readonly string $eventId,
         public readonly DateTimeImmutable $occurredAt,
         public readonly string $entityId,

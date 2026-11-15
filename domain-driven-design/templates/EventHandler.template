@@ -4,24 +4,25 @@ namespace Modules\{Module}\Application\EventHandlers;
 
 use Modules\{Module}\Application\DTOs\{Name}DTO;
 use Modules\{Module}\Application\UseCases\{Name}UseCase;
-use Modules\{SourceModule}\Domain\Events\{EventName};
+// Replace this example path with the actual published integration event contract.
+// Do NOT import another bounded context's private Domain\Events by default.
+use Modules\{SourceModule}\Contracts\Events\{EventName};
 
 class {EventName}Handler
 {
     public function __construct(
         private readonly {Name}UseCase $useCase,
-        // Inject the project's durable idempotency/inbox boundary only when required.
+        // Inject the project's durable inbox/idempotency boundary when required.
     ) {}
 
     public function handle({EventName} $event): void
     {
-        // If duplicate delivery can repeat a non-idempotent effect, wrap processing in the
-        // project's verified idempotency/inbox mechanism using the stable eventId. Do not
-        // write a permanent "processed" marker before work succeeds unless the marker and
-        // effect share an atomic transaction or recoverable claim/lease design.
+        // Validate contract version/owner and map into OUR application language.
+        // When effects are not naturally idempotent, process with durable dedup;
+        // never mark an event permanently complete before a retry-safe effect.
         $dto = new {Name}DTO(
             id: $event->entityId,
-            // Map all event fields required by this module's application flow.
+            // Map only approved fields; adapt to actual published payload.
         );
 
         $this->useCase->handle($dto);

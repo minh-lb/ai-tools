@@ -5,22 +5,29 @@ namespace Modules\{Module}\Application\UseCases;
 use Modules\{Module}\Application\DTOs\{Name}DTO;
 use Modules\{Module}\Domain\Actions\{Action}Action;
 use Modules\{Module}\Domain\Entities\{Entity};
+use Modules\{Module}\Domain\Repositories\{Entity}Repository;
 
+/**
+ * Application orchestration. Omit Action when aggregate behavior alone suffices.
+ */
 class {Name}UseCase
 {
     public function __construct(
+        private readonly {Entity}Repository $repository,
         private readonly {Action}Action $action,
     ) {}
 
     public function handle({Name}DTO $dto): {Entity}
     {
-        return $this->action->execute(
-            id: $dto->id,
-            // Pass only contract-approved fields needed by this operation.
-        );
+        // Apply trusted actor/tenant authorization before loading as needed.
+        // Wrap load -> domain operation -> save in the project's approved
+        // transaction boundary when atomicity or concurrent writes require it.
+        $current = $this->repository->find($dto->id);
+        $updated = $this->action->execute($current);
+        $this->repository->save($updated);
+
+        // Publish committed domain outcomes via the project's after-commit
+        // mechanism or durable outbox when reliable delivery is required.
+        return $updated;
     }
 }
-
-// Add event publication only when the use case actually produces/consumes an event.
-// Follow the target project's durable/after-commit/outbox contract; this skeleton
-// intentionally does not imply that dispatching here is transaction-safe.

@@ -8,16 +8,8 @@ class {Entity}Model extends Model
 {
     protected $table = '{table}';
 
-    public $incrementing = false;
-
-    protected $keyType = 'string';
-
-    protected $fillable = [
-        // Keep this in sync with RepositoryImpl::toPersistence().
-        'id',
-    ];
-
-    protected $casts = [
-        'id' => 'string',
-    ];
+    // Adapt key type/incrementing, fillable/guarded, casts, relationships,
+    // tenant scoping, uniqueness and lifecycle to the actual migration/schema.
+    // Do not assume all aggregate IDs are strings or user-supplied.
+    // This ORM model is NOT the domain aggregate when the layers are separated.
 }

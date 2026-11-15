@@ -2,17 +2,11 @@
 
 use Modules\{Module}\Domain\Actions\{Action}Action;
 use Modules\{Module}\Domain\Entities\{Entity};
-use Modules\{Module}\Domain\Repositories\{Entity}Repository;
 
-uses(Tests\TestCase::class); // Use the project's test base and mock teardown convention.
+uses(Tests\TestCase::class);
 
-test('{action} applies the requested business rule and persists the result', function (): void {
-    $entity = new {Entity}(id: 'entity-123');
-    $repository = Mockery::mock({Entity}Repository::class);
-    $repository->shouldReceive('find')->once()->with('entity-123')->andReturn($entity);
-    $repository->shouldReceive('save')->once()->with($entity);
-
-    $result = (new {Action}Action($repository))->execute(id: 'entity-123');
-
-    expect($result)->toBeInstanceOf({Entity}::class);
+test('{action} applies the approved domain rule without persistence', function (): void {
+    // Create domain state and invoke the pure Action (only when an Action is needed).
+    // Assert the business outcome and any rejected transition. No repository mocks.
+    $this->markTestIncomplete('Replace with meaningful domain rule assertions.');
 });

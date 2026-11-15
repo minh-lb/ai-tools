@@ -4,12 +4,17 @@ namespace Modules\{Module}\Domain\Repositories;
 
 use Modules\{Module}\Domain\Entities\{Entity};
 
+/**
+ * Repository boundary for an aggregate, not a generic table CRUD interface.
+ * Replace the sample identity type and missing/forbidden semantics as needed.
+ */
 interface {Entity}Repository
 {
     public function find(string $id): {Entity};
 
     public function save({Entity} $entity): void;
 
-    // Add only query or lifecycle operations required by the business behavior.
-    // Define deletion/archival semantics explicitly; do not assume permanent delete.
+    // Add only approved use-case operations. For multi-tenant data, the adapter
+    // must apply trusted tenant scope to reads and writes; do not trust a client ID.
+    // Define conflict/version and lifecycle behavior explicitly where needed.
 }

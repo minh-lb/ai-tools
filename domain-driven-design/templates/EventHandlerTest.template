@@ -3,17 +3,16 @@
 use Modules\{Module}\Application\DTOs\{Name}DTO;
 use Modules\{Module}\Application\EventHandlers\{EventName}Handler;
 use Modules\{Module}\Application\UseCases\{Name}UseCase;
-use Modules\{SourceModule}\Domain\Events\{EventName};
+// Replace with the actually published, versioned event contract.
+use Modules\{SourceModule}\Contracts\Events\{EventName};
 
 uses(Tests\TestCase::class);
 
-test('{event_name} maps the stable event to the application flow', function (): void {
+test('{event_name} maps the published event into our application flow', function (): void {
     $useCase = Mockery::mock({Name}UseCase::class);
     $useCase->shouldReceive('handle')
         ->once()
-        ->with(Mockery::on(
-            fn ({Name}DTO $dto): bool => $dto->id === 'entity-123',
-        ));
+        ->with(Mockery::on(fn ({Name}DTO $dto): bool => $dto->id === 'entity-123'));
 
     $handler = new {EventName}Handler($useCase);
     $handler->handle(new {EventName}(
@@ -23,9 +22,8 @@ test('{event_name} maps the stable event to the application flow', function (): 
     ));
 });
 
-// If processing needs idempotency, add tests against the actual durable mechanism:
-// - successful first delivery is processed once;
-// - redelivery after success does not repeat the protected side effect;
-// - a failed attempt remains retryable and is not falsely marked complete;
-// - concurrent deliveries cannot both perform a non-idempotent effect.
-// Do not substitute a cache-only unit mock for database/transport guarantees.
+// Above test proves mapping only, NOT safe dedup or durable delivery.
+// Where non-idempotent effects exist, test with the real durable mechanism:
+// first delivery succeeds; duplicate does not repeat the effect; failed attempt
+// remains retryable; concurrent delivery cannot double-apply the effect.
+// Also cover supported event-schema versions and invalid/unknown payloads.

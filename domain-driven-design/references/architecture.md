@@ -4,11 +4,13 @@ Use this as an index for the supplied Laravel module examples. The paths, filena
 
 ## Layer references
 
+- [modeling.md](modeling.md) — bounded contexts, domain language, aggregates, and consistency boundaries.
 - [domain.md](domain.md) — domain behavior, invariants, events, and repository boundaries.
 - [application.md](application.md) — use-case orchestration, DTOs, and event consumers.
 - [infrastructure.md](infrastructure.md) — persistence adapters, external clients, and dependency wiring.
 - [interfaces.md](interfaces.md) — HTTP/controllers, validation, resources, and routes.
-- [cross-cutting.md](cross-cutting.md) — module boundaries, event delivery, and idempotency.
+- [cross-cutting.md](cross-cutting.md) — module boundaries, event contracts, delivery, and idempotency.
+- [consistency.md](consistency.md) — tenant isolation, concurrent changes, transactions, and reliable writes.
 - [verification.md](verification.md) — final consistency and validation checks.
 
 ## Example template layout
@@ -16,7 +18,7 @@ Use this as an index for the supplied Laravel module examples. The paths, filena
 | Component | Example path | Example naming |
 |---|---|---|
 | Entity | `Modules/{Module}/Domain/Entities/` | `{Entity}.php` |
-| Action | `Modules/{Module}/Domain/Actions/` | `{Verb}{Entity}Action.php` |
+| Optional pure domain action | `Modules/{Module}/Domain/Actions/` | `{Verb}{Entity}Action.php` |
 | Event | `Modules/{Module}/Domain/Events/` | `{Entity}{PastTense}.php` |
 | Repository contract | `Modules/{Module}/Domain/Repositories/` | `{Entity}Repository.php` |
 | DTO | `Modules/{Module}/Application/DTOs/` | `{Verb}{Entity}DTO.php` |
@@ -34,4 +36,4 @@ Test locations also vary by project. Use the existing suite's organization and n
 
 ## Templates
 
-Template files are `templates/{Component}.template`. Load only those needed and remove unused files. `ApiResponse`, `BaseDTO`, and `RulesAttribute` are optional examples; they are not required for a DTO or HTTP endpoint. Follow the existing response envelope and validation mechanism.
+Template files are `templates/{Component}.template`. They are incomplete scaffolds, never ready-to-ship code: replace business placeholders, persistence decisions, policies, and unfinished test cases before reporting completion. Load only those needed and remove unused files. `ApiResponse`, `BaseDTO`, and `RulesAttribute` are optional examples; they are not required for a DTO or HTTP endpoint. Follow the existing response envelope and validation mechanism.

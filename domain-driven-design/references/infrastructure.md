@@ -20,3 +20,10 @@ Persist all fields that belong to the current entity/record contract. Make delet
 ## Testing
 
 Use the project's database factories, transactions, and integration-test conventions. Verify mappings and important constraints against the supported database when unit mocks cannot prove them.
+
+## Tenant scope and concurrency
+
+- If the product is multi-tenant, define the tenant owner of each row/aggregate and require scope on ID-based **reads and writes**; default Eloquent ID lookup is not isolation by itself. Authenticate/authorize at the application/interface boundary and derive tenant identity from trusted context.
+- Check relationships and unique constraints within the approved tenant scope. Use database constraints and tenant-aware associations where relevant; never rely on client-provided tenant IDs or filtering in the frontend.
+- A read-then-save sequence can lose concurrent updates. Choose conditional version updates, row locking, unique constraints, or a documented idempotent operation for the actual risk. Detect and report conflicts rather than silently overwriting state.
+- `updateOrCreate()` is not a generic safe aggregate save: creation vs update, tenant constraints, version checks, field mappings, and row lifecycle must be decided for the specific model. See [consistency.md](consistency.md).

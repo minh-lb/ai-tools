@@ -2,30 +2,20 @@
 
 namespace Modules\{Module}\Domain\Actions;
 
+use LogicException;
 use Modules\{Module}\Domain\Entities\{Entity};
-use Modules\{Module}\Domain\Repositories\{Entity}Repository;
 
+/**
+ * Optional domain operation for a business rule that has no natural entity owner.
+ * If the entity owns the rule, call its behavior directly and omit this class.
+ */
 class {Action}Action
 {
-    public function __construct(
-        private readonly {Entity}Repository $repository,
-    ) {}
-
-    public function execute(
-        string $id,
-        // Add one parameter per domain primitive or Value Object needed for the operation.
-        // Adapt for a create flow: use the project's approved ID generator or an injected
-        // boundary; keep Laravel/framework APIs out of the domain layer.
-    ): {Entity} {
-        // Adapt creation/loading to the real operation and its domain invariants.
-        $entity = $this->repository->find($id);
-
-        // Core business rules and state transitions live here.
-        // If the operation produces a domain event, return it using the project's
-        // established immutable result/outcome convention; do not mutate shared entity state.
-
-        $this->repository->save($entity);
-
-        return $entity;
+    public function execute({Entity} $entity): {Entity}
+    {
+        // Replace with the actual approved pure domain operation, delegating
+        // to the aggregate's invariant-preserving behavior where possible.
+        // Do NOT load/save repositories, dispatch jobs, or open transactions.
+        throw new LogicException('Implement the approved domain operation before use.');
     }
 }

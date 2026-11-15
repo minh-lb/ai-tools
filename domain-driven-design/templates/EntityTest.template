@@ -4,11 +4,15 @@ use Modules\{Module}\Domain\Entities\{Entity};
 
 uses(Tests\TestCase::class);
 
-test('{entity} represents the supplied domain identity', function (): void {
-    $entity = new {Entity}(id: 'entity-123');
-
-    expect($entity->id)->toBe('entity-123');
+test('{entity} enforces an approved state transition', function (): void {
+    // Construct the initial domain state; perform the actual command.
+    // Assert meaningful new business state, not only object type or ID.
+    $this->markTestIncomplete('Replace with a real approved state transition assertion.');
 });
 
-// Add focused tests for the actual invariants and immutable state transitions.
-// Do not test generic event/cache behavior on an entity that does not own it.
+test('{entity} rejects a forbidden transition without partial mutation', function (): void {
+    // Construct an invalid transition; assert the domain error AND unchanged state.
+    $this->markTestIncomplete('Replace with a real invariant regression assertion.');
+});
+
+// Remove irrelevant tests; never ship placeholders or report incomplete as passed.

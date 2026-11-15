@@ -19,3 +19,13 @@ Keep domain rules independent of HTTP request objects, Eloquent models, facades,
 ## Testing
 
 Test domain invariants and state transitions with focused tests. Use project conventions for object construction and collaborators; do not add mocks or framework setup when the behavior is pure.
+
+## Aggregate design
+
+- Identify the aggregate root and which invariants must hold immediately after every operation. Only the root should expose state-changing operations that protect those invariants; avoid public setters that bypass checks.
+- Decide aggregate size from business consistency needs, not table relationships. Reference other aggregates by identity where appropriate. A transaction around one aggregate does not imply all cross-aggregate facts are instantly consistent.
+- Use ubiquitous language from approved requirements for commands, methods, state, and events. If two contexts use the same word differently, document the distinction instead of sharing a mutable entity type.
+- A domain service/action is useful for a business rule without a natural entity owner. Domain actions should accept domain values/objects and return a meaningful result; they should not fetch, save, dispatch jobs, or manage transactions.
+- Invariant violations must fail explicitly without partial mutation. Mutable or immutable entities are both valid; follow the project convention and test the actual transition semantics.
+
+Read [modeling.md](modeling.md) for decisions about roots, boundaries, and domain terminology.

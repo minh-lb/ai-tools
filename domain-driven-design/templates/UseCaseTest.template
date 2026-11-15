@@ -2,22 +2,26 @@
 
 use Modules\{Module}\Application\DTOs\{Name}DTO;
 use Modules\{Module}\Application\UseCases\{Name}UseCase;
+use Modules\{Module}\Domain\Actions\{Action}Action;
 use Modules\{Module}\Domain\Entities\{Entity};
+use Modules\{Module}\Domain\Repositories\{Entity}Repository;
 
-uses(Tests\TestCase::class, Illuminate\Foundation\Testing\RefreshDatabase::class);
+uses(Tests\TestCase::class);
 
-test('{name} coordinates the requested application behavior', function (): void {
-    $dto = {Name}DTO::fromArray([
-        'id' => 'entity-123',
-        // Add fields from the validated application contract.
-    ]);
+test('{name} loads, applies domain behavior and persists the result', function (): void {
+    $dto = {Name}DTO::fromArray(['id' => 'entity-123']);
+    $current = new {Entity}(id: 'entity-123');
+    $updated = new {Entity}(id: 'entity-123'); // Replace with actual changed state.
 
-    /** @var {Name}UseCase $useCase */
-    $useCase = app({Name}UseCase::class);
-    $result = $useCase->handle($dto);
+    $repository = Mockery::mock({Entity}Repository::class);
+    $action = Mockery::mock({Action}Action::class);
+    $repository->shouldReceive('find')->once()->with($dto->id)->andReturn($current);
+    $action->shouldReceive('execute')->once()->with($current)->andReturn($updated);
+    $repository->shouldReceive('save')->once()->with($updated);
 
-    expect($result)->toBeInstanceOf({Entity}::class);
-    // Assert persisted state or effects only when they are part of this use case.
-    // Example: $this->assertDatabaseHas('{table}', ['id' => $result->id]);
-    // Add event/failure assertions only when this flow owns those behaviors.
+    $result = (new {Name}UseCase($repository, $action))->handle($dto);
+    expect($result)->toBe($updated);
+
+    // This proves orchestration ONLY. Test business invariants in domain tests,
+    // and transactions, tenant isolation and persistence against a real database.
 });

@@ -6,6 +6,12 @@
 - Do not reach into another module's private repository or data model. Prefer a published contract. Use a domain event for decoupled side effects; use an explicit synchronous application/API contract when the use case requires a response and the project permits it.
 - Follow the project's actual import and dependency rules; the example `Modules/{Module}` layout is not mandatory.
 
+## Event contracts
+
+- Distinguish domain events (internal model facts) from integration events (published, versioned contracts). Publish minimal required data, stable event identity, producer/context identity, and a compatible schema version when other modules consume it.
+- Give consumers an explicit contract for payload validation, ownership, replay, schema evolution, and failure handling. Translate external contracts into the receiving context; never leak another module's private persistence model.
+- If a change must be delivered reliably with the database write, use the project's transactional outbox/after-commit mechanism. After-commit dispatch alone does not guarantee delivery if the process fails before publishing.
+
 ## Event flow and idempotency
 
 A common flow is: entry point → application coordination → domain behavior/persistence → durable event publication → consumer → receiving application flow. A domain event publish is not a synchronous call into its consumer. Trace each async consumer as a separate path.
