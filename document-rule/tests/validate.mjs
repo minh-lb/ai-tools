@@ -12,6 +12,9 @@ const required = [
   'references/quality-checklist.md',
   'examples/before-after.md',
   'eval/scenarios.md',
+  'eval/cases.json',
+  'eval/run.mjs',
+  'tests/eval-runner.mjs',
 ];
 const files = [];
 function walk(dir) {
@@ -30,17 +33,27 @@ for (const dir of ['templates', 'references/plan', 'references/spec']) {
   assert.ok(!existsSync(path.join(root, dir)), 'Legacy workflow remains: ' + dir);
 }
 for (const file of files.filter(f => f.endsWith('.md'))) {
-  const content = readFileSync(file, 'utf8');
-  const links = content.matchAll(/\[[^\]]+\]\(([^)]+)\)/g);
-  for (const [, target] of links) {
+  const text = readFileSync(file, 'utf8');
+  for (const [,target] of text.matchAll(/\[[^\]]+\]\(([^)]+)\)/g)) {
     if (/^(https?:|mailto:|#)/.test(target)) continue;
     const dest = path.resolve(path.dirname(file), target.split('#')[0]);
-    assert.ok(dest.startsWith(root + path.sep), 'Link escapes root: ' + file);
+    assert.ok(dest.startsWith(root + path.sep), 'Link escapes skill: ' + file);
     assert.ok(existsSync(dest), 'Broken link: ' + file + ' -> ' + target);
   }
 }
-const scenarios = readFileSync(path.join(root, 'eval/scenarios.md'), 'utf8');
-for (let n = 1; n <= 12; n++) {
-  assert.match(scenarios, new RegExp('E' + String(n).padStart(2, '0') + ' \\|'));
+const scenarios = JSON.parse(readFileSync(path.join(root,'eval/cases.json'),'utf8'));
+const ids = scenarios.map(c=>c.id);
+assert.equal(ids.length,18);
+assert.equal(new Set(ids).size,ids.length,'duplicate eval IDs');
+for (let n=1;n<=18;n++) {
+  const id = 'E' + String(n).padStart(2,'0');
+  const c = scenarios.find(c=>c.id===id);
+  assert.ok(c,'missing '+id);
+  for (const field of ['prompt','mustKeep','mustAvoid']) {
+    assert.ok(typeof c[field]==='string' && c[field].trim(),id+' missing '+field);
+  }
 }
-console.log('PASS: required files, skill metadata, legacy removal, links, 12 eval scenarios');
+const examples = readFileSync(path.join(root,'examples/before-after.md'),'utf8');
+assert.ok((examples.match(/^## \d+\. /gm)||[]).length>=12,'need bilingual rewrite examples');
+assert.match(examples,/## 9\. Báo cáo công việc/);
+console.log('PASS: required files, links, 18 eval scenarios, Vietnamese examples, legacy removal');
