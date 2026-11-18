@@ -117,5 +117,29 @@
     "prompt": "Giải thích cho người mới: Một worker đọc message từ SQS để gửi email thông báo. Hệ thống có cơ chế retry khi gửi thất bại. Tài liệu hiện không nêu số lần thử lại hoặc thời gian chờ. Chỉ giải thích luồng gửi thông báo, không suy đoán cấu hình.",
     "mustKeep": "Hàng đợi thông báo, xử lý gửi email, có thử lại, chưa rõ cấu hình.",
     "mustAvoid": "Bịa số lần retry, timeout, SLA hoặc hướng dẫn triển khai."
+  },
+  {
+    "id": "E19",
+    "prompt": "Viết một đoạn mô tả ngắn, tự nhiên trong basic design, không dùng bullet: 'Chức năng phân quyền xác định vai trò nào có quyền xem và chỉnh sửa hồ sơ. Chỉ quản trị viên được thay đổi quyền.'",
+    "mustKeep": "Một đoạn văn tiếng Việt tự nhiên, giữ quyền xem/sửa theo vai trò và chỉ quản trị viên thay đổi quyền.",
+    "mustAvoid": "Lời dẫn khuôn mẫu, quảng cáo tính quan trọng, bullet, tự thêm quyền hoặc cơ chế."
+  },
+  {
+    "id": "E20",
+    "prompt": "Viết lại đoạn sau như người trong nhóm kỹ thuật báo cáo với đồng nghiệp, giữ nguyên sự thật: 'Trong khuôn khổ quá trình tiến hành triển khai, nhóm đã thực hiện việc cập nhật thông báo khi đăng nhập thất bại. Unit test đã chạy và đạt. Kiểm thử E2E hiện chưa thực hiện.'",
+    "mustKeep": "Đã cập nhật thông báo đăng nhập thất bại; unit test đạt; E2E chưa chạy; câu chữ gọn và tự nhiên.",
+    "mustAvoid": "Nhắc lại lối diễn đạt rườm rà, nhãn báo cáo cứng nhắc hoặc khẳng định hoàn tất toàn bộ kiểm thử."
+  },
+  {
+    "id": "E21",
+    "prompt": "Viết lại theo giọng trang trọng, tự nhiên, không thân mật hóa: 'Mọi yêu cầu xóa dữ liệu cần được chủ sở hữu phê duyệt. Khi chưa được phê duyệt, hệ thống không tiến hành xóa.'",
+    "mustKeep": "Trang trọng vừa đủ; yêu cầu phê duyệt của chủ sở hữu trước khi xóa; không đổi điều kiện.",
+    "mustAvoid": "Giọng hội thoại suồng sã, câu sáo rỗng, bịa thêm quy trình hoặc bỏ điều kiện."
+  },
+  {
+    "id": "E22",
+    "prompt": "Biên tập đúng một đoạn, không thêm dữ kiện hay tiêu đề: 'Để mang lại một trải nghiệm thuận tiện và tối ưu cho người sử dụng, hệ thống hiện đang hỗ trợ việc tải hóa đơn dưới dạng PDF. Tính năng gửi hóa đơn qua email hiện chưa có.'",
+    "mustKeep": "Một đoạn văn ngắn, tự nhiên; tải PDF hiện có; gửi email chưa có.",
+    "mustAvoid": "Tiêu đề hoặc danh sách; ca ngợi tính năng; ngụ ý gửi email đã hoạt động; tự thêm tính năng."
   }
 ]
