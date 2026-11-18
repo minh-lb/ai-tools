@@ -46,9 +46,9 @@ for (const file of files.filter(f => f.endsWith('.md'))) {
 }
 const scenarios = JSON.parse(readFileSync(path.join(root,'eval/cases.json'),'utf8'));
 const ids = scenarios.map(c=>c.id);
-assert.equal(ids.length,18);
+assert.equal(ids.length,22);
 assert.equal(new Set(ids).size,ids.length,'duplicate eval IDs');
-for (let n=1;n<=18;n++) {
+for (let n=1;n<=22;n++) {
   const id = 'E' + String(n).padStart(2,'0');
   const c = scenarios.find(c=>c.id===id);
   assert.ok(c,'missing '+id);
@@ -57,6 +57,9 @@ for (let n=1;n<=18;n++) {
   }
 }
 const examples = readFileSync(path.join(root,'examples/before-after.md'),'utf8');
-assert.ok((examples.match(/^## \d+\. /gm)||[]).length>=12,'need bilingual rewrite examples');
+assert.ok((examples.match(/^## \d+\. /gm)||[]).length>=16,'need bilingual rewrite examples');
 assert.match(examples,/## 9\. Báo cáo công việc/);
-console.log('PASS: required files, links, 18 eval scenarios, Vietnamese examples, legacy removal');
+assert.match(skill, /^## Human-like Writing$/m);
+assert.match(skill, /^## Editorial Review \\(internal\\)$/m);
+assert.match(examples, /## 16\\. Biên tập văn phong/);
+console.log('PASS: required files, links, 22 eval scenarios, natural-writing examples, legacy removal');
