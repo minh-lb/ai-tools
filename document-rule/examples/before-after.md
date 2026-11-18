@@ -81,3 +81,29 @@ When a user requests raw JSON with exactly two keys, return **only** valid JSON 
 **Trước:** Nhằm tăng trải nghiệm tổng thể, đội dự án đã trao đổi nhiều lần về quy trình xuất hóa đơn. Hệ thống tạo hóa đơn nháp; quản lý phải duyệt trước khi phát hành. Người thuê chỉ được thông báo sau khi hóa đơn phát hành. Ngoài ra còn nhiều cân nhắc chung về khả năng mở rộng trong tương lai.
 
 **Sau:** **Quy trình:** Hệ thống tạo hóa đơn nháp → quản lý duyệt và phát hành → người thuê nhận thông báo sau khi phát hành.
+
+## 14. Văn phong máy móc — chuyển thành giải thích tự nhiên
+
+**Trước:** Chức năng phân quyền đóng vai trò vô cùng quan trọng trong việc nâng cao hiệu quả quản lý và bảo đảm tính bảo mật của toàn bộ hệ thống.
+
+**Sau:** Chức năng phân quyền xác định ai được phép thực hiện từng thao tác trong hệ thống.
+
+**Lý do:** Bỏ nhận định chung chung; nêu đúng tác dụng của chức năng mà không tự thêm cơ chế.
+
+## 15. Không ép mọi đoạn thành danh sách
+
+**Trước:** **Trạng thái:** Đã sửa thông báo lỗi. **Kiểm thử:** Unit test đã đạt. **Giới hạn:** Chưa chạy E2E.
+
+**Sau:** Đã sửa thông báo lỗi và chạy unit test thành công. Chưa chạy E2E.
+
+**Lý do:** Với một cập nhật ngắn, văn xuôi dễ đọc hơn ba nhãn lặp lại. Nếu người đọc cần đối chiếu nhiều hạng mục, danh sách hoặc bảng vẫn phù hợp.
+
+## 16. Biên tập văn phong không được thay đổi điều kiện
+
+**Trước:** Chỉ quản lý được phép phát hành hóa đơn sau khi kiểm tra. Người thuê chỉ được thông báo sau khi hóa đơn đã phát hành.
+
+**Sai:** "Hệ thống tự động gửi hóa đơn cho người thuê."
+
+**Đúng:** "Quản lý kiểm tra và phát hành hóa đơn trước. Người thuê nhận thông báo sau khi hóa đơn được phát hành."
+
+**Lý do:** Câu tự nhiên hơn nhưng vẫn giữ vai trò, thứ tự và điều kiện thông báo.
