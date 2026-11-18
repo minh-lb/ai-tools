@@ -60,6 +60,6 @@ const examples = readFileSync(path.join(root,'examples/before-after.md'),'utf8')
 assert.ok((examples.match(/^## \d+\. /gm)||[]).length>=16,'need bilingual rewrite examples');
 assert.match(examples,/## 9\. Báo cáo công việc/);
 assert.match(skill, /^## Human-like Writing$/m);
-assert.match(skill, /^## Editorial Review \\(internal\\)$/m);
-assert.match(examples, /## 16\\. Biên tập văn phong/);
+assert.match(skill, /^## Editorial Review \(internal\)$/m);
+assert.match(examples, /## 16\. Biên tập văn phong/);
 console.log('PASS: required files, links, 22 eval scenarios, natural-writing examples, legacy removal');
