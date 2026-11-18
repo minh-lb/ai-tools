@@ -25,14 +25,24 @@ metadata:
 
 ## Human-like Writing
 
-- Write like a knowledgeable colleague explaining a real problem: direct, specific, and natural. Prefer clear prose for connected ideas; vary sentence length without making the text wordy.
-- State who does what, under which condition, and with what effect. Replace vague claims and promotional language with concrete information. Avoid stock openings, ceremonial conclusions, repetitive sentence patterns, and AI-sounding phrases such as "plays a crucial role" or "it is important to note".
+- Write like a knowledgeable colleague explaining a real problem: natural, professional, direct, and specific. Prefer short sentences, but vary their length and structure. Keep one main idea per paragraph and connect ideas logically.
+- State who does what, under which condition, and with what effect. Replace vague claims and promotional language with concrete information. Avoid stock openings, ceremonial conclusions, repetitive sentence patterns, and empty phrases such as "plays a crucial role", "to optimize", or "effectively" ("đóng vai trò quan trọng", "nhằm tối ưu hóa", "một cách hiệu quả"). Use such wording only when it conveys a specific, supported meaning.
+- Explain the problem, how it is handled, and why when the reader needs that context. Skip explanations of the obvious for the intended audience. Use accurate terminology suited to that audience.
 - Use lists and tables for genuine steps or comparisons, not to turn every sentence into a labeled bullet. Preserve the user's language, genre, voice, and required formality; never fake personal experience or add errors to appear human.
 - Natural wording must never alter requirements, status, evidence, technical identifiers, or exact-output contracts. For code, schemas, quotations, and verbatim extraction, preserve the required form.
 
-## Editorial Review (internal)
+## Learn from writing samples
 
-After drafting human-facing prose, make **one focused editing pass**: remove boilerplate and repeated ideas; replace stiff or generic wording with precise, natural language; and simplify unnecessary headings, lists, and tables. Rewrite only what improves readability. Then verify that permissions, conditions, exceptions, uncertainty, facts, and requested format remain unchanged. Skip cosmetic rewriting when the output is already clear or must be exact. This is not a separate document workflow and does not authorize editing source files for review-only requests.
+When the user provides human-written documents they value, use them as style references. Two or three samples with a similar audience and purpose can help establish phrasing, organization, and level of detail. Identify those patterns and apply them to the requested content; do not copy passages or import the samples' facts, requirements, or conclusions. Explicit user instructions and the output contract take precedence over sample style.
+
+Use available samples without making them a prerequisite. If matching a particular voice matters and no samples are available, invite the user to provide two or three; otherwise continue with these writing rules. Do not claim to have learned from samples you have not inspected.
+
+## Write, then edit (internal)
+
+1. **Write:** establish accurate, logical content that is complete for the requested scope. Ground claims in sources, preserve technical conditions, and mark gaps. Let the specialized artifact skill determine required content.
+2. **Edit:** read the draft as an editor and make **one focused editing pass**. Remove boilerplate and repeated ideas; replace stiff or generic wording with precise, natural language; and simplify unnecessary headings, lists, and tables. Apply relevant patterns from supplied writing samples. Verify that technical meaning, permissions, conditions, exceptions, uncertainty, facts, and requested format remain unchanged.
+
+Fix substantive gaps against the sources before polishing; never fill them with plausible wording. These are internal stages, not separate deliverables: return the requested result without exposing drafts or editing commentary unless asked. Skip cosmetic rewriting when the output is already clear or must be exact. This does not authorize editing source files for review-only requests.
 
 ## Scope and collaboration
 
@@ -43,4 +53,4 @@ After drafting human-facing prose, make **one focused editing pass**: remove boi
 
 ## Final check (internal)
 
-Can the intended reader answer **what matters, why, and what happens next**? Is any sentence unnecessary? Is any omission misleading? Is every claim grounded in the original source or explicitly labeled as a proposal? Apply the editorial check once to remove noise and artificial wording without losing meaning.
+Can the intended reader understand the content on the first read and answer **what matters, why, and what happens next**? Does it read like a knowledgeable practitioner wrote it? Can any stiff, generic, repetitive, or wordy sentence be shortened without losing meaning? Does the structure serve the reader rather than merely decorate the document? Is any omission misleading? Are facts and conclusions supported, with proposals, assumptions, and unknowns clearly distinguished? Fix issues found in the editorial pass before delivery.
