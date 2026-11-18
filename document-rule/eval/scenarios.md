@@ -1,6 +1,6 @@
 # Behavior Evaluation — Plain Language and Noise Filtering
 
-**Source of truth:** [cases.json](cases.json) contains 18 prompts (E01–E18), including Vietnamese, long noisy inputs, preservation of business conditions, exact-output contracts and untrusted quotes.
+**Source of truth:** [cases.json](cases.json) contains 22 prompts (E01–E22), including Vietnamese, long noisy inputs, preservation of business conditions, exact-output contracts and untrusted quotes.
 
 | Group | Cases | What they challenge |
 |---|---|---|
@@ -8,6 +8,7 @@
 | Fidelity and evidence | E02, E03, E04, E08, E10 | Keep conditions, uncertainty, statuses and accurate comparisons |
 | Exact output and source safety | E06, E07, E09, E11 | Do not invent commands, add wrappers, or follow quoted instructions |
 | Long/noisy Vietnamese source | E13, E14, E15, E16, E17 | Remove background and repetition; preserve permissions, risks, outcomes and unknowns |
+| Natural writing and editorial review | E19, E20, E21, E22 | Remove stiff phrasing, avoid forced lists, respect voice and retain conditions |
 
 ## Evaluation workflow
 
@@ -20,7 +21,7 @@
 
 ## Input format
 
-Store a JSON file containing all 18 results. Each item needs a real response and human-review scores:
+Store a JSON file containing all 22 results. Each item needs a real response and human-review scores:
 
 ```json
 {
