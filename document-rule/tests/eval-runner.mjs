@@ -46,10 +46,14 @@ try {
   wrongJson.results.find(r=>r.id==='E07').response='```json\n{}\n```';
   assert.equal(run(wrongJson,'json-fail.json').code,1,'JSON-only contract must be checked');
 
+  const multipleLines = structuredClone(full);
+  multipleLines.results.find(r=>r.id==='E28').response=['Chưa.', 'E2E chưa chạy.'].join(String.fromCharCode(10));
+  assert.equal(run(multipleLines,'lines-fail.json').code,1,'one-line contract must be checked');
+
   const invalid = structuredClone(full);
   delete invalid.results[0].scores.accuracy;
   assert.equal(run(invalid,'score-fail.json').code,1,'missing score must not pass');
-  console.log('PASS: evaluator baseline, regression, incomplete, strict JSON, missing score');
+  console.log('PASS: evaluator baseline, regression, incomplete, strict JSON, max lines, missing score');
 } finally {
   rmSync(temp,{recursive:true,force:true});
 }

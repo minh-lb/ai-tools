@@ -25,6 +25,9 @@ const key = process.env.OPENAI_API_KEY;
 const limit = get('--limit') === null ? Infinity : Number(get('--limit'));
 const instructions = 'Answer the user accurately. Follow their requested scope and output format. Never invent source facts.';
 const rubric = 'You are a blind quality evaluator. You do NOT know whether the response was produced with a skill. Evaluate against the user task and explicit mustKeep/mustAvoid.\nGive integer scores 0, 1, or 2 for relevance, clarity, accuracy, contract.\nrelevance=2 only if directly useful without noise; clarity=2 only if understandable to the intended reader, natural and coherent, without boilerplate or forced lists; accuracy=2 only if no unsupported facts and no lost important conditions; contract=2 only if the user\'s scope and output constraints are met.\nIf unsure about facts not present in the input, do not award accuracy=2. Quote brief, concrete reasons.\nRespond ONLY as valid JSON: {"scores":{"relevance":0,"clarity":0,"accuracy":0,"contract":0},"notes":"short explanation"}. Do not add other keys.';
+function conversation(c) {
+  return c.messages ?? [{role:'user',content:c.prompt}];
+}
 function extract(data) {
   if (typeof data.output_text === 'string' && data.output_text.trim()) return data.output_text;
   const parts = (data.output || []).flatMap(item => (item.content || []).filter(x => x.type === 'output_text').map(x => x.text));
@@ -45,7 +48,7 @@ async function callApi(input, whichModel) {
 async function judge(c, response) {
   const raw = await callApi([
     {role:'developer',content:rubric},
-    {role:'user',content:JSON.stringify({userPrompt:c.prompt,mustKeep:c.mustKeep,mustAvoid:c.mustAvoid,response})}
+    {role:'user',content:JSON.stringify({userPrompt:c.prompt,conversation:conversation(c),mustKeep:c.mustKeep,mustAvoid:c.mustAvoid,response})}
   ], judgeModel);
   let j;
   try { j = JSON.parse(raw); } catch { throw new Error('Judge output was not JSON for ' + c.id); }
@@ -57,6 +60,7 @@ async function judge(c, response) {
 function checkAutomatic(c, response) {
   if (!c.automatic) return true;
   if (c.automatic.type === 'textExact') return response === c.automatic.value;
+  if (c.automatic.type === 'maxLines') return response.trim().split(/\r?\n/).length <= c.automatic.value;
   if (c.automatic.type === 'jsonExact') {
     try {
       const j=JSON.parse(response), exp=c.automatic.value;
@@ -89,7 +93,7 @@ async function main(){
   for(const [i,c] of selected.entries()){
     for(const arm of (i%2===0?['baseline','candidate']:['candidate','baseline'])){
       const dev=instructions + (arm==='candidate'?'\n\nThe following is the document-rule skill, to apply when relevant:\n'+skill:'');
-      const response=await callApi([{role:'developer',content:dev},{role:'user',content:c.prompt}],model);
+      const response=await callApi([{role:'developer',content:dev},...conversation(c)],model);
       const auto=checkAutomatic(c,response);
       const rated=judgeModel?await judge(c,response):{scores:undefined,notes:'Not graded; run with --judge-model or review manually'};
       (arm==='baseline'?baseline:candidate).push({id:c.id,response,scores:rated.scores,notes:rated.notes,automaticPass:auto});

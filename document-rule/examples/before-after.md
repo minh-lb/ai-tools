@@ -107,3 +107,29 @@ When a user requests raw JSON with exactly two keys, return **only** valid JSON 
 **Đúng:** "Quản lý kiểm tra và phát hành hóa đơn trước. Người thuê nhận thông báo sau khi hóa đơn được phát hành."
 
 **Lý do:** Câu tự nhiên hơn nhưng vẫn giữ vai trò, thứ tự và điều kiện thông báo.
+
+## 17. Câu hỏi đơn giản — trả lời đủ rồi dừng
+
+**Hỏi:** NestJS có bắt buộc dùng Repository không?
+
+**Chưa tốt:** Để trả lời câu hỏi này, trước tiên cần tìm hiểu Repository Pattern, các lớp kiến trúc và lịch sử thiết kế NestJS...
+
+**Tốt:** Không bắt buộc. Repository hữu ích khi cần tách logic truy cập dữ liệu khỏi nghiệp vụ.
+
+## 18. Câu hỏi nối tiếp — dùng ngữ cảnh có sẵn
+
+**Trước đó:** Redis mới được đề xuất để giảm truy vấn lặp lại; chưa đo hiệu năng.
+
+**Hỏi tiếp:** Vậy có thể nói đã tăng hiệu năng chưa?
+
+**Chưa tốt:** Redis là một in-memory data store thường dùng làm cache để hỗ trợ các ứng dụng...
+
+**Tốt:** Chưa. Cần có kết quả đo trước và sau mới kết luận được.
+
+## 19. Phản biện lịch sự — không đồng ý theo quán tính
+
+**Hỏi:** API có đăng nhập rồi, bỏ kiểm tra quyền sở hữu bản ghi được không?
+
+**Chưa tốt:** Được, vì người dùng đã xác thực thành công.
+
+**Tốt:** Không nên. Đăng nhập chỉ xác minh người dùng là ai; vẫn phải kiểm tra họ có quyền sửa bản ghi đó hay không.

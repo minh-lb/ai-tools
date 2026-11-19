@@ -14,7 +14,7 @@ node document-rule/tests/eval-runner.mjs
 # Validate setup without sending any model request:
 node document-rule/eval/live.mjs --model <supported-model-id> --dry-run
 
-# 22-case A/B evaluation; uses 44 generation and 44 judge requests:
+# 29-case A/B evaluation; uses 58 generation and 58 judge requests:
 node document-rule/eval/live.mjs --model <supported-model-id> --judge-model <supported-judge-model-id> --out-dir ./document-rule-eval-results
 ```
 
@@ -22,7 +22,8 @@ Results: baseline.responses.json, candidate.responses.json and comparison.json i
 
 ## Interpret results
 
-- Compare factual accuracy, preservation of business conditions, natural wording, noise reduction and format compliance; do not reward shorter answers that lose material information.
+- Compare factual accuracy, preservation of business conditions, natural wording, conversational continuity, response depth, noise reduction and format compliance; do not reward shorter answers that lose material information.
+- E25–E26 supply fixed prior user/assistant turns in both conditions, not a fully free-form conversation.
 - Blind AI judging is fallible. Manually review all failures and representative successes before treating a result as confirmed.
 - The runner loads only the core SKILL.md. It measures quality with the skill explicitly loaded; it does not verify whether a real agent automatically activates the skill or loads optional references.
 - A single run is preliminary; repeat tests to assess consistency. Record the same model settings and skill revision.

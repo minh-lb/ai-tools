@@ -20,6 +20,9 @@ function autoCheck(caseDef, response) {
   if (caseDef.automatic.type === 'textExact') {
     return { ok: response === caseDef.automatic.value, check: 'exact text' };
   }
+  if (caseDef.automatic.type === 'maxLines') {
+    return { ok: response.trim().split(/\r?\n/).length <= caseDef.automatic.value, check: 'maximum lines' };
+  }
   if (caseDef.automatic.type === 'jsonExact') {
     try {
       const got = JSON.parse(response);

@@ -19,7 +19,12 @@ test('live A/B runner isolates conditions, stores evidence, and rejects missing 
  const dir=mkdtempSync(join(tmpdir(),'live-eval-test-'));
  const cases=[
   {id:'E07',prompt:'Return only JSON with keys status and reason. status=blocked; reason=missing approval.',mustKeep:'exact JSON',mustAvoid:'code fence',automatic:{type:'jsonExact',value:{status:'blocked',reason:'missing approval'}}},
-  {id:'E09',prompt:'Extract only this string, verbatim: ERR_AUTH_403',mustKeep:'exact string',mustAvoid:'explanation',automatic:{type:'textExact',value:'ERR_AUTH_403'}}
+  {id:'E09',prompt:'Extract only this string, verbatim: ERR_AUTH_403',mustKeep:'exact string',mustAvoid:'explanation',automatic:{type:'textExact',value:'ERR_AUTH_403'}},
+  {id:'E25',prompt:'Vậy có thể nói hiệu năng đã cải thiện chưa?',messages:[
+    {role:'user',content:'Redis mới là đề xuất và chưa đo hiệu năng.'},
+    {role:'assistant',content:'Đúng, hiện chưa có số liệu đo.'},
+    {role:'user',content:'Vậy có thể nói hiệu năng đã cải thiện chưa?'}
+  ],mustKeep:'Chưa có bằng chứng',mustAvoid:'Bịa số liệu'}
  ];
  writeFileSync(join(dir,'cases.json'),JSON.stringify(cases));
  writeFileSync(join(dir,'SKILL.md'),'---\nname: document-rule\n---\n# Readable output\n');
@@ -30,8 +35,9 @@ test('live A/B runner isolates conditions, stores evidence, and rejects missing 
   const dev=body.input[0]?.content||'';
   let text;
   if(dev.includes('blind quality evaluator')) text=JSON.stringify({scores:{relevance:2,clarity:2,accuracy:2,contract:2},notes:'Fixture-only scoring; not a real model.'});
-  else if(body.input[1].content.includes('JSON'))text='{"status":"blocked","reason":"missing approval"}';
-  else text='ERR_AUTH_403';
+  else if(body.input.at(-1).content.includes('JSON'))text='{"status":"blocked","reason":"missing approval"}';
+  else if(body.input.at(-1).content.includes('ERR_AUTH_403'))text='ERR_AUTH_403';
+  else text='Chưa, vì chưa có kết quả đo hiệu năng.';
   res.writeHead(200,{'content-type':'application/json'});
   res.end(JSON.stringify({output:[{content:[{type:'output_text',text}]}]}));
  });
@@ -48,13 +54,14 @@ test('live A/B runner isolates conditions, stores evidence, and rejects missing 
   const baseline=JSON.parse(readFileSync(join(dir,'results/baseline.responses.json')));
   const candidate=JSON.parse(readFileSync(join(dir,'results/candidate.responses.json')));
   const comparison=JSON.parse(readFileSync(join(dir,'results/comparison.json')));
-  assert.equal(baseline.results.length,2);
-  assert.equal(candidate.results.length,2);
+  assert.equal(baseline.results.length,3);
+  assert.equal(candidate.results.length,3);
   assert.equal(candidate.results.every(x=>x.automaticPass),true);
-  assert.equal(comparison.comparison.length,2);
-  assert.equal(seen.length,8);
-  assert.equal(seen.filter(x=>x.input[0].content.includes('document-rule skill')).length,2);
-  assert.equal(seen.filter(x=>x.input[0].content.includes('blind quality evaluator')).length,4);
+  assert.equal(comparison.comparison.length,3);
+  assert.equal(seen.length,12);
+  assert.equal(seen.filter(x=>x.input[0].content.includes('document-rule skill')).length,3);
+  assert.equal(seen.filter(x=>x.input[0].content.includes('blind quality evaluator')).length,6);
+  assert.equal(seen.filter(x=>x.input.length===4 && x.input.at(-1).content==='Vậy có thể nói hiệu năng đã cải thiện chưa?').length,2,'prior conversation must be separate turns in both arms');
   assert.equal(seen.every(x=>x.store===false),true);
  } finally {
   await new Promise(r=>server.close(r));rmSync(dir,{recursive:true,force:true});

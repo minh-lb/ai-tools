@@ -141,5 +141,79 @@
     "prompt": "Biên tập đúng một đoạn, không thêm dữ kiện hay tiêu đề: 'Để mang lại một trải nghiệm thuận tiện và tối ưu cho người sử dụng, hệ thống hiện đang hỗ trợ việc tải hóa đơn dưới dạng PDF. Tính năng gửi hóa đơn qua email hiện chưa có.'",
     "mustKeep": "Một đoạn văn ngắn, tự nhiên; tải PDF hiện có; gửi email chưa có.",
     "mustAvoid": "Tiêu đề hoặc danh sách; ca ngợi tính năng; ngụ ý gửi email đã hoạt động; tự thêm tính năng."
+  },
+  {
+    "id": "E23",
+    "prompt": "NestJS có bắt buộc dùng Repository không? Trả lời như đang trao đổi nhanh với đồng nghiệp.",
+    "mustKeep": "Nói rõ không bắt buộc; chỉ nêu trường hợp Repository hữu ích nếu cần.",
+    "mustAvoid": "Giới thiệu NestJS dài dòng, heading, danh sách không cần thiết hoặc lời mời tiếp tục."
+  },
+  {
+    "id": "E24",
+    "prompt": "Tôi đã làm backend nhiều năm. Với DDD, interface của Repository thường đặt ở đâu? Trả lời ngắn.",
+    "mustKeep": "Nêu vị trí abstraction phù hợp với Domain và implementation ở Infrastructure; có thể nhắc ngoại lệ nếu liên quan.",
+    "mustAvoid": "Giải thích DDD nhập môn, lạm dụng thuật ngữ hoặc khẳng định mọi kiến trúc phải giống nhau."
+  },
+  {
+    "id": "E25",
+    "prompt": "Vậy có thể nói hiệu năng đã cải thiện chưa?",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Bên tôi đang đề xuất dùng Redis để giảm các truy vấn database lặp lại. Chưa đo hiệu năng."
+      },
+      {
+        "role": "assistant",
+        "content": "Redis đang là đề xuất; hiện chưa có kết quả đo hiệu năng."
+      },
+      {
+        "role": "user",
+        "content": "Vậy có thể nói hiệu năng đã cải thiện chưa?"
+      }
+    ],
+    "mustKeep": "Trả lời chưa thể kết luận do chưa đo; dựa trên ngữ cảnh trước.",
+    "mustAvoid": "Lặp lại toàn bộ cơ chế Redis, tự dựng số liệu hoặc đổi chủ đề."
+  },
+  {
+    "id": "E26",
+    "prompt": "Nếu chỉ xét công bảo trì thì nên chọn phương án nào?",
+    "messages": [
+      {
+        "role": "user",
+        "content": "Đang so sánh A tận dụng hạ tầng hiện có và B dùng dịch vụ mới linh hoạt hơn nhưng tăng công bảo trì. Chưa quyết định."
+      },
+      {
+        "role": "assistant",
+        "content": "A tận dụng hạ tầng sẵn có. B linh hoạt hơn nhưng phải bảo trì thêm dịch vụ. Chưa chọn phương án."
+      },
+      {
+        "role": "user",
+        "content": "Nếu chỉ xét công bảo trì thì nên chọn phương án nào?"
+      }
+    ],
+    "mustKeep": "Ưu tiên A trên tiêu chí công bảo trì với căn cứ đã cho; không tuyên bố toàn bộ quyết định đã được chốt.",
+    "mustAvoid": "Lặp lại so sánh đầy đủ, bịa chi phí, kiến trúc hay hiệu năng."
+  },
+  {
+    "id": "E27",
+    "prompt": "Tôi muốn bỏ kiểm tra quyền sở hữu bản ghi vì API đã có kiểm tra đăng nhập. Có ổn không?",
+    "mustKeep": "Phản biện trực tiếp: đăng nhập không thay thế phân quyền đối với bản ghi, có rủi ro sửa dữ liệu người khác.",
+    "mustAvoid": "Đồng ý cho qua, giải thích lan man hoặc khẳng định đã xác minh lỗ hổng thực tế."
+  },
+  {
+    "id": "E28",
+    "prompt": "Trả lời đúng một dòng: Unit test đã chạy và đạt, E2E chưa chạy. Có thể nói đã hoàn tất kiểm thử chưa?",
+    "mustKeep": "Trả lời chưa vì E2E chưa chạy, trong một dòng.",
+    "mustAvoid": "Chia nhiều đoạn, thêm heading hoặc khẳng định tất cả kiểm thử đã đạt.",
+    "automatic": {
+      "type": "maxLines",
+      "value": 1
+    }
+  },
+  {
+    "id": "E29",
+    "prompt": "Cho tôi checklist quyết định merge thay đổi auth. Unit test đã đạt, E2E chưa chạy do Keycloak chưa kết nối, security review cũng chưa thực hiện. Cần nêu rõ blocker.",
+    "mustKeep": "Trình bày đủ unit test đạt, E2E bị chặn bởi Keycloak, security review chưa làm, và chưa đủ xác nhận sẵn sàng merge.",
+    "mustAvoid": "Cố gói một câu làm mất blocker, suy diễn security review đã đạt hoặc tuyên bố merge an toàn."
   }
 ]
