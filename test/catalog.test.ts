@@ -421,6 +421,7 @@ test("loadSelectionCatalog includes curated local skills in installer choices", 
       "git-workflow",
       "react-component-generator",
       "reviewer",
+      "software-architecture",
       "task-creator",
       "testcase-creator",
       "testing-rule"
@@ -444,7 +445,7 @@ test("loadSelectionCatalog includes curated local skills in installer choices", 
     {
       id: "document-rule",
       label: "Document Rule",
-      description: "Use when creating, editing, reviewing, displaying, or exporting software docs.",
+      description: "Apply when writing, explaining, summarizing, rewriting, or presenting user-facing answers and technical documents. Make content relevant, plain-language, concise, accurate, and easy for a non-developer to understand and review. This is a communication/output quality skill, not a document-planning workflow.",
       sourceBranch: "agent-skills",
       sourcePath: "document-rule",
       targets: undefined
@@ -492,9 +493,21 @@ test("loadSelectionCatalog includes curated local skills in installer choices", 
     {
       id: "reviewer",
       label: "Reviewer",
-      description: "Use when reviewer is explicitly requested for code or technical documentation, including a named workflow handoff.",
+      description: "Use only when reviewer is explicitly requested for code, technical documents, GitHub PRs, GitLab MRs, or a named workflow handoff.",
       sourceBranch: "agent-skills",
       sourcePath: "reviewer",
+      targets: undefined
+    }
+  );
+
+  assert.deepEqual(
+    catalog.skills.find((skill) => skill.id === "software-architecture"),
+    {
+      id: "software-architecture",
+      label: "Software Architecture",
+      description: "Use when asked to analyze, design, review, or validate software architecture, including a feature architecture outline or design based on an existing business specification. Also use when a redesign changes system boundaries, data ownership, consistency guarantees, or deployment topology. Routine code changes and document edits stay in their own workflows.",
+      sourceBranch: "agent-skills",
+      sourcePath: "software-architecture",
       targets: undefined
     }
   );
