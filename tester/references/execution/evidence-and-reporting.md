@@ -28,7 +28,7 @@ Do not generate a long test document unless requested or required by the project
 
 ## Completion gate
 
-Before claiming success, reconcile planned journeys with results. Passing smoke checks establish only their selected scope. Local tests with mocked providers establish only that local configuration. Manual browser checks establish only the inspected session. Unit tests, builds, and file validation cannot substitute for an unexecuted E2E run.
+Before claiming success, reconcile requested case IDs or journeys with executed cases and their effective environment or runner project. When the selection is unexpected, inspect filters, shards, skips, and retries in the runner output or artifacts. A wrapper exit code of zero with no executed checks is a no-run result. Passing smoke checks establish only the scope that ran. Local tests with mocked providers and manual browser checks establish evidence for those configurations only. Unit tests, builds, and file validation cannot substitute for an unexecuted E2E run.
 
 Separate runner success from acceptance readiness: exit code 0 can coexist with retries and skipped criteria. Give a readiness recommendation only against the project's acceptance/release policy and the evidence available. If that policy or required coverage is missing, state the verified scope and gaps instead of inventing a universal release gate. A timeout with an unknown committed result remains unresolved even when no error is visible afterward.
 

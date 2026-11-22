@@ -1,6 +1,6 @@
 # E2E Scope and Expected-Result Rules
 
-This skill produces **one E2E user-journey case set**, not separate frontend and backend suites. Each deterministic case begins at a product entry point and asserts an approved user-visible outcome. Include a cross-layer effect (persistence, notification, job completion, etc.) only when it is part of the user outcome; prefer a UI/product read-back over database inspection.
+The case-design workflow produces **one E2E user-journey case set**, not separate frontend and backend suites. Each deterministic case begins at a product entry point and asserts an approved user-visible outcome. Include a cross-layer effect (persistence, notification, job completion, etc.) only when it is part of the user outcome; prefer a UI/product read-back over database inspection.
 
 ## E2E case fields
 
@@ -32,4 +32,4 @@ Do not present locally authored examples or implementation behavior as approved 
 
 - Keep Scope and sources to entry/exit point, approved links, actors/data, environment, cleanup, and material exclusions.
 - Add Pending decisions only when a journey is genuinely blocked on an oracle/source/owner. Do not keep empty gaps or review-summary sections.
-- Exploratory observations can suggest risk-based conditions but are not deterministic testcases. If an oracle cannot be approved, record a missing condition as `pending-spec`. Do not create exploratory charters, execution notes or run results with this skill.
+- Exploratory observations can suggest risk-based conditions but are not deterministic testcases. If an oracle cannot be approved, record a missing condition as `pending-spec`. Do not create exploratory charters, execution notes or run results in the testcase document.

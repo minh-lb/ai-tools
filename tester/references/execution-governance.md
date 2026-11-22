@@ -11,7 +11,7 @@ Keep deterministic E2E testcase design separate from execution results. Testcase
 
 Document only what a future tester needs to reproduce the journey: target environment and supported client, browser/device when material, locale/timezone, feature flags, test account/role/tenant, starting state, test data, and preconditions. Avoid secrets and real personal data; use synthetic or masked data. Include numbered sign-in actions when authentication is in scope; otherwise declare the authenticated-session precondition. Define cleanup/reset or state why data is retained.
 
-For destructive, financial, notification, external webhook, bulk, load, security, or fault-injection scenarios, document required authorization, isolation, impact limits, and cleanup. This skill designs cases; it does not perform actions against an environment. Security-sensitive direct API probes belong in dedicated authorized suites.
+For destructive, financial, notification, external webhook, bulk, load, security, or fault-injection scenarios, document required authorization, isolation, impact limits, and cleanup. Record these conditions in the testcase and check them before execution. Security-sensitive direct API probes belong in dedicated authorized suites.
 
 ## Types and layers
 

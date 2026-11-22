@@ -21,9 +21,11 @@ Do not blame infrastructure merely because the failure is intermittent.
 
 Compare expected and actual state at the failed boundary. Inspect only relevant logs, network requests, selectors, data, and service health. Check common causes: stale authentication, wrong target, shared fixtures, eventual consistency, asynchronous race, timezone assumptions, and external dependency failure.
 
-Change one factor at a time. Reproduce the original case with the same inputs when safe. A bounded rerun can test a hypothesis; repeated blind retries destroy useful evidence and can duplicate side effects.
+Change one factor at a time. Reproduce the original case with the same inputs when safe. If it passes alone but fails in the suite, compare test order, worker count, reused sessions, and backend test data to look for interference. Keep any change to those conditions visible in the report. A bounded rerun can test a hypothesis; repeated blind retries can mask interference and duplicate side effects.
 
 If a failure is followed by a passing retry with unchanged product, test, and configuration under comparable conditions, report the attempt history as flaky/intermittent; the cause may remain unknown. A retry does not erase a failure. A passing rerun after a deliberate fix is before/after verification, not evidence of flakiness by itself. Record what changed and follow existing CI policy for the runner's final status.
+
+See [Playwright retry outcomes](https://playwright.dev/docs/test-retries) for an example of how a runner distinguishes first-pass, flaky, and failed cases.
 
 ### Mutation with an unknown outcome
 
