@@ -48,4 +48,4 @@ State the stage being assessed. For implementation, recommend **Ready for Implem
 
 Scale the output to the task. Use Markdown and Mermaid when useful. Combine the relevant architecture views, requirements, decisions, migration or rollout plan, findings, validation, and readiness. Reuse requirement IDs rather than restating them. Adapt the [decision and readiness template](templates/decision-readiness.md) when a reusable artifact helps. See the [worked example](examples/booking-consistency.md) for a design-stage review and gate.
 
-Follow project conventions for design, decisions, and handoff. Use `reviewer` for an authorized independent review and `document-rule` for presentation when relevant. The core workflow supports a local self-review. Name the actual decision owner or mark ownership as unconfirmed.
+Follow project conventions for design, decisions, and handoff. Use `reviewer` for an authorized independent review and `document-writer` for presentation when relevant. The core workflow supports a local self-review. Name the actual decision owner or mark ownership as unconfirmed.

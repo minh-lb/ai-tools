@@ -1,5 +1,5 @@
 ---
-name: document-rule
+name: document-writer
 description: >-
   Apply when writing, explaining, summarizing, rewriting, or presenting user-facing
   answers and technical documents. Make content relevant, plain-language, concise,
@@ -9,7 +9,7 @@ metadata:
   author: Minh Luu
 ---
 
-# Document Rule
+# Document Writer
 
 **Goal:** readers understand the important message on the first read, without having to filter noise or ask for a simpler explanation.
 

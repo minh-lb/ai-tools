@@ -1,6 +1,6 @@
 # Behavior evaluation rubric
 
-Use a fresh session with standard skill discovery for each prompt in [cases.md](cases.md). For the baseline, omit the candidate. For the candidate, expose its name, description and folder without requiring invocation. Leave other capabilities constant when comparing. For cases with a folder under `fixtures/`, copy its contents into the test workspace before starting. For H, also expose the repository's `reviewer` and `document-rule` skills. A manual metadata-selection simulation tests routing judgment only. Read traces when available to confirm which instructions actually loaded. Keep the evaluator's rubric out of the tested session.
+Use a fresh session with standard skill discovery for each prompt in [cases.md](cases.md). For the baseline, omit the candidate. For the candidate, expose its name, description and folder without requiring invocation. Leave other capabilities constant when comparing. For cases with a folder under `fixtures/`, copy its contents into the test workspace before starting. For H, also expose the repository's `reviewer` and `document-writer` skills. A manual metadata-selection simulation tests routing judgment only. Read traces when available to confirm which instructions actually loaded. Keep the evaluator's rubric out of the tested session.
 
 Score each row Pass, Fail or Unverified using observable evidence from the response and trace.
 

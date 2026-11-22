@@ -30,7 +30,7 @@ function walk(dir) {
 walk(root);
 for (const file of required) assert.ok(existsSync(path.join(root, file)), file + ' is missing');
 const skill = readFileSync(path.join(root, 'SKILL.md'), 'utf8');
-assert.match(skill, /^---\nname: document-rule\n/m);
+assert.match(skill, /^---\nname: document-writer\n/m);
 assert.match(skill, /communication\/output quality skill/i);
 for (const dir of ['templates', 'references/plan', 'references/spec']) {
   assert.ok(!existsSync(path.join(root, dir)), 'Legacy workflow remains: ' + dir);

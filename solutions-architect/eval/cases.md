@@ -32,7 +32,7 @@ In this existing CRUD app, rename the UI label “Save” to “Save changes.”
 
 ## H — Companion skills
 
-Review the checkout architecture before implementation. There is one item in stock. Each request reads available stock, then separately writes a reservation, with no conditional update or lock. Never reserve more units than are available. Use the reviewer skill in embedded mode and apply document-rule to the final write-up. Respond in chat only with findings and the implementation-readiness verdict. No publish or file writes.
+Review the checkout architecture before implementation. There is one item in stock. Each request reads available stock, then separately writes a reservation, with no conditional update or lock. Never reserve more units than are available. Use the reviewer skill in embedded mode and apply document-writer to the final write-up. Respond in chat only with findings and the implementation-readiness verdict. No publish or file writes.
 
 ## I — Architecture outline only
 

@@ -1,4 +1,4 @@
-/** A/B test an explicitly loaded document-rule with OpenAI Responses API.
+/** A/B test an explicitly loaded document-writer with OpenAI Responses API.
  * This does not test automatic skill activation by an agent harness.
  */
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
@@ -17,7 +17,7 @@ const has = (name) => args.includes(name);
 const parse = file => JSON.parse(readFileSync(resolve(file), 'utf8'));
 const model = get('--model', process.env.OPENAI_MODEL);
 const judgeModel = get('--judge-model');
-const outDir = resolve(get('--out-dir', './document-rule-eval-results'));
+const outDir = resolve(get('--out-dir', './document-writer-eval-results'));
 const casesFile = resolve(get('--cases', resolve(dir, 'cases.json')));
 const skillFile = resolve(get('--skill', resolve(root, 'SKILL.md')));
 const apiBase = get('--api-base', 'https://api.openai.com/v1').replace(/\/$/, '');
@@ -82,7 +82,7 @@ async function main(){
   if(!Array.isArray(cases) || !cases.length)throw new Error('No cases available');
   const selected=cases.slice(0,limit);
   const skill=readFileSync(skillFile,'utf8');
-  if(!skill.includes('name: document-rule'))throw new Error('Invalid skill source');
+  if(!skill.includes('name: document-writer'))throw new Error('Invalid skill source');
   const revision=createHash('sha256').update(skill).digest('hex').slice(0,12);
   if(has('--dry-run')){
     console.log(JSON.stringify({mode:'dry-run',cases:selected.length,model,judgeModel:judgeModel||null,skillSha256:revision,apiKeyConfigured:!!key,liveRequests:0},null,2));
@@ -92,7 +92,7 @@ async function main(){
   const baseline=[], candidate=[];
   for(const [i,c] of selected.entries()){
     for(const arm of (i%2===0?['baseline','candidate']:['candidate','baseline'])){
-      const dev=instructions + (arm==='candidate'?'\n\nThe following is the document-rule skill, to apply when relevant:\n'+skill:'');
+      const dev=instructions + (arm==='candidate'?'\n\nThe following is the document-writer skill, to apply when relevant:\n'+skill:'');
       const response=await callApi([{role:'developer',content:dev},...conversation(c)],model);
       const auto=checkAutomatic(c,response);
       const rated=judgeModel?await judge(c,response):{scores:undefined,notes:'Not graded; run with --judge-model or review manually'};

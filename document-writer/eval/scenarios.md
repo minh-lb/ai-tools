@@ -48,10 +48,10 @@ The single result above is an **illustration**, not a valid full-suite PASS or a
 ## Commands
 
 ```bash
-node document-rule/tests/validate.mjs
-node document-rule/tests/eval-runner.mjs
-node document-rule/eval/run.mjs --input /path/to/evaluated-responses.json --output /path/to/report.json
-node document-rule/eval/run.mjs --input /path/to/new-responses.json --output /path/to/new-report.json --baseline /path/to/previous-report.json
+node document-writer/tests/validate.mjs
+node document-writer/tests/eval-runner.mjs
+node document-writer/eval/run.mjs --input /path/to/evaluated-responses.json --output /path/to/report.json
+node document-writer/eval/run.mjs --input /path/to/new-responses.json --output /path/to/new-report.json --baseline /path/to/previous-report.json
 ```
 
 This workflow does not require a particular model provider or paid evaluation service; it processes **actual model outputs collected separately**. The runner does not generate model responses, does not treat human scores as automatic truth, and does not publish reports to the repository by default.

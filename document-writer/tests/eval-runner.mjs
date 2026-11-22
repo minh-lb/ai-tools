@@ -7,7 +7,7 @@ import { spawnSync } from 'node:child_process';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const cases = JSON.parse(readFileSync(join(root,'eval/cases.json'),'utf8'));
-const temp = mkdtempSync(join(tmpdir(),'document-rule-eval-'));
+const temp = mkdtempSync(join(tmpdir(),'document-writer-eval-'));
 const script = join(root,'eval/run.mjs');
 function run(input, report, baseline) {
   writeFileSync(join(temp,'input.json'), JSON.stringify(input));

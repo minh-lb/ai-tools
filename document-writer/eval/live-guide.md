@@ -1,4 +1,4 @@
-# Live A/B evaluation for document-rule
+# Live A/B evaluation for document-writer
 
 The runner compares the same model and test prompts in two independent requests: baseline without skill instructions, candidate with SKILL.md explicitly loaded. A separate blind judge scores the answers; strict JSON and verbatim checks run automatically.
 
@@ -7,15 +7,15 @@ The runner compares the same model and test prompts in two independent requests:
 Prerequisites: Node.js 22+, outbound HTTPS access, and a valid OPENAI_API_KEY held in the runtime environment (never commit credentials).
 
 ```bash
-node document-rule/tests/validate.mjs
-node --test document-rule/tests/live.test.mjs
-node document-rule/tests/eval-runner.mjs
+node document-writer/tests/validate.mjs
+node --test document-writer/tests/live.test.mjs
+node document-writer/tests/eval-runner.mjs
 
 # Validate setup without sending any model request:
-node document-rule/eval/live.mjs --model <supported-model-id> --dry-run
+node document-writer/eval/live.mjs --model <supported-model-id> --dry-run
 
 # 29-case A/B evaluation; uses 58 generation and 58 judge requests:
-node document-rule/eval/live.mjs --model <supported-model-id> --judge-model <supported-judge-model-id> --out-dir ./document-rule-eval-results
+node document-writer/eval/live.mjs --model <supported-model-id> --judge-model <supported-judge-model-id> --out-dir ./document-writer-eval-results
 ```
 
 Results: baseline.responses.json, candidate.responses.json and comparison.json in the output directory. Each answer includes judge scores, comments, automatic-format checks and complete response text.

@@ -27,7 +27,7 @@ test('live A/B runner isolates conditions, stores evidence, and rejects missing 
   ],mustKeep:'Chưa có bằng chứng',mustAvoid:'Bịa số liệu'}
  ];
  writeFileSync(join(dir,'cases.json'),JSON.stringify(cases));
- writeFileSync(join(dir,'SKILL.md'),'---\nname: document-rule\n---\n# Readable output\n');
+ writeFileSync(join(dir,'SKILL.md'),'---\nname: document-writer\n---\n# Readable output\n');
  const seen=[];
  const server=createServer(async (req,res)=>{
   let raw='';for await(const buf of req)raw+=buf;
@@ -59,7 +59,7 @@ test('live A/B runner isolates conditions, stores evidence, and rejects missing 
   assert.equal(candidate.results.every(x=>x.automaticPass),true);
   assert.equal(comparison.comparison.length,3);
   assert.equal(seen.length,12);
-  assert.equal(seen.filter(x=>x.input[0].content.includes('document-rule skill')).length,3);
+  assert.equal(seen.filter(x=>x.input[0].content.includes('document-writer skill')).length,3);
   assert.equal(seen.filter(x=>x.input[0].content.includes('blind quality evaluator')).length,6);
   assert.equal(seen.filter(x=>x.input.length===4 && x.input.at(-1).content==='Vậy có thể nói hiệu năng đã cải thiện chưa?').length,2,'prior conversation must be separate turns in both arms');
   assert.equal(seen.every(x=>x.store===false),true);
