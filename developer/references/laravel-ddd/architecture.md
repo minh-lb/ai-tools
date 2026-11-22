@@ -36,4 +36,4 @@ Test locations also vary by project. Use the existing suite's organization and n
 
 ## Templates
 
-Template files are `templates/{Component}.template`. They are incomplete scaffolds, never ready-to-ship code: replace business placeholders, persistence decisions, policies, and unfinished test cases before reporting completion. Load only those needed and remove unused files. `ApiResponse`, `BaseDTO`, and `RulesAttribute` are optional examples; they are not required for a DTO or HTTP endpoint. Follow the existing response envelope and validation mechanism.
+The [Laravel templates](../../templates/laravel-ddd/) use the filename pattern `{Component}.template`. They are incomplete scaffolds, never ready-to-ship code: replace business placeholders, persistence decisions, policies, and unfinished test cases before reporting completion. Load only those needed and remove unused files. `ApiResponse`, `BaseDTO`, and `RulesAttribute` are optional examples; they are not required for a DTO or HTTP endpoint. Follow the existing response envelope and validation mechanism.

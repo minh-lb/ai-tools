@@ -55,6 +55,6 @@ export default ProductListFilters;
 ## Conventions
 
 - Keep async server data access on the server side and client interaction in the client boundary. Use a `controller.ts` only when that matches the repository's pattern.
-- Pass only the fields the client component actually needs, not the raw fetch response — see `references/props-design.md` on avoiding oversized prop objects; this also keeps the RSC-to-client serialization payload minimal.
+- Pass only the fields the client component actually needs, not the raw fetch response — see [props design](props-design.md) on avoiding oversized prop objects; this also keeps the RSC-to-client serialization payload minimal.
 - If server-only imports and client-only behavior currently share a module, split them even when the client interaction is small. Otherwise, a small interaction may remain with its existing component when that is the clearer local design.
 - Name and place the client boundary according to the codebase's established component conventions; behavior-oriented names are often easier to understand than mechanical `Client` suffixes.

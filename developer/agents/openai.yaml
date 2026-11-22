@@ -1,0 +1,4 @@
+interface:
+  display_name: "Developer"
+  short_description: "Implement features, fix bugs, and refactor code"
+  default_prompt: "Use $developer to implement this change and verify it with the repository's existing checks."

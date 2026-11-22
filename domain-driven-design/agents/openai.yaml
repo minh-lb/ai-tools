@@ -1,4 +1,0 @@
-interface:
-  display_name: "Domain Driven Design"
-  short_description: "Model or implement a requested DDD-oriented Laravel slice"
-  default_prompt: "Use $domain-driven-design only when the user requests DDD or the target Laravel project already uses it. Inspect the repository's conventions, aggregate ownership, transaction and tenant boundaries first; generate only the requested components and do not impose a sample module, one-action rule, response wrapper, validation scheme, or event design."

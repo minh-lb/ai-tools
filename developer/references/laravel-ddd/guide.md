@@ -1,15 +1,8 @@
----
-name: domain-driven-design
-description: Design or implement a Laravel module when the user requests Domain-Driven Design or the target codebase already uses that approach. Use for bounded-context modeling, domain behavior, repositories, application flows, and domain events; do not impose DDD layers on ordinary Laravel CRUD work.
-metadata:
-  author: Minh Luu
----
-
 # Domain-Driven Design for Laravel
 
-Use this skill only when the user requests DDD or the target Laravel codebase already has a DDD/module architecture. Before scaffolding, inspect the existing directory structure, namespaces, dependencies, framework version, validation, response, event, persistence, and test conventions. If the project does not use DDD and the user has not asked to introduce it, follow the current architecture or ask before creating new layers.
+Use this guide when the user requests DDD in Laravel or the module being changed already uses it. Look for domain-owned business invariants, aggregate or bounded-context boundaries, and established layer responsibilities. A modular directory layout alone is insufficient evidence. Inspect the module’s validation, responses, persistence, events, and tests before choosing a pattern.
 
-Templates are optional starting points, not a required architecture. This skill is self-contained; do not assume project-local Laravel docs, response wrappers, or shared base classes exist unless verified in the target codebase.
+Templates are optional starting points, not a required architecture. Verify that project-local Laravel docs, response wrappers, and shared base classes exist before relying on them.
 
 ## Workflow
 
@@ -20,9 +13,8 @@ Templates are optional starting points, not a required architecture. This skill 
    - Use the existing HTTP response/resource contract. Do not introduce a new response wrapper or envelope by default.
    - For event consumers, inspect delivery guarantees and side effects. Add idempotency where duplicate delivery can cause incorrect effects; use a design whose completion marker cannot permanently suppress a failed retry.
 4. Make aggregate operations enforce their own business invariants; let application use cases coordinate loading, domain operations, persistence, transaction, and publication. Model a Domain Action as a pure business operation, not a second application service. Keep cross-context calls behind published contracts; choose sync interactions or events based on required consistency, not fashion.
-5. Load `references/architecture.md` first. Read `references/modeling.md` for new aggregates, business rules, or bounded-context changes; layer references only for affected components; `references/consistency.md` for writes, concurrent updates, multi-tenancy, or reliable messaging; `cross-cutting.md` for cross-module work; `verification.md` for final review.
-6. Adapt templates completely: replace placeholders with real types, fields, mappings, and project-approved behavior. Remove unused files and example conventions.
-7. Validate generated behavior with the project's supported checks and tests for the changed layers. Do not claim checks ran unless they did; do not commit unless asked.
+5. Open the [architecture guide](architecture.md) for layer responsibilities and links to relevant references. Read [modeling](modeling.md) for aggregate and bounded-context changes, [consistency](consistency.md) for writes, tenancy, concurrency or reliable messaging, and [cross-cutting guidance](cross-cutting.md) for work across modules.
+6. Replace all template placeholders with actual types, fields, mappings, and project-approved behavior. Use the shared verification workflow and the [DDD verification guide](verification.md) for the affected boundaries.
 
 ## Design guidance
 
@@ -33,10 +25,6 @@ Templates are optional starting points, not a required architecture. This skill 
 - Preserve project-defined response shapes, status codes, authorization policies, deletion/retention rules, transactions, and event delivery semantics. For multi-tenant repositories, enforce tenant scope on reads and writes using trusted context, and verify it with tests; handle concurrent writes according to business risk.
 - Give each test the appropriate layer and isolation. Check allowed and rejected transitions, unchanged state after failure, concurrency/tenant boundaries where applicable, and real side effects. Follow the target project's Pest/PHPUnit, mocking, database, and coverage practices rather than assuming a runner.
 
-## Interaction with other workflows
-
-This skill owns DDD architecture decisions, not general code style, test-case documents, E2E execution, or review publication. Apply repository coding/testing/review conventions where present; never assume another skill is installed. Do not write implementation plans or testcase documents unless separately requested. For behavior benchmarking outside the normal workflow, use `eval/scenarios.md` and report observed results separately from static review.
-
 ## Layout
 
-The `Modules/{Module}/{Domain,Application,Infrastructure,Interfaces}` paths in `references/architecture.md` are an example layout used by the templates. Follow the target repository's actual module paths and registration conventions. Never move existing code into this layout unless the task requests that change.
+The `Modules/{Module}/{Domain,Application,Infrastructure,Interfaces}` layout in the [architecture guide](architecture.md) illustrates the [Laravel templates](../../templates/laravel-ddd/). Follow the target repository's module paths and registration conventions. Move existing code only when the task calls for it.
