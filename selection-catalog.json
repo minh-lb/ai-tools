@@ -2,25 +2,18 @@
   "version": 1,
   "skills": [
     {
-      "id": "coding-rule",
-      "label": "Coding Rule",
-      "description": "Use when implementing, debugging, or refactoring software, or making code naming and design decisions, including PHP, JavaScript, TypeScript, React, Next.js, Laravel, NestJS, and APIs.",
+      "id": "developer",
+      "label": "Developer",
+      "description": "Implement features, fix bugs, refactor code, or change tests in an existing repository. Verify the resulting behavior.",
       "sourceBranch": "agent-skills",
-      "sourcePath": "coding-rule"
+      "sourcePath": "developer"
     },
     {
-      "id": "document-rule",
-      "label": "Document Rule",
+      "id": "document-writer",
+      "label": "Document Writer",
       "description": "Apply when writing, explaining, summarizing, rewriting, or presenting user-facing answers and technical documents. Make content relevant, plain-language, concise, accurate, and easy for a non-developer to understand and review. This is a communication/output quality skill, not a document-planning workflow.",
       "sourceBranch": "agent-skills",
-      "sourcePath": "document-rule"
-    },
-    {
-      "id": "domain-driven-design",
-      "label": "Domain Driven Design",
-      "description": "Design or implement a Laravel module when the user requests Domain-Driven Design or the target codebase already uses that approach. Use for bounded-context modeling, domain behavior, repositories, application flows, and domain events; do not impose DDD layers on ordinary Laravel CRUD work.",
-      "sourceBranch": "agent-skills",
-      "sourcePath": "domain-driven-design"
+      "sourcePath": "document-writer"
     },
     {
       "id": "generate-flow",
@@ -37,13 +30,6 @@
       "sourcePath": "git-workflow"
     },
     {
-      "id": "react-component-generator",
-      "label": "React Component Generator",
-      "description": "Create, refactor, or improve a React component or UI block. Use when the requested work is component-level; inspect the target repository and follow its placement, styling, state, testing, and accessibility conventions rather than imposing a new stack.",
-      "sourceBranch": "agent-skills",
-      "sourcePath": "react-component-generator"
-    },
-    {
       "id": "reviewer",
       "label": "Reviewer",
       "description": "Use only when reviewer is explicitly requested for code, technical documents, GitHub PRs, GitLab MRs, or a named workflow handoff.",
@@ -51,11 +37,11 @@
       "sourcePath": "reviewer"
     },
     {
-      "id": "software-architecture",
-      "label": "Software Architecture",
-      "description": "Use when asked to analyze, design, review, or validate software architecture, including a feature architecture outline or design based on an existing business specification. Also use when a redesign changes system boundaries, data ownership, consistency guarantees, or deployment topology. Routine code changes and document edits stay in their own workflows.",
+      "id": "solutions-architect",
+      "label": "Solutions Architect",
+      "description": "Design or review solution architecture for software systems, infrastructure, cloud or on-premises deployments, data platforms, and system integrations. Use for architecture outlines, consequential design decisions, migrations, and implementation-readiness assessments.",
       "sourceBranch": "agent-skills",
-      "sourcePath": "software-architecture"
+      "sourcePath": "solutions-architect"
     },
     {
       "id": "task-creator",
@@ -65,18 +51,11 @@
       "sourcePath": "task-creator"
     },
     {
-      "id": "testcase-creator",
-      "label": "Testcase Creator",
-      "description": "Use when the user asks to write feature-level E2E test cases, manual user-flow test scenarios, or E2E test plans from approved feature requirements. This skill authors testcase documentation only.",
+      "id": "tester",
+      "label": "Tester",
+      "description": "Write unit, integration, and E2E tests, author feature-level E2E test case documents, or run and diagnose existing tests and interactive frontend checks.",
       "sourceBranch": "agent-skills",
-      "sourcePath": "testcase-creator"
-    },
-    {
-      "id": "testing-rule",
-      "label": "Testing Rule",
-      "description": "Use when executing, diagnosing, or evaluating existing E2E tests and interactive browser/frontend journeys, including smoke/regression runs, UI forms, accessibility checks, and flaky failures. For writing an E2E testcase document, use testcase-creator. Automated test code belongs to a separate implementation task.",
-      "sourceBranch": "agent-skills",
-      "sourcePath": "testing-rule"
+      "sourcePath": "tester"
     }
   ]
 }

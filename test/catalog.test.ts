@@ -318,11 +318,11 @@ test("resolveSelectionItems supports direct branch folders without a manifest", 
         sourcePath: "git-workflow"
       },
       {
-        id: "document-rule",
-        label: "Document Rule",
+        id: "document-writer",
+        label: "Document Writer",
         description: "Technical document authoring and review",
         sourceBranch: "agent-skills",
-        sourcePath: "document-rule"
+        sourcePath: "document-writer"
       }
     ],
     groups: []
@@ -359,7 +359,7 @@ test("resolveSelectionItems supports direct branch folders without a manifest", 
       github: client.config
     },
     selectionCatalog,
-    selectedSkillIds: ["git-workflow", "document-rule"],
+    selectedSkillIds: ["git-workflow", "document-writer"],
     selectedGroupIds: []
   });
 
@@ -383,11 +383,11 @@ test("resolveSelectionItems supports direct branch folders without a manifest", 
       }
     },
     {
-      id: "document-rule",
-      label: "Document Rule",
+      id: "document-writer",
+      label: "Document Writer",
       description: "Technical document authoring and review",
       sourceBranch: "agent-skills",
-      sourcePath: "document-rule",
+      sourcePath: "document-writer",
       targets: {
         codex: { type: "directory" },
         claude: { type: "directory" },
@@ -414,64 +414,49 @@ test("loadSelectionCatalog includes curated local skills in installer choices", 
   assert.deepEqual(
     catalog.skills.map((skill) => skill.id),
     [
-      "coding-rule",
-      "document-rule",
-      "domain-driven-design",
+      "developer",
+      "document-writer",
       "generate-flow",
       "git-workflow",
-      "react-component-generator",
       "reviewer",
-      "software-architecture",
+      "solutions-architect",
       "task-creator",
-      "testcase-creator",
-      "testing-rule"
+      "tester"
     ]
   );
 
   assert.deepEqual(
-    catalog.skills.find((skill) => skill.id === "coding-rule"),
+    catalog.skills.find((skill) => skill.id === "developer"),
     {
-      id: "coding-rule",
-      label: "Coding Rule",
-      description: "Use when implementing, debugging, or refactoring software, or making code naming and design decisions, including PHP, JavaScript, TypeScript, React, Next.js, Laravel, NestJS, and APIs.",
+      id: "developer",
+      label: "Developer",
+      description: "Implement features, fix bugs, refactor code, or change tests in an existing repository. Verify the resulting behavior.",
       sourceBranch: "agent-skills",
-      sourcePath: "coding-rule",
+      sourcePath: "developer",
       targets: undefined
     }
   );
 
   assert.deepEqual(
-    catalog.skills.find((skill) => skill.id === "document-rule"),
+    catalog.skills.find((skill) => skill.id === "document-writer"),
     {
-      id: "document-rule",
-      label: "Document Rule",
+      id: "document-writer",
+      label: "Document Writer",
       description: "Apply when writing, explaining, summarizing, rewriting, or presenting user-facing answers and technical documents. Make content relevant, plain-language, concise, accurate, and easy for a non-developer to understand and review. This is a communication/output quality skill, not a document-planning workflow.",
       sourceBranch: "agent-skills",
-      sourcePath: "document-rule",
+      sourcePath: "document-writer",
       targets: undefined
     }
   );
 
   assert.deepEqual(
-    catalog.skills.find((skill) => skill.id === "domain-driven-design"),
+    catalog.skills.find((skill) => skill.id === "tester"),
     {
-      id: "domain-driven-design",
-      label: "Domain Driven Design",
-      description: "Design or implement a Laravel module when the user requests Domain-Driven Design or the target codebase already uses that approach. Use for bounded-context modeling, domain behavior, repositories, application flows, and domain events; do not impose DDD layers on ordinary Laravel CRUD work.",
+      id: "tester",
+      label: "Tester",
+      description: "Write unit, integration, and E2E tests, author feature-level E2E test case documents, or run and diagnose existing tests and interactive frontend checks.",
       sourceBranch: "agent-skills",
-      sourcePath: "domain-driven-design",
-      targets: undefined
-    }
-  );
-
-  assert.deepEqual(
-    catalog.skills.find((skill) => skill.id === "testcase-creator"),
-    {
-      id: "testcase-creator",
-      label: "Testcase Creator",
-      description: "Use when the user asks to write feature-level E2E test cases, manual user-flow test scenarios, or E2E test plans from approved feature requirements. This skill authors testcase documentation only.",
-      sourceBranch: "agent-skills",
-      sourcePath: "testcase-creator",
+      sourcePath: "tester",
       targets: undefined
     }
   );
@@ -501,13 +486,13 @@ test("loadSelectionCatalog includes curated local skills in installer choices", 
   );
 
   assert.deepEqual(
-    catalog.skills.find((skill) => skill.id === "software-architecture"),
+    catalog.skills.find((skill) => skill.id === "solutions-architect"),
     {
-      id: "software-architecture",
-      label: "Software Architecture",
-      description: "Use when asked to analyze, design, review, or validate software architecture, including a feature architecture outline or design based on an existing business specification. Also use when a redesign changes system boundaries, data ownership, consistency guarantees, or deployment topology. Routine code changes and document edits stay in their own workflows.",
+      id: "solutions-architect",
+      label: "Solutions Architect",
+      description: "Design or review solution architecture for software systems, infrastructure, cloud or on-premises deployments, data platforms, and system integrations. Use for architecture outlines, consequential design decisions, migrations, and implementation-readiness assessments.",
       sourceBranch: "agent-skills",
-      sourcePath: "software-architecture",
+      sourcePath: "solutions-architect",
       targets: undefined
     }
   );
@@ -532,30 +517,6 @@ test("loadSelectionCatalog includes curated local skills in installer choices", 
       description: "Create an evidence-backed flow document when the user asks to trace, map, document, or generate an end-to-end flow for a specific feature. Do not trigger on a generic question about how code works when no document is requested.",
       sourceBranch: "agent-skills",
       sourcePath: "generate-flow",
-      targets: undefined
-    }
-  );
-
-  assert.deepEqual(
-    catalog.skills.find((skill) => skill.id === "react-component-generator"),
-    {
-      id: "react-component-generator",
-      label: "React Component Generator",
-      description: "Create, refactor, or improve a React component or UI block. Use when the requested work is component-level; inspect the target repository and follow its placement, styling, state, testing, and accessibility conventions rather than imposing a new stack.",
-      sourceBranch: "agent-skills",
-      sourcePath: "react-component-generator",
-      targets: undefined
-    }
-  );
-
-  assert.deepEqual(
-    catalog.skills.find((skill) => skill.id === "testing-rule"),
-    {
-      id: "testing-rule",
-      label: "Testing Rule",
-      description: "Use when executing, diagnosing, or evaluating existing E2E tests and interactive browser/frontend journeys, including smoke/regression runs, UI forms, accessibility checks, and flaky failures. For writing an E2E testcase document, use testcase-creator. Automated test code belongs to a separate implementation task.",
-      sourceBranch: "agent-skills",
-      sourcePath: "testing-rule",
       targets: undefined
     }
   );
