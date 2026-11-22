@@ -1,10 +1,16 @@
 # Architecture design reference
 
-## Boundaries and trade-offs
+## Quality scenarios and trade-offs
 
-- For each important rule, identify who may act, what changes, which owner enforces the rule and what rejection leaves unchanged. Name the authoritative owner for each mutable record. Describe what other modules can read or change through published interfaces.
-- For a consequential decision, compare options using relevant criteria such as consistency, peak workload, delivery time, team capacity, operating cost and rollback. State the evidence or assumptions behind the choice and what would trigger reconsideration.
-- Turn terms such as “fast,” “available,” and “global” into measurable scenarios. Ask for missing material targets or evaluate under labeled assumptions. Under a partition, describe what a caller sees given different state versions and whether the system can safely serve or must refuse an operation.
+- Turn goals such as “fast” or “available” into scenarios tied to business outcomes. State who or what triggers the scenario, the affected flow and conditions, the expected response, and the acceptance measure. A latency target needs a path, percentile, workload and measurement window where those affect the decision. Include peak, failure, or change conditions in proportion to their impact.
+- Reject options that violate confirmed constraints before comparing benefits. Use the current design or a smaller change as the baseline where viable. Compare against the same scenarios and show what improves, what gets worse, and which requirement takes priority. Use ranges or conditional outcomes when inputs are uncertain.
+- Vary the assumptions most likely to change the recommendation, such as concurrent load, allowable staleness, external service limits, or operator capacity. State the threshold or condition at which another option becomes better and identify the smallest test or source that could settle the choice. Under partition, describe what callers see and whether each side can safely serve.
+
+These techniques adapt [arc42 quality scenarios](https://docs.arc42.org/section-10/) and [SEI's Architecture Tradeoff Analysis Method](https://www.sei.cmu.edu/library/architecture-tradeoff-analysis-method-collection/) to a focused design decision.
+
+## System boundaries
+
+- For each important rule, identify who may act, what changes, which owner enforces the rule, and what rejection leaves unchanged. Name the authoritative owner for each mutable record. Describe what other modules can read or change through published interfaces.
 - Use a C4 context view for actors and external dependencies, a container view for runnable applications and data stores, and a component view when module responsibilities matter. Code-level views are useful for a specific implementation question. Show protocol, direction and trust boundary where consequential. Use a Mermaid sequence diagram when ordering, timeouts, retries or partial commits determine correctness.
 
 ## Data and interfaces
@@ -22,6 +28,7 @@ Consult only the sources useful to the decision. Use standards to structure desi
 - Architecture documentation sections and views. [arc42](https://arc42.org/overview)
 - Diagram levels and notation. [C4 Model](https://c4model.com/)
 - Decision context, status and consequences. [Architecture Decision Records](https://www.cognitect.com/blog/2011/11/15/documenting-architecture-decisions)
+- Recording alternatives, trade-offs and decision history. [Microsoft's ADR guidance](https://learn.microsoft.com/en-us/azure/well-architected/architect-role/architecture-decision-record)
 - Domain language, bounded contexts and aggregate rules. [Domain-Driven Design Reference](https://www.domainlanguage.com/ddd/reference/)
 - Product quality attributes. [ISO/IEC 25010](https://www.iso.org/standard/78176.html)
 - Verifiable application security requirements. [OWASP ASVS](https://owasp.org/www-project-application-security-verification-standard/)

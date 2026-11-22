@@ -1,0 +1,7 @@
+# Data Platform Design
+
+- Start with the consumers and decisions the data supports. Define dataset ownership, the authoritative source, record grain and identity, freshness, completeness, retention, and access requirements. Separate event time, arrival time, and the time a result is published where lateness affects consumers.
+- Choose batch, change data capture, or streaming from freshness needs, source capabilities, peak volume, backfill requirements, and operational cost. State what ordering the source guarantees, how changes and deletions are represented, and how consumers recover after a schema change or outage.
+- Show how an update moves from source to consumers. Define replay and checkpoint boundaries, deduplication keys, late data handling, and how corrections reach materialized datasets. Make backfills safe to resume and reconcile their overlap with live ingestion.
+- Classify sensitive fields and scope access to the datasets and outputs that actually need them. Carry retention, deletion, and audit requirements through raw, transformed, and serving layers. Document how replay or restore respects deletions.
+- Define quality gates and ownership. Measure source-to-output freshness, missing or duplicate records, reconciliation, and failed transformations. State how consumers see a delayed or untrusted dataset, how a correct snapshot is restored, and which gates protect cutover or retirement of the old pipeline.

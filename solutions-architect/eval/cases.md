@@ -45,3 +45,35 @@ Tài liệu nghiệp vụ trả hàng đã chốt: khách được yêu cầu tr
 ## K — Expand a selected architecture section
 
 Tiếp tục thiết kế phân quyền. Dàn ý đã chốt gồm ranh giới, mô hình dữ liệu, điểm thực thi quyền và kiểm chứng. Tài liệu nghiệp vụ đã quy định chỉ quản trị viên cùng tổ chức được cấp hoặc thu hồi vai trò cố định cho thành viên đang hoạt động. Quyền bị thu hồi phải hết hiệu lực từ lần kiểm tra tiếp theo. Tổ chức và thành viên đã có trong database quan hệ của ứng dụng. Viết ngay phần điểm thực thi quyền và các kịch bản kiểm chứng liên quan. Giữ các phần còn lại ở mức tham chiếu.
+
+## L — Infrastructure design and recovery
+
+Design production infrastructure for an existing web app and its relational database. The service must survive loss of a single availability zone. Recovery must take at most 30 minutes and can lose at most 5 minutes of accepted writes. A two-person team operates the service and already uses managed cloud services. Give a recommendation now, alternatives worth considering, a deployment and recovery design, and how you would verify it. Work in chat. No cloud environment is available for testing.
+
+## M — Hybrid integration and cutover
+
+A factory needs to send machine readings to a cloud analytics service over an unreliable link. The local network may be disconnected for up to 24 hours. Operators must keep seeing local readings during the outage. Downstream analytics must count each reading once and be able to identify late arrivals. Propose an end-to-end solution, including infrastructure, the ingestion contract, and how to move from the current local-only setup. Do not assume a particular cloud provider.
+
+## N — Data platform design
+
+Design a reporting pipeline from an order database that already exposes a change feed with stable keys, ordered revisions, and delete records. Product dashboards need data within 15 minutes. An initial backfill must overlap live changes. Corrections may arrive up to seven days late. Deleted customer contact fields must disappear from analytical copies within 24 hours, including after restore or replay. Use the existing warehouse and a small operations team. Recommend a design and give acceptance scenarios.
+
+## O — Implementation readiness versus rollout
+
+Review the proposed architecture for a read-only reporting endpoint and decide whether engineering can start implementation. It uses the existing API runtime, authorization and reporting database pattern, and the team has approved a 60-second freshness target. The design explains the refresh behavior and empty/error states. There are no unresolved architecture decisions or known design defects. Load and end-to-end freshness tests require the endpoint to be built and are required before production rollout. No endpoint or test results exist yet.
+
+## P — Trade-off under uncertain peak load
+
+Recommend a search architecture for an existing internal app. Searchable records and all derived copies must stay on premises. The team prefers keeping the existing relational database and can operate one more service only if necessary. The current query meets the target at 20 searches per second. The approved launch target is p95 below 250 ms for the search endpoint at 100 searches per second during a 15-minute peak. Growth may take the peak to 300 searches per second, but that forecast is uncertain. Compare a database-only approach and a self-managed index. Explain what would change your recommendation and the cheapest way to find out. No representative load test has run.
+
+## Q — Threat model for a changed trust boundary
+
+Review a proposed customer-export flow. An authenticated organization administrator requests an export of private customer data. A shared worker generates the file from a job containing the organization ID, writes it to object storage, and emails a download link. The proposal calls the email link sufficient authorization, leaves storage and worker permissions unspecified, and does not define what happens when the requesting administrator loses access. Exports must only be available to current administrators of the original organization. Give a focused threat model, design fixes, checks, and a verdict before implementation.
+
+## R — Approved controls versus an informal exception
+
+Use this repository's docs to design a private customer export for a company with a centrally managed platform. The delivery lead wants the workshop proposal implemented this sprint. Provide the fastest viable design, decisions and dependencies that still need owners, and release checks. Explain what can proceed while those decisions are open. Work in chat.
+
+## S — Cross-team cutover and operational ownership
+
+Review a proposed production cutover from Ledger V1 to Ledger V2. The ledger team maintains both APIs and the ledger data. Billing and Reporting deploy independently. Today both call V1. The proposal shifts all traffic and write authority to V2 in one step, and tells on-call to roll back by pointing producers and consumers back to V1. V2's new write representation cannot be read by V1 and no reverse synchronization exists. A migration can tolerate a short pause in writes. Designs and load results exist, but the release lacks an agreed version-compatibility window, a reconciliation rehearsal, and named approval and incident roles. Decide whether the rollout can go ahead, and propose stages, checks, and owner handoffs that make it safe.

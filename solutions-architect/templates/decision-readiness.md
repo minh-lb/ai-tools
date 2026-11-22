@@ -8,8 +8,8 @@ Summarize the proposed architecture and identify the reviewed revision or source
 
 - **Status** — Proposed, accepted, or superseded. Record who accepted it and where, if evidenced.
 - **Context** — Requirement IDs and constraints driving the decision.
-- **Options and choice** — Viable options, discriminating evidence, and rationale.
-- **Consequences** — Trade-offs, residual risks and revisit conditions.
+- **Options and choice** — Compare viable options against the same decisive scenarios. Record the evidence, rationale, and why other options were ruled out.
+- **Consequences** — Trade-offs, residual risks, and the threshold or evidence that would trigger reconsideration. Link any superseding ADR to preserve the decision history.
 
 ## Findings and validation
 
@@ -23,4 +23,10 @@ Summarize the proposed architecture and identify the reviewed revision or source
 
 ## Implementation readiness
 
-Give the proposed verdict, material gates still open, residual risk and any evidenced risk acceptance. Record design approval separately when given.
+Give the proposed implementation verdict, material gates, residual risk, and any evidenced risk acceptance. Identify checks that gate production rollout and their pass conditions. Record explicit approvals for the stage they cover.
+
+When work crosses team or policy boundaries, record open handoff items using the project’s existing process.
+
+| Gate or dependency | Owner and decision authority | Pass condition | Evidence or open action |
+| --- | --- | --- | --- |
+| [Stage and required outcome] | [Responsible team and authorized decision-maker] | [Observable condition] | [Source, status, and next action] |

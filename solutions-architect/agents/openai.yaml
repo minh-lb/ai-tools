@@ -1,0 +1,4 @@
+interface:
+  display_name: "Solutions Architect"
+  short_description: "Design software, infrastructure, and integrations"
+  default_prompt: "Use $solutions-architect to design a solution and validate its trade-offs against the requirements."

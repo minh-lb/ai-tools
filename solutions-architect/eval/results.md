@@ -1,5 +1,64 @@
 # Behavior evaluation results
 
+## Solutions Architect
+
+On 2026-11-22, Codex CLI 0.171.0 with `gpt-6.2-sol` at low reasoning effort ran G, I, L, and M in fresh read-only temporary directories. The prompts relied on automatic skill discovery. The host also exposed its built-in and plugin skills. Scores are based on the responses and the skill-read traces.
+
+| Case | Result | Observed evidence |
+| --- | --- | --- |
+| G · Scope exclusion | Pass | Kept the label change and checks focused. The trace contains no read of the Solutions Architect entrypoint. |
+| I · Architecture outline | Pass | Read the entrypoint and produced design questions tied to receipt-before-refund and refund-once without choosing endpoints or schemas. |
+| L · Infrastructure and recovery | Pass | Read the infrastructure reference and proposed a multi-zone design with surviving capacity, database failover, rollout, and separate RTO/RPO checks. Held readiness for a representative recovery drill. |
+| M · Hybrid integration and cutover | Pass | Read both design references. Kept local visibility independent, sized a durable buffer for the outage, and defined replay-safe identity, late arrivals, and migration checks. |
+
+The runs exercised architecture reasoning and routing. No infrastructure or application workload was deployed or tested.
+
+### Design scope, data platforms, and readiness review
+
+On 2026-11-22, the same CLI setup ran I, J, L, N, and O after the workflow review. L and N were rerun after tightening on-demand reference selection.
+
+| Case | Result | Observed evidence |
+| --- | --- | --- |
+| I · Explicit outline | Pass | Kept the response to an outline grounded in the return and refund rules. |
+| J · Open document scope | Pass | Proposed architecture questions about organization isolation and timely revocation. Kept the approved role model and left the detailed design open. |
+| L · Infrastructure and recovery | Pass | Read infrastructure and review guidance. Specified zone-loss capacity, an external write ledger, how to measure RTO and data loss, and rollout gates. |
+| N · Data platform | Pass | Read the data platform reference alone. Reused the warehouse and defined revision-aware backfill, late corrections, deletion, restore and replay controls, and freshness checks. |
+| O · Readiness by stage | Pass | Recommended implementation and held production rollout for the planned load and freshness tests. Reported that neither had run. |
+
+These are skill-routing and design-response checks. Production and test infrastructure were not provisioned.
+
+### Research-based design review update
+
+On 2026-11-22, Codex CLI 0.171.0 ran A, I, L, P, and Q with the same model and discovery setup. All five cases passed the reviewed criteria.
+
+| Case | Observed evidence |
+| --- | --- |
+| A · CRUD design | Delivered an outline and design in the same response, kept the existing app and database, and used a database constraint with an explicit concurrent-write outcome. |
+| I · Outline only | Proposed design questions tied to receive-before-refund and refund-once without selecting a schema or endpoints. |
+| L · Infrastructure recovery | Modelled capacity after zone loss and defined an end-to-end RTO check plus reconciliation of acknowledged writes. Recovery drills remained planned. |
+| P · Architecture trade-off | Kept all copies on premises, used the observed 20-search baseline and the 100-search launch target, and proposed a representative test and a threshold for prototyping an index. |
+| Q · Trust boundary review | Mapped the export and download boundaries, proposed live authorization and tenant-scoped worker and storage controls, and withheld implementation readiness. Verification remained planned. |
+
+These runs evaluated skill discovery and design responses. No workload, infrastructure, or security controls were exercised at runtime.
+
+### Enterprise delivery review
+
+On 2026-11-22 the same CLI and model ran G, I, O, R, and S in fresh read-only workspaces. R included the synthetic organization documents under `fixtures/R`. The evaluated workspaces exposed the skill through normal discovery and omitted the evaluator's cases and rubric. All five passed the reviewed criteria.
+
+| Case | Observed evidence |
+| --- | --- |
+| G · Scope exclusion | The skill entrypoint was not opened for the UI label change. |
+| I · Outline only | Read the entrypoint and delivered design questions tied to the return rules without expanding the design or loading enterprise guidance. |
+| O · Readiness by stage | Allowed implementation and kept load and freshness checks as production rollout gates. |
+| R · Enterprise policy evidence | Read and cited the approved controls, catalog, and draft workshop notes. Kept payloads on the approved regional platform, classified the exception as pending, identified the identity service commitment gap, and assigned owners and checks for the normal path. |
+| S · Cross-team cutover | Withheld production release, distinguished pre-commit abort from post-commit recovery, and specified reconciliation, decision authority, and ledger and consumer responsibilities. |
+
+These exercises validated the workflow against supplied documents and scenarios. They did not exercise an enterprise deployment, organizational approval, or runtime policy enforcement.
+
+## Historical software architecture evaluation results
+
+The remaining runs covered the software-focused predecessor.
+
 Run on 2026-11-20 with Codex CLI 0.169.0 and `gpt-6.2-sol` at low reasoning effort. Each CLI case ran in a fresh, read-only temporary directory with the candidate under `.agents/skills/`. Prompts were supplied without an explicit architecture skill mention. For H, the directory also included the repository copies of `reviewer` and `document-rule`.
 
 Reviewed the final responses and the JSON command trace for skill reads. Reproduce a case by placing its prompt in `case.txt` in an equivalent temporary directory and running:
