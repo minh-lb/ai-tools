@@ -64,7 +64,7 @@ function main() {
     const hasResponse = record && typeof record.response === 'string' && record.response.trim().length > 0;
     const automatic = hasResponse ? autoCheck(c, record.response) : { ok: false, check: 'missing response' };
     const total = scoreValid ? SCORE_KEYS.reduce((n,k) => n + scores[k],0) : null;
-    const passed = Boolean(hasResponse && scoreValid && automatic.ok && scores.accuracy === 2 && scores.contract === 2 && scores.relevance >= 1 && scores.clarity >= 1);
+    const passed = Boolean(hasResponse && scoreValid && automatic.ok && scores.accuracy === 2 && scores.contract === 2 && scores.relevance >= (['E30','E31','E32','E33'].includes(c.id) ? 2 : 1) && scores.clarity >= 1);
     const priorResult = prior?.results.find(r => r.id === c.id);
     const regressions = [];
     if (priorResult) {

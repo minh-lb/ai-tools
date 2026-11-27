@@ -58,6 +58,7 @@ test('live A/B runner isolates conditions, stores evidence, and rejects missing 
   assert.equal(candidate.results.length,3);
   assert.equal(candidate.results.every(x=>x.automaticPass),true);
   assert.equal(comparison.comparison.length,3);
+  assert.equal(comparison.comparison.every(x=>x.lengthDelta===0 && x.shorterWithQualityPreserved===false && Number.isInteger(x.baselineHeadings) && Number.isInteger(x.candidateHeadings)),true);
   assert.equal(seen.length,12);
   assert.equal(seen.filter(x=>x.input[0].content.includes('document-writer skill')).length,3);
   assert.equal(seen.filter(x=>x.input[0].content.includes('blind quality evaluator')).length,6);

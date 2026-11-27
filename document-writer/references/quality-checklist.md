@@ -4,6 +4,7 @@ Apply proportionately and silently before delivering the answer or document.
 
 | Check | Pass condition |
 |---|---|
+| Document scope | Every optional section serves a distinct purpose; mandatory sections remain; duplicate requirements are consolidated; necessary references are accessible |
 | Relevant | Every paragraph serves the user's question, decision, action, or verification |
 | Understandable | A non-developer can explain the main point without decoding unexplained jargon |
 | Concise | No filler, restatement, duplicated facts, or unneeded implementation detail |
@@ -23,7 +24,7 @@ Fix blockers and majors before delivery. Avoid stylistic churn when the text alr
 ## Practical self-review
 
 1. Read just the opening: does it answer the request?
-2. Remove anything that would not change understanding or decisions.
+2. Remove unnecessary sections first, then redundant paragraphs and sentences; verify mandatory coverage and reference usability.
 3. Translate unnecessary technical wording; define necessary terms once.
 4. Confirm evidence and caveats still support every important claim.
 5. Check exact output restrictions and requested scope.

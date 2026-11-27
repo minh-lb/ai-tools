@@ -133,3 +133,35 @@ When a user requests raw JSON with exactly two keys, return **only** valid JSON 
 **Chưa tốt:** Được, vì người dùng đã xác thực thành công.
 
 **Tốt:** Không nên. Đăng nhập chỉ xác minh người dùng là ai; vẫn phải kiểm tra họ có quyền sửa bản ghi đó hay không.
+
+## 20. Rút gọn toàn bộ tài liệu — không chỉ câu chữ
+
+**Yêu cầu:** Viết đặc tả ngắn cho chức năng phát hành hóa đơn. Hệ thống tạo bản nháp; chỉ quản lý được phát hành sau khi kiểm tra; người thuê được thông báo sau khi phát hành. Nếu gửi thông báo thất bại, hóa đơn vẫn đã phát hành và hệ thống ghi nhận lỗi. Chưa xác định cơ chế retry.
+
+**Trước (dư thừa):**
+
+### Tổng quan
+Chức năng phát hành hóa đơn giúp tối ưu hóa quá trình quản lý và nâng cao trải nghiệm người thuê.
+
+### Quy trình
+Hệ thống tạo hóa đơn nháp. Quản lý kiểm tra và phát hành. Người thuê được thông báo sau khi phát hành.
+
+### Phân quyền
+Chỉ quản lý được phát hành hóa đơn sau khi kiểm tra.
+
+### Xử lý lỗi
+Khi gửi thông báo thất bại, hóa đơn vẫn đã phát hành và hệ thống ghi nhận lỗi. Chưa xác định cơ chế retry.
+
+### Kết luận
+Quản lý kiểm tra và phát hành hóa đơn, sau đó hệ thống thông báo cho người thuê.
+
+**Sau:**
+
+### Phát hành hóa đơn
+
+- Hệ thống tạo hóa đơn nháp. Chỉ quản lý được phát hành sau khi kiểm tra.
+- Người thuê được thông báo sau khi hóa đơn phát hành.
+- Nếu gửi thông báo thất bại, hóa đơn vẫn đã phát hành; hệ thống ghi nhận lỗi.
+- Chưa xác định cơ chế retry.
+
+**Lý do:** Bỏ tổng quan chung chung và kết luận lặp lại, gộp phân quyền vào quy trình. Giữ đầy đủ điều kiện, lỗi và điểm chưa xác định.

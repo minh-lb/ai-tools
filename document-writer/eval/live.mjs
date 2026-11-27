@@ -24,7 +24,7 @@ const apiBase = get('--api-base', 'https://api.openai.com/v1').replace(/\/$/, ''
 const key = process.env.OPENAI_API_KEY;
 const limit = get('--limit') === null ? Infinity : Number(get('--limit'));
 const instructions = 'Answer the user accurately. Follow their requested scope and output format. Never invent source facts.';
-const rubric = 'You are a blind quality evaluator. You do NOT know whether the response was produced with a skill. Evaluate against the user task and explicit mustKeep/mustAvoid.\nGive integer scores 0, 1, or 2 for relevance, clarity, accuracy, contract.\nrelevance=2 only if directly useful without noise; clarity=2 only if understandable to the intended reader, natural and coherent, without boilerplate or forced lists; accuracy=2 only if no unsupported facts and no lost important conditions; contract=2 only if the user\'s scope and output constraints are met.\nIf unsure about facts not present in the input, do not award accuracy=2. Quote brief, concrete reasons.\nRespond ONLY as valid JSON: {"scores":{"relevance":0,"clarity":0,"accuracy":0,"contract":0},"notes":"short explanation"}. Do not add other keys.';
+const rubric = 'You are a blind quality evaluator. You do NOT know whether the response was produced with a skill. Evaluate against the user task and explicit mustKeep/mustAvoid.\nGive integer scores 0, 1, or 2 for relevance, clarity, accuracy, contract.\nrelevance=2 only if directly useful without noise, unnecessary sections, or repeated facts; for documents assess economy across the whole document, not just short sentences; clarity=2 only if understandable to the intended reader, natural and coherent, without boilerplate or forced lists; accuracy=2 only if no unsupported facts and no lost important conditions; contract=2 only if the user\'s scope and output constraints are met.\nIf unsure about facts not present in the input, do not award accuracy=2. Quote brief, concrete reasons.\nRespond ONLY as valid JSON: {"scores":{"relevance":0,"clarity":0,"accuracy":0,"contract":0},"notes":"short explanation"}. Do not add other keys.';
 function conversation(c) {
   return c.messages ?? [{role:'user',content:c.prompt}];
 }
@@ -69,9 +69,13 @@ function checkAutomatic(c, response) {
   }
   return false;
 }
+const documentCases = new Set(['E30','E31','E32','E33']);
+function passes(r) {
+  return r.scores?.accuracy===2 && r.scores?.contract===2 && r.scores?.relevance>=(documentCases.has(r.id)?2:1) && r.scores?.clarity>=1 && r.automaticPass;
+}
 function summary(results) {
   if (!judgeModel) return {total:results.length, judged:0, passed:null};
-  const passed=results.filter(r => r.scores?.accuracy===2 && r.scores?.contract===2 && r.scores?.relevance>=1 && r.scores?.clarity>=1 && r.automaticPass).length;
+  const passed=results.filter(passes).length;
   return {total:results.length,judged:results.length,passed};
 }
 function save(file,obj){mkdirSync(outDir,{recursive:true});writeFileSync(resolve(outDir,file),JSON.stringify(obj,null,2)+'\n');}
@@ -108,7 +112,7 @@ async function main(){
   const comparison=selected.map(c=>{
     const a=baseline.find(r=>r.id===c.id),b=candidate.find(r=>r.id===c.id);
     const score=r=>r.scores?Object.values(r.scores).reduce((s,n)=>s+n,0):null;
-    return {id:c.id,baselineScore:score(a),candidateScore:score(b),delta:score(a)===null?null:score(b)-score(a),baselineLength:a.response.length,candidateLength:b.response.length,baselineAutomaticPass:a.automaticPass,candidateAutomaticPass:b.automaticPass};
+    return {id:c.id,baselineScore:score(a),candidateScore:score(b),delta:score(a)===null?null:score(b)-score(a),baselineLength:a.response.length,candidateLength:b.response.length,baselineAutomaticPass:a.automaticPass,candidateAutomaticPass:b.automaticPass,baselineHeadings:(a.response.match(/^#{1,6}\s+/gm)||[]).length,candidateHeadings:(b.response.match(/^#{1,6}\s+/gm)||[]).length,lengthDelta:b.response.length-a.response.length,shorterWithQualityPreserved:judgeModel?b.response.length<a.response.length&&passes(b)&&['relevance','clarity','accuracy','contract'].every(k=>b.scores[k]>=a.scores[k]):null};
   });
   save('comparison.json',{...metadata,baseline:summary(baseline),candidate:summary(candidate),comparison});
   console.log(JSON.stringify({result:'completed',...metadata,baseline:summary(baseline),candidate:summary(candidate),outputDirectory:outDir},null,2));

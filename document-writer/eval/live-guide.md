@@ -14,7 +14,7 @@ node document-writer/tests/eval-runner.mjs
 # Validate setup without sending any model request:
 node document-writer/eval/live.mjs --model <supported-model-id> --dry-run
 
-# 29-case A/B evaluation; uses 58 generation and 58 judge requests:
+# 33-case A/B evaluation; uses 66 generation and 66 judge requests:
 node document-writer/eval/live.mjs --model <supported-model-id> --judge-model <supported-judge-model-id> --out-dir ./document-writer-eval-results
 ```
 
@@ -22,6 +22,7 @@ Results: baseline.responses.json, candidate.responses.json and comparison.json i
 
 ## Interpret results
 
+- E30–E33 test full-document economy. Compare character counts and section counts only alongside semantic scores and pass status; shorter failing answers are not improvements.
 - Compare factual accuracy, preservation of business conditions, natural wording, conversational continuity, response depth, noise reduction and format compliance; do not reward shorter answers that lose material information.
 - E25–E26 supply fixed prior user/assistant turns in both conditions, not a fully free-form conversation.
 - Blind AI judging is fallible. Manually review all failures and representative successes before treating a result as confirmed.

@@ -34,3 +34,7 @@ Do not replace specific technical facts with vague claims like "works correctly.
 ## Avoid over-filtering
 
 Do not automatically truncate to a word count or a fixed number of bullets. Do not remove negative cases, counterarguments or caveats solely because they make the output longer. Never hide a material unresolved problem in a footnote. 
+
+## Document-level filtering
+
+Before drafting, map mandatory facts to the smallest set of useful sections. For every optional section ask: what reader decision, action, or verification would fail if this section were absent? If none, omit it. Merge sections that answer the same question. Assign each requirement a canonical location and refer to it elsewhere only when needed. Use existing verified accessible references instead of restating whole documents; preserve necessary context for standalone output. Do not remove mandated sections or specialized artifact coverage. Stop once the intended reader can use the document; avoid adding material merely because it is related.

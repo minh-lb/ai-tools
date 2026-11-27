@@ -38,6 +38,10 @@ try {
   const regression = JSON.parse(readFileSync(join(temp,'degraded.json'),'utf8'));
   assert.equal(regression.summary.regressions,1);
 
+  const verbose = structuredClone(full);
+  verbose.results.find(r=>r.id==='E30').scores.relevance=1;
+  assert.equal(run(verbose,'verbose.json').code,1,'document-level redundancy must fail');
+
   const missing = structuredClone(full);
   missing.results.pop();
   assert.equal(run(missing,'missing.json').code,1,'missing scenario must not pass');
