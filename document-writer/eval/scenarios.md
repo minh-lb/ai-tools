@@ -1,6 +1,6 @@
 # Behavior Evaluation — Plain Language and Noise Filtering
 
-**Source of truth:** [cases.json](cases.json) contains 38 prompts (E01–E38), including Vietnamese, long noisy inputs, preservation of business conditions, exact-output contracts and untrusted quotes.
+**Source of truth:** [cases.json](cases.json) contains 43 prompts (E01–E43), including Vietnamese, long noisy inputs, preservation of business conditions, exact-output contracts and untrusted quotes.
 
 | Group | Cases | What they challenge |
 |---|---|---|
@@ -11,6 +11,7 @@
 | Natural writing and editorial review | E19, E20, E21, E22 | Remove stiff phrasing, avoid forced lists, respect voice and retain conditions |
 | Adaptive depth and reader expertise | E23, E24, E28, E29 | Brief when sufficient; complete for consequential decisions; one-line contract |
 | Document-level economy | E30–E38 | Complete multi-domain SRS/design/runbook; section deduplication; mandatory structure, standalone coverage and reader effort |
+| Adaptive writing style | E39–E43 | Business prose, normative SRS, expert technical design, English README, nontechnical guide |
 | Conversational continuity and judgment | E25, E26, E27 | Use prior-turn context without repetition and challenge unsafe assumptions |
 
 ## Evaluation workflow
@@ -22,11 +23,11 @@
 
 Cases E25–E26 use fixed prior turns; they do not simulate an organically generated conversation. Evaluate whether the answer uses that history without repetition.
 
-**Pass:** accuracy and contract both 2; relevance and clarity each at least 1; no automatic check failure or invented material fact. Target is 8/8. For document-level cases, relevance must be 2 (no material redundancy or unnecessary sections). A lower score compared with the baseline is a regression even when the case still meets the minimum.
+**Pass:** accuracy and contract both 2; relevance and clarity each at least 1; no automatic check failure or invented material fact. Target is 8/8. For document-level cases, relevance must be 2 (no material redundancy or unnecessary sections). Style-sensitive cases require clarity 2 (genre, register, terminology, flow and structure must fit the reader). A lower score compared with the baseline is a regression even when the case still meets the minimum.
 
 ## Input format
 
-Store a JSON file containing all 38 results. Each item needs a real response and human-review scores:
+Store a JSON file containing all 43 results. Each item needs a real response and human-review scores:
 
 ```json
 {

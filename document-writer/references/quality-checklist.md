@@ -8,6 +8,7 @@ Apply proportionately and silently before delivering the answer or document.
 | Relevant | Every paragraph serves the user's question, decision, action, or verification |
 | Understandable | The intended reader can explain the main point without unnecessary jargon or repeated lookups; specialist terms remain precise |
 | First-read comprehension | Material questions are answered in context; actors, conditions, outcomes, and exceptions are clear; unresolved decisions are explicitly marked |
+| Style fit | Natural wording, appropriate register and precise terminology for the genre/audience; logical flow and formatting that support comprehension |
 | Concise | No filler, restatement, duplicated facts, or unneeded implementation detail |
 | Accurate | No invented facts; essential conditions, exceptions, and technical identifiers remain intact |
 | Evidence | Claims of implementation, inspection, tests, performance, or status are supported and scoped |
@@ -26,7 +27,7 @@ Fix blockers and majors before delivery. Avoid stylistic churn when the text alr
 
 1. Read just the opening: does it answer the request?
 2. Remove unnecessary sections first, then redundant paragraphs and sentences; verify mandatory coverage and reference usability.
-3. Translate unnecessary technical wording; define necessary terms once.
+3. Check [writing style](writing-styles.md): register, terminology, flow and structure; define unfamiliar terms once where needed. Fix material reading friction, not stylistic preferences.
 4. Confirm evidence and caveats still support every important claim.
 5. Check exact output restrictions and requested scope.
 6. For complex documents, apply [Independent Reader Review](independent-reader-review.md) if the host can isolate Reader context; otherwise record self-review only.

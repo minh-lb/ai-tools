@@ -45,6 +45,12 @@ Use an explicit user length limit when given; otherwise avoid arbitrary word cou
 - Use prose for connected ideas, bullets for distinct items, tables for meaningful comparisons, and headings only for useful navigation.
 - When human-written samples are provided, adapt their phrasing, structure, and depth without importing their facts or copying passages. Never fabricate personal experience. Do not require samples to proceed.
 
+## Adaptive Writing Style
+
+- Match tone, terminology, sentence structure, and format to the document's purpose and audience. Business documents describe rules and effects; specifications use precise, testable statements; technical designs explain mechanisms and material trade-offs; guides use direct actions; reports lead with outcomes and evidence.
+- Prefer natural Vietnamese or the requested language, not literal translations, generic AI phrasing, or repeated sentence templates. Keep necessary technical terms and normative distinctions. Do not force informality or sacrifice precision to sound human.
+- Preserve required genre, voice, project conventions, and user instructions. Consult [writing styles](references/writing-styles.md) only when a document needs more specific guidance.
+
 ## Adaptive Response Depth
 
 - Simple questions: answer directly; 1–3 sentences are usually sufficient.
@@ -63,7 +69,7 @@ Use an explicit user length limit when given; otherwise avoid arbitrary word cou
 Perform one proportionate pass before delivery:
 
 - At document level: remove optional sections that have no distinct purpose; consolidate duplicated facts and requirements across sections; ensure references resolve and are sufficient for the intended reader.
-- At paragraph/sentence level: remove filler, repeated ideas, and explanations the audience does not need; replace vague wording with specific statements.
+- At paragraph/sentence level: remove filler and repeated ideas; replace vague wording with specific statements. Check natural flow, appropriate register, consistent terminology, and useful headings, bullets, or tables. Fix material friction, not personal stylistic preferences.
 - Verify mandatory coverage, source fidelity, evidence, uncertainty, and exact output constraints. Fix substantive gaps against sources, not by inventing content. Keep required headings even if a different structure would be shorter.
 - Simulate the intended reader: can they understand what matters, interpret the conditions correctly, and decide or act without material follow-up? Fix comprehension gaps from available evidence.
 - Deliver only the requested result. Skip cosmetic rewriting if already clear or exact. Do not edit files for review-only requests.
@@ -72,7 +78,7 @@ Perform one proportionate pass before delivery:
 
 For complex or consequential documents (e.g. SRS, Basic Design, Technical Design, multi-branch procedures), after Editorial Review follow [Independent Reader Review](references/independent-reader-review.md). Skip for simple chat, short explanations, routine reports, or when the user declines review.
 
-- Main agent writes; a fresh, isolated Reader subagent answers source-derived questions using only the document and reader-accessible material. A separate Evaluator subagent compares answers with the authoritative requirements.
+- Main agent writes; a fresh, isolated Reader subagent answers source-derived questions using only the document and reader-accessible material. Reader also identifies material style friction; a separate Evaluator subagent verifies comprehension, style fit, and fidelity to the authoritative requirements.
 - Verify isolation before delegation. Never pass source requirements, answer keys, parent history, or prior findings to Reader. Do not use a subagent that inherits or can retrieve these.
 - Use at most two review rounds by default; revise material gaps only. A pass applies only to the reviewed revision. If isolation or subagents are unavailable, use internal self-review and disclose the limitation when independent review was expected; never claim independent verification.
 - Reader and Evaluator are read-only roles; do not recursively invoke this workflow or generate extra user-facing artifacts.

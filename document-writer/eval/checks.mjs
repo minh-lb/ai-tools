@@ -42,7 +42,7 @@ export function validScores(scores) {
 }
 export function passes(caseDef, scores, automaticPass) {
   return validScores(scores) && automaticPass && scores.accuracy === 2 && scores.contract === 2 &&
-    scores.relevance >= (caseDef.documentEconomy ? 2 : 1) && scores.clarity >= 1;
+    scores.relevance >= (caseDef.documentEconomy ? 2 : 1) && scores.clarity >= (caseDef.styleSensitive ? 2 : 1);
 }
 export function regressions(baseline, candidate) {
   const issues = [];

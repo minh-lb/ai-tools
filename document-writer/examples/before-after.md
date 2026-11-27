@@ -165,3 +165,17 @@ Quản lý kiểm tra và phát hành hóa đơn, sau đó hệ thống thông b
 - Chưa xác định cơ chế retry.
 
 **Lý do:** Bỏ tổng quan chung chung và kết luận lặp lại, gộp phân quyền vào quy trình. Giữ đầy đủ điều kiện, lỗi và điểm chưa xác định.
+
+## 21. Văn phong theo đối tượng đọc
+
+**Dữ kiện chung:** Chỉ quản lý đúng tòa nhà được phát hành hóa đơn nháp sau khi kiểm tra. Nếu gửi thông báo thất bại, hóa đơn vẫn đã phát hành và lỗi được ghi nhận.
+
+**Business Requirement:** Quản lý kiểm tra và phát hành hóa đơn nháp của tòa nhà mình được cấp quyền. Lỗi gửi thông báo không làm thay đổi trạng thái hóa đơn; hệ thống ghi nhận lỗi.
+
+**SRS:**
+- Chỉ quản lý được cấp quyền tại tòa nhà tương ứng mới được phát hành hóa đơn ở trạng thái nháp sau khi kiểm tra.
+- Khi gửi thông báo thất bại, hệ thống phải giữ trạng thái đã phát hành và ghi nhận lỗi.
+
+**Technical Design (chỉ nêu hành vi đã biết):** Luồng phát hành phải kiểm tra quyền quản lý theo tòa nhà và trạng thái nháp; chỉ phát hành sau khi hóa đơn được kiểm tra. Lỗi gửi thông báo không hoàn tác trạng thái đã phát hành và phải được ghi nhận. Cơ chế triển khai chưa được cung cấp.
+
+**Lý do:** Cùng nghiệp vụ, nhưng thay đổi cách diễn đạt theo mục đích và người đọc. Không thêm cơ chế kỹ thuật hoặc làm yếu điều kiện bắt buộc. Đây là ví dụ minh họa, không phải kết quả live test.

@@ -286,5 +286,45 @@
     "prompt": "Viết hướng dẫn cho nhân viên hỗ trợ về cách xử lý tài khoản bị khóa. Chỉ trưởng nhóm được mở khóa sau khi xác minh danh tính; nhân viên hỗ trợ chỉ được tiếp nhận yêu cầu. Không yêu cầu mật khẩu hay mã OTP. Nếu xác minh không thành công thì giữ trạng thái khóa và báo trưởng nhóm; nếu thành công trưởng nhóm mở khóa và ghi lại thời gian cùng lý do. Nếu không có trưởng nhóm trực thì chuyển ca tiếp theo, không bỏ qua xác minh. Tài liệu nguồn chưa nêu phương thức xác minh cụ thể. Không dẫn sang tài liệu khác; người đọc cần biết ngay ai làm gì, khi nào và điều gì chưa rõ.",
     "mustKeep": "Quyền tiếp nhận/mở khóa, xác minh trước mở, cấm hỏi mật khẩu/OTP, thất bại giữ khóa và báo, thành công mở và ghi thời gian/lý do, không có trưởng nhóm thì chuyển ca, chưa rõ phương thức xác minh.",
     "mustAvoid": "Tự thêm cách xác minh, dẫn link thay điều kiện, giấu điểm chưa rõ, nén thành câu mơ hồ hoặc bổ sung quy trình không có."
+  },
+  {
+    "id": "E39",
+    "documentEconomy": true,
+    "styleSensitive": true,
+    "prompt": "Viết một đoạn Business Requirement bằng tiếng Việt cho BA và khách hàng, văn phong tự nhiên và trang trọng, không dùng bullet. Nguồn: Chủ sở hữu có thể chuyển quyền sở hữu tổ chức; cả chủ cũ và chủ mới phải xác nhận; chưa xác định thời hạn xác nhận. Quản lý tòa nhà không có quyền chuyển. Không thêm cơ chế kỹ thuật.",
+    "mustKeep": "Một đoạn văn mạch lạc; đúng vai trò, hai xác nhận, thời hạn chưa xác định, quản lý tòa nhà không có quyền; giọng nghiệp vụ trang trọng, tự nhiên.",
+    "mustAvoid": "Bullet hoặc heading, lời dẫn khuôn mẫu, thuật ngữ kỹ thuật thừa, tự đặt thời hạn, làm giọng suồng sã."
+  },
+  {
+    "id": "E40",
+    "documentEconomy": true,
+    "styleSensitive": true,
+    "prompt": "Viết phần SRS cho chức năng phát hành hóa đơn bằng tiếng Việt, dạng các yêu cầu có ID BR-01 đến BR-04 theo thứ tự. BR-01 chỉ quản lý đúng tòa nhà được phát hành bản nháp sau khi kiểm tra. BR-02 người thuê chỉ xem hóa đơn đã phát hành thuộc phòng mình. BR-03 hệ thống phải ghi lỗi nếu gửi thông báo thất bại và giữ trạng thái đã phát hành. BR-04 có thể cho phép gửi lại thông báo trong tương lai, chưa quyết định. Viết tự nhiên nhưng phải kiểm thử được, giữ đúng mức bắt buộc/tùy chọn.",
+    "mustKeep": "Bốn ID đúng thứ tự, điều kiện và quyền chính xác; BR-01–03 bắt buộc, BR-04 chỉ là khả năng chưa quyết định; thuật ngữ nhất quán và câu có thể kiểm thử.",
+    "mustAvoid": "Đổi phải thành nên, chốt retry, thêm API, diễn văn quảng bá, biến yêu cầu thành đoạn kể chung chung."
+  },
+  {
+    "id": "E41",
+    "documentEconomy": true,
+    "styleSensitive": true,
+    "prompt": "Viết phần Technical Design cho backend engineer đã biết SQS, bằng tiếng Việt. Worker đọc message từ SQS standard, dedup theo event_id, chỉ delete message sau khi ghi trạng thái sent. Nếu lỗi thì không delete; DLQ sau 5 lần nhận thất bại. Processing timeout 20 giây, visibility timeout 60 giây. Chưa chốt cách xử lý crash sau gửi email trước ghi sent. Không yêu cầu giải thích SQS nhập môn. Viết như kỹ sư trao đổi với đồng nghiệp, giữ nguyên các thuật ngữ cần thiết.",
+    "mustKeep": "Mọi cơ chế, thứ tự, trạng thái, thông số, điểm chưa chốt; văn phong kỹ thuật chính xác, rõ luồng và lỗi, không giải thích thuật ngữ quen thuộc.",
+    "mustAvoid": "Dịch sai identifier/thuật ngữ, giới thiệu SQS chung chung, tự chốt exactly-once hoặc cách xử lý crash, chia heading cho từng câu."
+  },
+  {
+    "id": "E42",
+    "documentEconomy": true,
+    "styleSensitive": true,
+    "prompt": "Viết README ngắn bằng tiếng Anh cho developer. Prerequisites: Docker and Make. Verified startup: make up; health check: make health; stop: make down. No rollback command verified. The tool starts a local invoice demo. Use practical, natural engineering language, no promotional text.",
+    "mustKeep": "English, purpose, prerequisites, three exact commands and their purposes, rollback unverified; usable README with concise instructions.",
+    "mustAvoid": "Generic introduction or marketing, invented install command/port, unnecessary explanation of Docker, implying rollback works."
+  },
+  {
+    "id": "E43",
+    "documentEconomy": true,
+    "styleSensitive": true,
+    "prompt": "Viết hướng dẫn tiếng Việt cho người thuê không biết kỹ thuật. Khi hóa đơn đã phát hành, mở mục Hóa đơn, chọn hóa đơn của phòng mình, bấm Tải PDF. Nếu chưa phát hành thì không xem hoặc tải được; liên hệ quản lý nếu cần kiểm tra. Không có chức năng gửi PDF qua email. Viết dễ làm theo, không dùng thuật ngữ API hoặc database.",
+    "mustKeep": "Hướng dẫn hành động theo đúng thứ tự, điều kiện phát hành, phạm vi phòng, ngoại lệ và cách liên hệ, không hỗ trợ gửi PDF email; lời hướng dẫn dễ hiểu.",
+    "mustAvoid": "Thuật ngữ kỹ thuật không cần thiết, tự thêm nút hoặc màn hình, mô tả dài dòng về lợi ích, nhập nhằng giữa tải PDF và gửi email."
   }
 ]

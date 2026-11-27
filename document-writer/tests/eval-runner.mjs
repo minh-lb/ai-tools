@@ -42,6 +42,10 @@ try {
   verbose.results.find(r=>r.id==='E30').scores.relevance=1;
   assert.equal(run(verbose,'verbose.json').code,1,'document-level redundancy must fail');
 
+  const badStyle = structuredClone(full);
+  badStyle.results.find(r=>r.id==='E39').scores.clarity=1;
+  assert.equal(run(badStyle,'style-fail.json').code,1,'material style mismatch must fail');
+
   const missing = structuredClone(full);
   missing.results.pop();
   assert.equal(run(missing,'missing.json').code,1,'missing scenario must not pass');
