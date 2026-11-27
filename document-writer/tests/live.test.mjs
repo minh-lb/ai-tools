@@ -29,15 +29,18 @@ test('live A/B runner isolates conditions, stores evidence, and rejects missing 
  writeFileSync(join(dir,'cases.json'),JSON.stringify(cases));
  writeFileSync(join(dir,'SKILL.md'),'---\nname: document-writer\n---\n# Readable output\n');
  const seen=[];
+ let degradeCandidate=false;
+ let candidateAnswer='Chưa, vì chưa có kết quả đo hiệu năng.';
+ writeFileSync(join(dir,'old.md'),'---\nname: document-writer\n---\n# Older output\n');
  const server=createServer(async (req,res)=>{
   let raw='';for await(const buf of req)raw+=buf;
   const body=JSON.parse(raw);seen.push(body);
   const dev=body.input[0]?.content||'';
   let text;
-  if(dev.includes('blind quality evaluator')) text=JSON.stringify({scores:{relevance:2,clarity:2,accuracy:2,contract:2},notes:'Fixture-only scoring; not a real model.'});
+  if(dev.includes('blind quality evaluator')) text=JSON.stringify({scores:{relevance:2,clarity:degradeCandidate&&JSON.parse(body.input.at(-1).content).response==='Candidate regression'?1:2,accuracy:2,contract:2},notes:'Fixture-only scoring; not a real model.'});
   else if(body.input.at(-1).content.includes('JSON'))text='{"status":"blocked","reason":"missing approval"}';
   else if(body.input.at(-1).content.includes('ERR_AUTH_403'))text='ERR_AUTH_403';
-  else text='Chưa, vì chưa có kết quả đo hiệu năng.';
+  else text=dev.includes('# Readable output')?candidateAnswer:'Chưa, vì chưa có kết quả đo hiệu năng.';
   res.writeHead(200,{'content-type':'application/json'});
   res.end(JSON.stringify({output:[{content:[{type:'output_text',text}]}]}));
  });
@@ -64,6 +67,22 @@ test('live A/B runner isolates conditions, stores evidence, and rejects missing 
   assert.equal(seen.filter(x=>x.input[0].content.includes('blind quality evaluator')).length,6);
   assert.equal(seen.filter(x=>x.input.length===4 && x.input.at(-1).content==='Vậy có thể nói hiệu năng đã cải thiện chưa?').length,2,'prior conversation must be separate turns in both arms');
   assert.equal(seen.every(x=>x.store===false),true);
+  assert.equal(comparison.ready,true);
+  assert.equal(baseline.skillRevision,'no-skill');
+  assert.notEqual(candidate.skillRevision,baseline.skillRevision);
+
+  seen.length=0;
+  degradeCandidate=true;
+  candidateAnswer='Candidate regression';
+  const priorRun=await spawnNode([...common,'--baseline-skill',join(dir,'old.md')],{OPENAI_API_KEY:'fixture-only'});
+  assert.equal(priorRun.code,1,priorRun.out);
+  const report=JSON.parse(readFileSync(join(dir,'results/comparison.json')));
+  assert.equal(report.ready,false);
+  assert.equal(report.regressionCount,1);
+  assert.equal(report.candidate.passed,3,'a passing score regression still fails the gate');
+  assert.equal(seen.filter(x=>x.input[0].content.includes('# Older output')).length,3);
+  assert.equal(seen.filter(x=>x.input[0].content.includes('# Readable output')).length,3);
+  assert.notEqual(report.baselineRevision,report.candidateRevision);
  } finally {
   await new Promise(r=>server.close(r));rmSync(dir,{recursive:true,force:true});
  }

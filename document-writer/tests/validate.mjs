@@ -14,6 +14,7 @@ const required = [
   'eval/scenarios.md',
   'eval/cases.json',
   'eval/run.mjs',
+  'eval/checks.mjs',
   'tests/eval-runner.mjs',
   'tests/live.test.mjs',
   'eval/live.mjs',
@@ -46,9 +47,9 @@ for (const file of files.filter(f => f.endsWith('.md'))) {
 }
 const scenarios = JSON.parse(readFileSync(path.join(root,'eval/cases.json'),'utf8'));
 const ids = scenarios.map(c=>c.id);
-assert.equal(ids.length,33);
+assert.equal(ids.length,36);
 assert.equal(new Set(ids).size,ids.length,'duplicate eval IDs');
-for (let n=1;n<=33;n++) {
+for (let n=1;n<=36;n++) {
   const id = 'E' + String(n).padStart(2,'0');
   const c = scenarios.find(c=>c.id===id);
   assert.ok(c,'missing '+id);
@@ -67,6 +68,8 @@ for (const c of scenarios) {
 }
 for (const id of ['E25','E26']) assert.ok(scenarios.find(c=>c.id===id)?.messages, id + ' missing conversation');
 assert.deepEqual(scenarios.find(c=>c.id==='E28').automatic, {type:'maxLines',value:1});
+assert.deepEqual(scenarios.find(c=>c.id==='E32').automatic, {type:'headingsExact',value:['## Phạm vi','## Quy tắc','## Ngoại lệ']});
+assert.ok(scenarios.slice(29).every(c=>c.documentEconomy===true),'document cases must require full relevance');
 const examples = readFileSync(path.join(root,'examples/before-after.md'),'utf8');
 assert.ok((examples.match(/^## \d+\. /gm)||[]).length>=20,'need conversational examples');
 assert.match(examples,/## 9\. Báo cáo công việc/);
@@ -76,4 +79,4 @@ assert.match(skill, /^## Minimum Sufficient Documentation$/m);
 assert.match(skill, /^## Adaptive Response Depth$/m);
 assert.match(skill, /^## Conversational Behavior$/m);
 assert.match(examples, /## 16\. Biên tập văn phong/);
-console.log('PASS: required files, links, 33 eval scenarios, conversational examples, legacy removal');
+console.log('PASS: required files, links, 36 eval scenarios, conversational examples, legacy removal');

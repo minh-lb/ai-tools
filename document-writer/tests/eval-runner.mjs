@@ -22,7 +22,7 @@ const full = {
   reviewer:'synthetic test, not model evaluation',
   results:cases.map(c=>({
     id:c.id,
-    response:c.automatic?.type==='textExact' ? c.automatic.value : c.automatic?.type==='jsonExact' ? JSON.stringify(c.automatic.value) : 'Synthetic response: manually scored for runner test only.',
+    response:c.automatic?.type==='textExact' ? c.automatic.value : c.automatic?.type==='jsonExact' ? JSON.stringify(c.automatic.value) : c.automatic?.type==='headingsExact' ? c.automatic.value.join('\n') : 'Synthetic response: manually scored for runner test only.',
     scores:{relevance:2,clarity:2,accuracy:2,contract:2}
   }))
 };
@@ -53,6 +53,12 @@ try {
   const multipleLines = structuredClone(full);
   multipleLines.results.find(r=>r.id==='E28').response=['Chưa.', 'E2E chưa chạy.'].join(String.fromCharCode(10));
   assert.equal(run(multipleLines,'lines-fail.json').code,1,'one-line contract must be checked');
+
+  for (const response of ['## Quy tắc\n## Phạm vi\n## Ngoại lệ','## Phạm vi\n## Quy tắc','## Phạm vi\n## Quy tắc\n## Ngoại lệ\n### Extra']) {
+    const wrong = structuredClone(full);
+    wrong.results.find(r=>r.id==='E32').response=response;
+    assert.equal(run(wrong,'heading-fail.json').code,1,'missing, reordered or extra heading must fail');
+  }
 
   const invalid = structuredClone(full);
   delete invalid.results[0].scores.accuracy;

@@ -1,6 +1,6 @@
 # Live A/B evaluation for document-writer
 
-The runner compares the same model and test prompts in two independent requests: baseline without skill instructions, candidate with SKILL.md explicitly loaded. A separate blind judge scores the answers; strict JSON and verbatim checks run automatically.
+The runner compares the same model and test prompts in two independent requests: baseline without skill instructions (or an older SKILL.md via --baseline-skill), candidate with SKILL.md explicitly loaded. A separate blind judge scores the answers; strict JSON and verbatim checks run automatically.
 
 ## Run locally
 
@@ -14,15 +14,20 @@ node document-writer/tests/eval-runner.mjs
 # Validate setup without sending any model request:
 node document-writer/eval/live.mjs --model <supported-model-id> --dry-run
 
-# 33-case A/B evaluation; uses 66 generation and 66 judge requests:
+# 36-case A/B evaluation; uses 72 generation and 72 judge requests:
 node document-writer/eval/live.mjs --model <supported-model-id> --judge-model <supported-judge-model-id> --out-dir ./document-writer-eval-results
+
+# Compare against a previous version (save the old SKILL.md first):
+node document-writer/eval/live.mjs --model <supported-model-id> --judge-model <supported-judge-model-id> --baseline-skill /path/to/old-SKILL.md --out-dir ./document-writer-version-comparison
 ```
 
 Results: baseline.responses.json, candidate.responses.json and comparison.json in the output directory. Each answer includes judge scores, comments, automatic-format checks and complete response text.
 
+Exit codes: 0 = selected judged cases pass without regressions, or an ungraded collection with no automatic failure; 1 = candidate automatic/quality failure or score regression; 2 = execution/configuration error. Without a judge, ready is null (not a quality pass). A partial run is not a full-suite pass. Reports record separate skill fingerprints and the cases fingerprint.
+
 ## Interpret results
 
-- E30–E33 test full-document economy. Compare character counts and section counts only alongside semantic scores and pass status; shorter failing answers are not improvements.
+- E30–E36 test full-document economy. Compare character counts and section counts only alongside semantic scores and pass status; shorter failing answers are not improvements.
 - Compare factual accuracy, preservation of business conditions, natural wording, conversational continuity, response depth, noise reduction and format compliance; do not reward shorter answers that lose material information.
 - E25–E26 supply fixed prior user/assistant turns in both conditions, not a fully free-form conversation.
 - Blind AI judging is fallible. Manually review all failures and representative successes before treating a result as confirmed.

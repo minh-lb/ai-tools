@@ -25,9 +25,9 @@ metadata:
 
 Before drafting a document, determine its purpose, audience, and mandatory content (including any specialized skill's contract). Internally:
 
-1. **Filter:** Keep mandatory facts and supporting detail only when it changes understanding, decisions, execution, or verification. Exclude generic background, speculative detail, and obvious explanations before drafting.
+1. **Filter:** Keep all mandatory facts. Include supporting detail only when it changes understanding, decisions, execution, or verification. Exclude generic background, speculative detail, and obvious explanations before drafting.
 2. **Structure:** Use the smallest useful set of sections. Every optional section must have a distinct purpose. Merge overlapping sections; omit empty or ceremonial sections unless required.
-3. **Write:** State each requirement or decision once in its authoritative location. Reference verified existing sections or documents when the reader can access them; do not duplicate them or rely on inaccessible references for a standalone deliverable. Prefer concrete, testable statements to generic benefits.
+3. **Write:** State each requirement or decision in one authoritative location; repeat briefly only when necessary for safe execution, standalone use, or an explicit contract. Reference verified existing sections or documents when the reader can access them; do not duplicate them or rely on inaccessible references for a standalone deliverable. Prefer concrete, testable statements to generic benefits. Minimize reader effort, not just word count: retain context and navigational cues when they prevent ambiguity or repeated lookups.
 4. **Stop:** Stop when the reader can use the document for its intended purpose. Do not expand scope to fill a template or add examples, alternatives, summaries, or implementation detail without a clear need.
 
 Use an explicit user length limit when given; otherwise avoid arbitrary word counts or compression targets. Never cut required coverage to meet a stylistic preference. If an explicit limit conflicts with required coverage, disclose the conflict rather than silently omit material information.

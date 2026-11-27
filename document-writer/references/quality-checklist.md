@@ -6,7 +6,7 @@ Apply proportionately and silently before delivering the answer or document.
 |---|---|
 | Document scope | Every optional section serves a distinct purpose; mandatory sections remain; duplicate requirements are consolidated; necessary references are accessible |
 | Relevant | Every paragraph serves the user's question, decision, action, or verification |
-| Understandable | A non-developer can explain the main point without decoding unexplained jargon |
+| Understandable | The intended reader can explain the main point without unnecessary jargon or repeated lookups; specialist terms remain precise |
 | Concise | No filler, restatement, duplicated facts, or unneeded implementation detail |
 | Accurate | No invented facts; essential conditions, exceptions, and technical identifiers remain intact |
 | Evidence | Claims of implementation, inspection, tests, performance, or status are supported and scoped |

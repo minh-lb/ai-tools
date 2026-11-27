@@ -220,24 +220,57 @@
     "id": "E30",
     "prompt": "Viết tài liệu SRS ngắn, đủ để dev và tester sử dụng, cho chức năng phát hành hóa đơn. Nguồn: hệ thống tạo nháp mỗi kỳ; chỉ quản lý của tòa nhà tương ứng được kiểm tra và phát hành; người thuê chỉ xem hóa đơn đã phát hành thuộc phòng của mình; thông báo sau khi phát hành; lỗi gửi thông báo không hoàn tác phát hành, phải ghi nhận lỗi; hóa đơn đã phát hành không sửa trực tiếp; cơ chế retry chưa quyết định. Các cuộc họp còn nói về chuyển đổi số, tăng trải nghiệm, mở rộng thị trường và công nghệ cache nhưng không có quyết định. Không bắt buộc mẫu section.",
     "mustKeep": "Đủ bảy nhóm quy tắc: nháp mỗi kỳ, quyền quản lý đúng tòa nhà và kiểm tra, phạm vi xem của người thuê, thời điểm thông báo, lỗi không hoàn tác và được ghi nhận, không sửa trực tiếp, retry chưa quyết định. Nội dung đủ test.",
-    "mustAvoid": "Mục tổng quan/lợi ích chung chung, lặp quy tắc ở nhiều mục, giả định công nghệ hoặc retry, bỏ ngoại lệ để ngắn."
+    "mustAvoid": "Mục tổng quan/lợi ích chung chung, lặp quy tắc ở nhiều mục, giả định công nghệ hoặc retry, bỏ ngoại lệ để ngắn.",
+    "documentEconomy": true
   },
   {
     "id": "E31",
     "prompt": "Viết Technical Design ngắn cho cơ chế xử lý job email. Đã chốt: SQS standard, worker đọc job; khóa idempotency là notification_id; nếu gửi thành công thì ghi trạng thái sent trước khi xóa message; khi lỗi không xóa message; job lỗi sau 5 lần nhận chuyển DLQ; timeout xử lý 20 giây, visibility timeout 60 giây; cảnh báo khi DLQ có message; không có cam kết exactly-once. Cơ chế khóa và xử lý crash sau khi gửi nhưng trước khi ghi sent chưa được chốt. Tài liệu kiến trúc hiện có (người đọc truy cập được) tại docs/architecture.md#queue mô tả cách tạo queue và cấu hình IAM. Không cần nhắc lại phần đó. Chỉ viết thiết kế cho job email, không viết kế hoạch triển khai.",
     "mustKeep": "Tất cả quyết định, thứ tự sent/xóa, các giá trị, lỗi/DLQ/cảnh báo, không cam kết exactly-once, hai điểm chưa chốt, tham chiếu tài liệu có sẵn.",
-    "mustAvoid": "Lặp lại cấu hình queue/IAM, hướng dẫn cài đặt, kế hoạch triển khai, khẳng định chống trùng tuyệt đối hoặc tự chọn cơ chế khóa."
+    "mustAvoid": "Lặp lại cấu hình queue/IAM, hướng dẫn cài đặt, kế hoạch triển khai, khẳng định chống trùng tuyệt đối hoặc tự chọn cơ chế khóa.",
+    "documentEconomy": true
   },
   {
     "id": "E32",
     "prompt": "Biên tập Basic Design sau cho gọn nhưng bắt buộc giữ đúng ba heading: ## Phạm vi, ## Quy tắc, ## Ngoại lệ. Nguồn: Phạm vi: tạo yêu cầu sửa chữa cho phòng đang thuê, chỉ người thuê chính. Quy tắc: người thuê chính được tạo yêu cầu cho phòng đang thuê, mô tả bắt buộc, tối đa 3 ảnh, quản lý tòa nhà nhận thông báo. Ngoại lệ: phòng đã kết thúc hợp đồng không được tạo yêu cầu; nếu gửi thông báo lỗi, yêu cầu vẫn lưu và lỗi được ghi. Phần mô tả chung: chức năng tăng trải nghiệm và giúp tối ưu quản lý. Phần kết luận: người thuê chính có thể tạo yêu cầu sửa chữa cho phòng đang thuê. Không thêm heading.",
     "mustKeep": "Đúng ba heading; người thuê chính/phòng đang thuê, mô tả bắt buộc, tối đa 3 ảnh, quản lý tòa nhà nhận thông báo, hợp đồng kết thúc bị chặn, lỗi thông báo vẫn lưu yêu cầu và ghi lỗi.",
-    "mustAvoid": "Xóa heading bắt buộc, thêm phần kết luận, lặp nội dung phạm vi vào quy tắc, thêm cơ chế hoặc bỏ ngoại lệ."
+    "mustAvoid": "Xóa heading bắt buộc, thêm phần kết luận, lặp nội dung phạm vi vào quy tắc, thêm cơ chế hoặc bỏ ngoại lệ.",
+    "documentEconomy": true,
+    "automatic": {
+      "type": "headingsExact",
+      "value": [
+        "## Phạm vi",
+        "## Quy tắc",
+        "## Ngoại lệ"
+      ]
+    }
   },
   {
     "id": "E33",
     "prompt": "Viết runbook độc lập cho on-call, không được dựa vào link hoặc tài liệu bên ngoài. Quy trình đã xác minh: chạy make health; nếu API lỗi và DB còn hoạt động chạy make restart-api; kiểm tra lại make health; nếu vẫn lỗi hoặc DB không hoạt động thì báo incident lead, không restart DB; nếu health đạt thì ghi thời điểm và kết quả vào incident log. Lệnh rollback chưa xác minh. Viết đủ thao tác, không thêm giải thích dài.",
     "mustKeep": "Tất cả lệnh chính xác, điều kiện restart API, kiểm tra lại, hai trường hợp escalation, cấm restart DB, ghi log khi đạt, rollback chưa xác minh; tài liệu độc lập.",
-    "mustAvoid": "Dùng link thay thao tác, thêm lệnh DB/rollback chưa xác minh, lược bỏ nhánh lỗi để ngắn."
+    "mustAvoid": "Dùng link thay thao tác, thêm lệnh DB/rollback chưa xác minh, lược bỏ nhánh lỗi để ngắn.",
+    "documentEconomy": true
+  },
+  {
+    "id": "E34",
+    "documentEconomy": true,
+    "prompt": "Tạo SRS độc lập, ngắn nhưng đủ để dev/tester triển khai và kiểm thử toàn bộ nghiệp vụ dưới đây. Không cần mẫu section cố định. Biên bản họp có phần quảng bá về chuyển đổi số, tính linh hoạt, năng suất, AI và thị trường; không có quyết định nào liên quan đến các chủ đề đó.\nA. Tổ chức: một Owner, nhiều Admin; mỗi người có thể thuộc nhiều tổ chức; dữ liệu tách biệt theo tổ chức. Owner chuyển quyền khi cả hai bên xác nhận. Manager chỉ thao tác tại tòa nhà được cấp quyền; đình chỉ thành viên ở tổ chức A không ảnh hưởng tổ chức B.\nB. Phòng: thuộc tòa nhà, tầng không bắt buộc; chỉ được lưu trữ khi không có hợp đồng đang hoạt động, công nợ chưa thanh toán hoặc đặt cọc chưa xử lý. Khôi phục phòng phải kiểm tra giới hạn gói.\nC. Hợp đồng: một phòng có nhiều người thuê, một người thuê chính; gia hạn tạo hợp đồng mới liên kết hợp đồng cũ và chuyển số dư cọc; thay đổi tiền thuê cần phụ lục được người thuê chính xác nhận; tính tiền theo ngày nếu đổi giá giữa kỳ.\nD. Hóa đơn: mỗi tòa nhà có kỳ chung; hệ thống tạo nháp; Admin hoặc Manager có quyền tại tòa nhà duyệt và phát hành; người thuê chỉ xem hóa đơn đã phát hành của phòng mình; không sửa trực tiếp hóa đơn đã phát hành; lỗi thông báo không hoàn tác phát hành, phải ghi lỗi. Retry chưa quyết định.\nE. Thanh toán: người thuê tải bằng chứng; Admin/Manager có quyền xác nhận; chưa xác nhận thì không đánh dấu đã trả. Tiền cọc có thu, khấu trừ, hoàn trả; mỗi khoản khấu trừ phải có lý do.\nF. Sửa chữa: người thuê tạo ticket; Manager được cấp quyền phân công; lưu tiến độ và chi phí; chi phí có thể chia cho các bên; nếu tính vào người thuê thì người thuê có quyền phản đối; Admin giải quyết và lưu lịch sử.\nG. Gói: Free mặc định; hạn mức chỉ tính tài nguyên active; quá giới hạn không tạo/khôi phục thêm nhưng vẫn dùng tài nguyên hiện có. Sau thời gian gia hạn, tổ chức read-only; thời lượng gia hạn chưa chốt. Mỗi tổ chức có subscription riêng.\nGhi chú lặp từ nhóm QA: quyền truy cập theo tổ chức/tòa nhà; hóa đơn nháp trước phát hành; chỉ người thuê chính xác nhận phụ lục; thời lượng grace và retry chưa biết. Không đưa kiến trúc, API, schema hay implementation plan vào SRS.",
+    "mustKeep": "Đầy đủ mọi quyết định, vai trò, ràng buộc, điều kiện và ngoại lệ ở A–G, hai điểm chưa chốt; cô lập tenant và phạm vi quyền; có thể truy vết từng quy tắc và kiểm thử độc lập.",
+    "mustAvoid": "Bỏ bất kỳ quy tắc nào để ngắn, lặp ghi chú QA, diễn giải quảng bá, tự thêm API/schema/kiến trúc, gộp quy tắc gây mơ hồ hoặc ngầm chốt thông tin còn thiếu."
+  },
+  {
+    "id": "E35",
+    "documentEconomy": true,
+    "prompt": "Viết Technical Design cho luồng tạo và phát hành hóa đơn, đủ để engineer triển khai, không cần kế hoạch thực hiện. Nguồn đã chốt:\n- API POST /buildings/{buildingId}/invoices/generate chỉ Admin và Manager có quyền tại tòa nhà; idempotency key building_id+billing_period; trả 409 khi cùng key nhưng payload khác. Kiểm tra quyền trước khi tra key.\n- Tạo invoice draft và lines trong cùng transaction; lỗi bất kỳ line nào rollback toàn bộ. Chỉ dùng đơn giá đã snapshot tại thời điểm tạo. Decimal 2 chữ số, quy tắc làm tròn chưa quyết định.\n- POST /invoices/{id}/publish chỉ Admin/Manager đúng tòa nhà. Chỉ draft được chuyển published. Cập nhật invoice và outbox trong cùng transaction. Không gọi email trong transaction.\n- Outbox worker gửi event invoice.published đến SQS standard; chỉ đánh dấu outbox dispatched khi SQS xác nhận; nếu lỗi giữ pending. Có thể trùng event. consumer dedup theo event_id; cách xử lý crash sau khi gửi email nhưng trước khi đánh dấu sent chưa quyết định.\n- Người thuê chỉ GET hóa đơn published thuộc phòng mình. Không trả thông tin tổ chức khác kể cả khi biết ID. Audit lưu actor_id, organization_id, invoice_id, action, timestamp cho publish thành công; không ghi nội dung hóa đơn hoặc token.\n- Log lỗi correlation_id; cảnh báo nếu pending outbox quá 10 phút; DLQ sau 5 lần nhận; manual replay cần phê duyệt Admin. Chưa chốt retention audit.\n- docs/architecture.md#auth và docs/architecture.md#queue đã tồn tại, người đọc truy cập được; hai mục mô tả JWT/IAM và tạo queue, không lặp lại.\n- Ghi chú dư: hệ thống phải dùng kiến trúc hiện đại, tối ưu hiệu suất; nhắc lại nhiều lần rằng draft phải precede published, outbox cùng transaction, không được gửi email trong transaction.\nTách các phần chỉ khi cần để dễ tìm; giữ đủ điều kiện để review triển khai.",
+    "mustKeep": "Mọi endpoint, quyền và phạm vi, thứ tự kiểm tra/idempotency/409, atomicity và rollback, snapshot/decimal, chuyển trạng thái, outbox và lỗi, dedup và điểm crash, GET tenant isolation, audit fields và dữ liệu cấm, correlation/10 phút/5 lần/approval, rounding/crash/retention chưa chốt, hai tham chiếu.",
+    "mustAvoid": "Nhắc lại note dư, tự chốt cơ chế hoặc thông số, thay link cho quy tắc cốt lõi, bỏ chi tiết kỹ thuật cần triển khai hoặc thêm implementation plan."
+  },
+  {
+    "id": "E36",
+    "documentEconomy": true,
+    "prompt": "Viết hướng dẫn thao tác độc lập cho nhân viên hỗ trợ không biết lập trình. Khi khách báo không nhận được hóa đơn, trước hết kiểm tra trạng thái hóa đơn: draft thì không gửi lại, yêu cầu quản lý phát hành; published thì kiểm tra trạng thái thông báo. Nếu failed, kiểm tra địa chỉ email rồi chọn Resend, tối đa một lần trong 10 phút; nếu sent thì không Resend, hướng dẫn kiểm tra thư rác; nếu pending thì chờ 5 phút rồi kiểm tra lại, nếu vẫn pending chuyển kỹ thuật. Khi email không hợp lệ, yêu cầu khách cập nhật và xác minh trước khi Resend. Nếu lỗi lặp lại sau Resend chuyển kỹ thuật, không yêu cầu khách cung cấp mật khẩu. Viết gọn nhưng dễ theo dõi, không dùng chữ viết tắt chưa giải thích.",
+    "mustKeep": "Tất cả nhánh trạng thái, thứ tự và điều kiện email, 1 lần/10 phút, 5 phút, escalation và cấm hỏi mật khẩu; mỗi nhánh đủ để nhân viên thao tác trực tiếp.",
+    "mustAvoid": "Nén thành câu dài khó đọc, dùng thuật ngữ không giải thích, lược bỏ nhánh hoặc buộc tra cứu chéo nhiều nơi, thêm thao tác chưa có."
   }
 ]
