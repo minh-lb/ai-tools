@@ -14,7 +14,7 @@ node document-writer/tests/eval-runner.mjs
 # Validate setup without sending any model request:
 node document-writer/eval/live.mjs --model <supported-model-id> --dry-run
 
-# 36-case A/B evaluation; uses 72 generation and 72 judge requests:
+# 38-case A/B evaluation; uses 76 generation and 76 judge requests:
 node document-writer/eval/live.mjs --model <supported-model-id> --judge-model <supported-judge-model-id> --out-dir ./document-writer-eval-results
 
 # Compare against a previous version (save the old SKILL.md first):
@@ -27,11 +27,11 @@ Exit codes: 0 = selected judged cases pass without regressions, or an ungraded c
 
 ## Interpret results
 
-- E30–E36 test full-document economy. Compare character counts and section counts only alongside semantic scores and pass status; shorter failing answers are not improvements.
+- E30–E38 test full-document economy. Compare character counts and section counts only alongside semantic scores and pass status; shorter failing answers are not improvements.
 - Compare factual accuracy, preservation of business conditions, natural wording, conversational continuity, response depth, noise reduction and format compliance; do not reward shorter answers that lose material information.
 - E25–E26 supply fixed prior user/assistant turns in both conditions, not a fully free-form conversation.
 - Blind AI judging is fallible. Manually review all failures and representative successes before treating a result as confirmed.
-- The runner loads only the core SKILL.md. It measures quality with the skill explicitly loaded; it does not verify whether a real agent automatically activates the skill or loads optional references.
+- The runner loads only the core SKILL.md. It measures quality with the skill explicitly loaded; it does not verify whether a real agent automatically activates the skill or loads optional references, or whether independent Reader/Evaluator subagents were used. See [workflow evaluation](reader-scenarios.md) for that separate test.
 - A single run is preliminary; repeat tests to assess consistency. Record the same model settings and skill revision.
 - The mocked test does not call a real AI model and cannot establish behavior improvements.
 - Without API credentials or outbound network access, a live run is blocked. Do not describe a dry-run or mock run as real model evaluation.

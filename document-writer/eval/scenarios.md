@@ -1,6 +1,6 @@
 # Behavior Evaluation — Plain Language and Noise Filtering
 
-**Source of truth:** [cases.json](cases.json) contains 36 prompts (E01–E36), including Vietnamese, long noisy inputs, preservation of business conditions, exact-output contracts and untrusted quotes.
+**Source of truth:** [cases.json](cases.json) contains 38 prompts (E01–E38), including Vietnamese, long noisy inputs, preservation of business conditions, exact-output contracts and untrusted quotes.
 
 | Group | Cases | What they challenge |
 |---|---|---|
@@ -10,7 +10,7 @@
 | Long/noisy Vietnamese source | E13, E14, E15, E16, E17 | Remove background and repetition; preserve permissions, risks, outcomes and unknowns |
 | Natural writing and editorial review | E19, E20, E21, E22 | Remove stiff phrasing, avoid forced lists, respect voice and retain conditions |
 | Adaptive depth and reader expertise | E23, E24, E28, E29 | Brief when sufficient; complete for consequential decisions; one-line contract |
-| Document-level economy | E30–E36 | Complete multi-domain SRS/design/runbook; section deduplication; mandatory structure, standalone coverage and reader effort |
+| Document-level economy | E30–E38 | Complete multi-domain SRS/design/runbook; section deduplication; mandatory structure, standalone coverage and reader effort |
 | Conversational continuity and judgment | E25, E26, E27 | Use prior-turn context without repetition and challenge unsafe assumptions |
 
 ## Evaluation workflow
@@ -26,7 +26,7 @@ Cases E25–E26 use fixed prior turns; they do not simulate an organically gener
 
 ## Input format
 
-Store a JSON file containing all 36 results. Each item needs a real response and human-review scores:
+Store a JSON file containing all 38 results. Each item needs a real response and human-review scores:
 
 ```json
 {
@@ -60,3 +60,7 @@ This workflow does not require a particular model provider or paid evaluation se
 ## Live model A/B test
 
 Use [the live evaluation guide](live-guide.md) to compare baseline and explicitly loaded skill responses. Unlike the mocked tests, this requires real API credentials and outbound network access.
+
+## Independent Reader workflow
+
+Use [reader workflow scenarios](reader-scenarios.md) in an actual subagent-capable host to verify first-read comprehension, isolation, follow-up gaps, bounded revisions, and fallback behavior. E37–E38 assess document output only, not delegation.

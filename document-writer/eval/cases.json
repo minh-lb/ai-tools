@@ -272,5 +272,19 @@
     "prompt": "Viết hướng dẫn thao tác độc lập cho nhân viên hỗ trợ không biết lập trình. Khi khách báo không nhận được hóa đơn, trước hết kiểm tra trạng thái hóa đơn: draft thì không gửi lại, yêu cầu quản lý phát hành; published thì kiểm tra trạng thái thông báo. Nếu failed, kiểm tra địa chỉ email rồi chọn Resend, tối đa một lần trong 10 phút; nếu sent thì không Resend, hướng dẫn kiểm tra thư rác; nếu pending thì chờ 5 phút rồi kiểm tra lại, nếu vẫn pending chuyển kỹ thuật. Khi email không hợp lệ, yêu cầu khách cập nhật và xác minh trước khi Resend. Nếu lỗi lặp lại sau Resend chuyển kỹ thuật, không yêu cầu khách cung cấp mật khẩu. Viết gọn nhưng dễ theo dõi, không dùng chữ viết tắt chưa giải thích.",
     "mustKeep": "Tất cả nhánh trạng thái, thứ tự và điều kiện email, 1 lần/10 phút, 5 phút, escalation và cấm hỏi mật khẩu; mỗi nhánh đủ để nhân viên thao tác trực tiếp.",
     "mustAvoid": "Nén thành câu dài khó đọc, dùng thuật ngữ không giải thích, lược bỏ nhánh hoặc buộc tra cứu chéo nhiều nơi, thêm thao tác chưa có."
+  },
+  {
+    "id": "E37",
+    "documentEconomy": true,
+    "prompt": "Viết hướng dẫn ngắn, độc lập cho người thuê nhà không biết lập trình về việc gia hạn hợp đồng. Người thuê chính gửi yêu cầu trước ngày hết hạn ít nhất 7 ngày; quản lý tòa nhà duyệt hoặc từ chối, nếu từ chối phải ghi lý do. Khi duyệt tạo hợp đồng mới liên kết hợp đồng cũ, chuyển số dư cọc; hợp đồng cũ vẫn có hiệu lực đến hết ngày hết hạn. Nếu hết hạn mà yêu cầu vẫn chờ duyệt, hệ thống không tự gia hạn. Cách tính tiền thuê khi hợp đồng mới bắt đầu giữa kỳ chưa quyết định. Tránh để người đọc phải hỏi lại về quyền, thời điểm, cọc, trường hợp bị từ chối hoặc chưa duyệt. Không tự quyết định cách tính tiền.",
+    "mustKeep": "Vai trò, thời hạn 7 ngày, duyệt/từ chối và lý do, hợp đồng mới liên kết và chuyển số dư cọc, hợp đồng cũ hiệu lực đến hết ngày hết hạn, không tự gia hạn khi còn chờ, cách tính tiền chưa quyết định; nhóm điều kiện dễ đọc.",
+    "mustAvoid": "Bỏ điều kiện gây câu hỏi lại, lặp quy trình, thuật ngữ không cần thiết, tự đặt cách tính tiền hoặc khẳng định tự gia hạn."
+  },
+  {
+    "id": "E38",
+    "documentEconomy": true,
+    "prompt": "Viết hướng dẫn cho nhân viên hỗ trợ về cách xử lý tài khoản bị khóa. Chỉ trưởng nhóm được mở khóa sau khi xác minh danh tính; nhân viên hỗ trợ chỉ được tiếp nhận yêu cầu. Không yêu cầu mật khẩu hay mã OTP. Nếu xác minh không thành công thì giữ trạng thái khóa và báo trưởng nhóm; nếu thành công trưởng nhóm mở khóa và ghi lại thời gian cùng lý do. Nếu không có trưởng nhóm trực thì chuyển ca tiếp theo, không bỏ qua xác minh. Tài liệu nguồn chưa nêu phương thức xác minh cụ thể. Không dẫn sang tài liệu khác; người đọc cần biết ngay ai làm gì, khi nào và điều gì chưa rõ.",
+    "mustKeep": "Quyền tiếp nhận/mở khóa, xác minh trước mở, cấm hỏi mật khẩu/OTP, thất bại giữ khóa và báo, thành công mở và ghi thời gian/lý do, không có trưởng nhóm thì chuyển ca, chưa rõ phương thức xác minh.",
+    "mustAvoid": "Tự thêm cách xác minh, dẫn link thay điều kiện, giấu điểm chưa rõ, nén thành câu mơ hồ hoặc bổ sung quy trình không có."
   }
 ]

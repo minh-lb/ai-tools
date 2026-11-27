@@ -10,8 +10,10 @@ const required = [
   'references/plain-language.md',
   'references/output-formatting.md',
   'references/quality-checklist.md',
+  'references/independent-reader-review.md',
   'examples/before-after.md',
   'eval/scenarios.md',
+  'eval/reader-scenarios.md',
   'eval/cases.json',
   'eval/run.mjs',
   'eval/checks.mjs',
@@ -47,9 +49,9 @@ for (const file of files.filter(f => f.endsWith('.md'))) {
 }
 const scenarios = JSON.parse(readFileSync(path.join(root,'eval/cases.json'),'utf8'));
 const ids = scenarios.map(c=>c.id);
-assert.equal(ids.length,36);
+assert.equal(ids.length,38);
 assert.equal(new Set(ids).size,ids.length,'duplicate eval IDs');
-for (let n=1;n<=36;n++) {
+for (let n=1;n<=38;n++) {
   const id = 'E' + String(n).padStart(2,'0');
   const c = scenarios.find(c=>c.id===id);
   assert.ok(c,'missing '+id);
@@ -78,5 +80,14 @@ assert.match(skill, /^## Editorial Review \(internal\)$/m);
 assert.match(skill, /^## Minimum Sufficient Documentation$/m);
 assert.match(skill, /^## Adaptive Response Depth$/m);
 assert.match(skill, /^## Conversational Behavior$/m);
+assert.match(skill, /^## First-read Comprehension$/m);
+assert.match(skill, /^## Independent Reader Review \(internal\)$/m);
+const readerReview = readFileSync(path.join(root,'references/independent-reader-review.md'),'utf8');
+assert.match(readerReview,/At most two independent review rounds/i);
+assert.match(readerReview,/fresh isolated Reader/i);
+assert.match(readerReview,/answer key outside Reader context/i);
+assert.match(readerReview,/self-review/i);
+const readerScenarios = readFileSync(path.join(root,'eval/reader-scenarios.md'),'utf8');
+assert.deepEqual([...readerScenarios.matchAll(/^\| (R\d{2}) \|/gm)].map(m=>m[1]),Array.from({length:9},(_,i)=>'R'+String(i+1).padStart(2,'0')));
 assert.match(examples, /## 16\. Biên tập văn phong/);
-console.log('PASS: required files, links, 36 eval scenarios, conversational examples, legacy removal');
+console.log('PASS: required files, links, 38 eval scenarios, conversational examples, legacy removal');

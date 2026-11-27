@@ -32,6 +32,12 @@ Before drafting a document, determine its purpose, audience, and mandatory conte
 
 Use an explicit user length limit when given; otherwise avoid arbitrary word counts or compression targets. Never cut required coverage to meet a stylistic preference. If an explicit limit conflicts with required coverage, disclose the conflict rather than silently omit material information.
 
+## First-read Comprehension
+
+- Anticipate the intended reader's material questions. State the relevant actors, actions, conditions, outcomes, exceptions, rationale, and impact; do not turn these into mandatory sections.
+- Give essential context before complex concepts; keep related rules and exceptions together. Use consistent terminology and an example only when it resolves ambiguity.
+- Explicitly mark unresolved decisions. Never invent missing answers or expand the scope to address speculative questions.
+
 ## Human-like Writing
 
 - Write like a knowledgeable colleague: direct, natural, specific. Vary sentence length; use one main idea per paragraph.
@@ -59,7 +65,17 @@ Perform one proportionate pass before delivery:
 - At document level: remove optional sections that have no distinct purpose; consolidate duplicated facts and requirements across sections; ensure references resolve and are sufficient for the intended reader.
 - At paragraph/sentence level: remove filler, repeated ideas, and explanations the audience does not need; replace vague wording with specific statements.
 - Verify mandatory coverage, source fidelity, evidence, uncertainty, and exact output constraints. Fix substantive gaps against sources, not by inventing content. Keep required headings even if a different structure would be shorter.
+- Simulate the intended reader: can they understand what matters, interpret the conditions correctly, and decide or act without material follow-up? Fix comprehension gaps from available evidence.
 - Deliver only the requested result. Skip cosmetic rewriting if already clear or exact. Do not edit files for review-only requests.
+
+## Independent Reader Review (internal)
+
+For complex or consequential documents (e.g. SRS, Basic Design, Technical Design, multi-branch procedures), after Editorial Review follow [Independent Reader Review](references/independent-reader-review.md). Skip for simple chat, short explanations, routine reports, or when the user declines review.
+
+- Main agent writes; a fresh, isolated Reader subagent answers source-derived questions using only the document and reader-accessible material. A separate Evaluator subagent compares answers with the authoritative requirements.
+- Verify isolation before delegation. Never pass source requirements, answer keys, parent history, or prior findings to Reader. Do not use a subagent that inherits or can retrieve these.
+- Use at most two review rounds by default; revise material gaps only. A pass applies only to the reviewed revision. If isolation or subagents are unavailable, use internal self-review and disclose the limitation when independent review was expected; never claim independent verification.
+- Reader and Evaluator are read-only roles; do not recursively invoke this workflow or generate extra user-facing artifacts.
 
 ## Scope and collaboration
 
