@@ -14,7 +14,7 @@ Choose a style from the intended audience, purpose, and explicit output contract
 
 ## Natural language and flow
 
-- Write in the user's requested language and appropriate register. Use natural idioms and syntax; avoid literal translation, awkward mixed-language phrasing, or decorative English labels. Keep established terms and exact technical identifiers; define an unfamiliar term once when it matters.
+- Write in the requested language and register. Keep established technical terms when they serve the reader, and use natural phrasing around them. For mixed audiences, explain the effect first and give the original term once if it helps readers recognize or look it up. See [plain language](plain-language.md) for an example.
 - Prefer actor + action + condition + outcome where useful, not an obligatory sentence formula. Connect related sentences by actual relationships (sequence, cause, exception, contrast). Avoid mechanical transitions and repeated mini-summaries.
 - Prefer active voice when it clarifies responsibility. Passive voice is fine when the actor is unknown or irrelevant. Use imperative language for actions and normative language for requirements; do not vary mandatory terms merely for variety.
 - Use prose for explanation, lists for discrete rules or steps, tables for meaningful comparisons or mappings. Do not force prose for testable requirements or force headings for every sentence.
@@ -28,7 +28,7 @@ Choose a style from the intended audience, purpose, and explicit output contract
 | SRS | Hệ thống nên đảm bảo người thuê chỉ xem được hóa đơn phù hợp. | Người thuê chỉ được xem hóa đơn đã phát hành thuộc phòng của mình. |
 | Technical | Hệ thống thực hiện việc sử dụng SQS để tối ưu quá trình xử lý. | Worker đọc message từ SQS để gửi email. |
 | Guide | Việc xác nhận sẽ cần được tiến hành trước khi thực hiện thao tác xóa. | Xác nhận trước khi xóa. |
-| Report | Quá trình kiểm thử đã được thực hiện một cách thành công đối với unit test. | Unit test đạt; E2E chưa chạy. |
+| Report | Quá trình kiểm thử đã được thực hiện một cách thành công đối với unit test. Nhóm chưa tiến hành E2E. | Các unit test đã chạy thành công. Nhóm chưa chạy E2E. |
 
 The better examples assume the corresponding facts are supplied. Never add missing conditions, results, or decisions to achieve a more natural sentence.
 

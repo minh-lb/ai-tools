@@ -23,6 +23,8 @@
 
 Cases E25–E26 use fixed prior turns; they do not simulate an organically generated conversation. Evaluate whether the answer uses that history without repetition.
 
+For Vietnamese terminology, check E41 and E43 together. E41 should preserve technical terms familiar to backend engineers and exact identifiers. E43 should use the tenant's vocabulary and preserve the names of UI controls. Judge the terminology by what readers need to recognize, understand, or look up.
+
 **Pass:** accuracy and contract both 2; relevance and clarity each at least 1; no automatic check failure or invented material fact. Target is 8/8. For document-level cases, relevance must be 2 (no material redundancy or unnecessary sections). Style-sensitive cases require clarity 2 (genre, register, terminology, flow and structure must fit the reader). A lower score compared with the baseline is a regression even when the case still meets the minimum.
 
 ## Input format

@@ -1,6 +1,6 @@
 # Before / After: Reader-Focused Output
 
-These **fictional** examples demonstrate presentation changes. Each "After" uses only facts stated in "Before". A rewrite must not invent additional evidence, implementation details, causes, or test results.
+These **fictional** examples demonstrate presentation changes. Each recommended rewrite uses the supplied source facts or conversation. A rewrite must not invent additional evidence, implementation details, causes, or test results.
 
 ## 1. Concurrent updates — explain the effect
 
@@ -54,7 +54,7 @@ When a user requests raw JSON with exactly two keys, return **only** valid JSON 
 
 **Trước:** Trong quá trình thực hiện nhiệm vụ, nhóm đã tiến hành cập nhật giao diện đăng nhập và thực hiện kiểm tra chất lượng. Cụ thể, nhóm đã sửa thông báo lỗi khi nhập sai email. Unit test đã chạy thành công, nhưng chưa thực hiện E2E.
 
-**Sau:** **Đã sửa:** Thông báo email không hợp lệ ở màn hình đăng nhập. **Đã kiểm tra:** Unit test đạt. **Chưa kiểm tra:** E2E.
+**Sau (báo cáo cho nhóm kỹ thuật):** Nhóm đã sửa thông báo lỗi khi nhập sai email ở màn hình đăng nhập. Các unit test đã chạy thành công. Nhóm chưa chạy kiểm thử E2E.
 
 ## 10. Giải thích lỗi — ưu tiên tác động
 
@@ -74,13 +74,13 @@ When a user requests raw JSON with exactly two keys, return **only** valid JSON 
 
 **Sai:** "Chủ sở hữu có thể lưu trữ tổ chức."
 
-**Đúng:** "Chỉ chủ sở hữu được lưu trữ tổ chức sau khi hoàn tất hợp đồng, xử lý nợ và quyết toán tiền đặt cọc. Quản lý tòa nhà không có quyền này."
+**Đúng:** "Chỉ chủ sở hữu có quyền lưu trữ tổ chức. Việc lưu trữ chỉ được thực hiện khi tất cả hợp đồng đã hoàn tất, các khoản nợ đã được xử lý và tiền đặt cọc đã được quyết toán. Quản lý tòa nhà không có quyền lưu trữ tổ chức."
 
 ## 13. Nhiễu thông tin — giữ điều kiện quan trọng
 
 **Trước:** Nhằm tăng trải nghiệm tổng thể, đội dự án đã trao đổi nhiều lần về quy trình xuất hóa đơn. Hệ thống tạo hóa đơn nháp; quản lý phải duyệt trước khi phát hành. Người thuê chỉ được thông báo sau khi hóa đơn phát hành. Ngoài ra còn nhiều cân nhắc chung về khả năng mở rộng trong tương lai.
 
-**Sau:** **Quy trình:** Hệ thống tạo hóa đơn nháp → quản lý duyệt và phát hành → người thuê nhận thông báo sau khi phát hành.
+**Sau:** Hệ thống tạo hóa đơn nháp. Hóa đơn chỉ được phát hành sau khi quản lý duyệt. Người thuê chỉ nhận thông báo sau khi hóa đơn đã phát hành.
 
 ## 14. Văn phong máy móc — chuyển thành giải thích tự nhiên
 
@@ -104,7 +104,7 @@ When a user requests raw JSON with exactly two keys, return **only** valid JSON 
 
 **Sai:** "Hệ thống tự động gửi hóa đơn cho người thuê."
 
-**Đúng:** "Quản lý kiểm tra và phát hành hóa đơn trước. Người thuê nhận thông báo sau khi hóa đơn được phát hành."
+**Đúng:** "Chỉ quản lý có quyền phát hành hóa đơn, và chỉ sau khi hóa đơn đã được kiểm tra. Người thuê chỉ nhận thông báo sau khi hóa đơn đã phát hành."
 
 **Lý do:** Câu tự nhiên hơn nhưng vẫn giữ vai trò, thứ tự và điều kiện thông báo.
 
@@ -170,7 +170,7 @@ Quản lý kiểm tra và phát hành hóa đơn, sau đó hệ thống thông b
 
 **Dữ kiện chung:** Chỉ quản lý đúng tòa nhà được phát hành hóa đơn nháp sau khi kiểm tra. Nếu gửi thông báo thất bại, hóa đơn vẫn đã phát hành và lỗi được ghi nhận.
 
-**Business Requirement:** Quản lý kiểm tra và phát hành hóa đơn nháp của tòa nhà mình được cấp quyền. Lỗi gửi thông báo không làm thay đổi trạng thái hóa đơn; hệ thống ghi nhận lỗi.
+**Yêu cầu nghiệp vụ:** Sau khi kiểm tra hóa đơn nháp, chỉ quản lý được cấp quyền tại tòa nhà tương ứng mới có thể phát hành. Nếu gửi thông báo thất bại, hóa đơn vẫn ở trạng thái đã phát hành và lỗi được ghi nhận.
 
 **SRS:**
 - Chỉ quản lý được cấp quyền tại tòa nhà tương ứng mới được phát hành hóa đơn ở trạng thái nháp sau khi kiểm tra.
@@ -179,3 +179,15 @@ Quản lý kiểm tra và phát hành hóa đơn, sau đó hệ thống thông b
 **Technical Design (chỉ nêu hành vi đã biết):** Luồng phát hành phải kiểm tra quyền quản lý theo tòa nhà và trạng thái nháp; chỉ phát hành sau khi hóa đơn được kiểm tra. Lỗi gửi thông báo không hoàn tác trạng thái đã phát hành và phải được ghi nhận. Cơ chế triển khai chưa được cung cấp.
 
 **Lý do:** Cùng nghiệp vụ, nhưng thay đổi cách diễn đạt theo mục đích và người đọc. Không thêm cơ chế kỹ thuật hoặc làm yếu điều kiện bắt buộc. Đây là ví dụ minh họa, không phải kết quả live test.
+
+## 22. Chọn thuật ngữ tiếng Anh theo người đọc
+
+**Dữ kiện chung:** API cho phép mỗi tài khoản gửi tối đa 60 yêu cầu mỗi phút. API trả mã `429` nếu tài khoản vượt giới hạn.
+
+**Cho lập trình viên:** API áp dụng rate limit theo tài khoản, tối đa 60 yêu cầu mỗi phút. Khi tài khoản vượt giới hạn, API trả mã `429`.
+
+**Cho người đọc nghiệp vụ:** Mỗi tài khoản có thể gửi tối đa 60 yêu cầu mỗi phút. Nếu gửi nhiều hơn, hệ thống trả mã lỗi `429`.
+
+**Cho tài liệu dùng chung:** Hệ thống giới hạn số yêu cầu qua API theo từng tài khoản (rate limit). Mỗi tài khoản được gửi tối đa 60 yêu cầu mỗi phút. Khi vượt giới hạn, API trả mã `429`.
+
+**Lý do:** Lập trình viên có thể tra cứu theo cụm `rate limit`. Người đọc nghiệp vụ cần biết ngưỡng và phạm vi áp dụng. Tài liệu dùng chung giải thích ý nghĩa ở lần đầu để cả hai nhóm dùng được cùng một thuật ngữ.

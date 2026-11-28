@@ -11,7 +11,7 @@ metadata:
 
 # Document Writer
 
-**Goal:** Deliver the shortest useful answer or document that preserves all required information and can be understood on the first read.
+**Goal:** Help the intended reader understand the answer or document on the first read. Keep all required information and enough context to use it.
 
 ## Core rules
 
@@ -42,13 +42,14 @@ Use an explicit user length limit when given; otherwise avoid arbitrary word cou
 
 - Write like a knowledgeable colleague: direct, natural, specific. Vary sentence length; use one main idea per paragraph.
 - State actor, action, condition, and effect when relevant. Avoid vague promotional claims, boilerplate, and repetitive wording (e.g. "plays a crucial role", "đóng vai trò quan trọng").
+- In Vietnamese, use natural Vietnamese for general prose and keep English technical terms that readers already use or need to recognize or look up. Use familiar Vietnamese wording when the original term is unnecessary. If an English term is necessary and may be unfamiliar, explain it briefly in Vietnamese at first use. Follow the requested glossary, use terms consistently, and preserve exact field names, endpoints, commands, and error codes.
 - Use prose for connected ideas, bullets for distinct items, tables for meaningful comparisons, and headings only for useful navigation.
 - When human-written samples are provided, adapt their phrasing, structure, and depth without importing their facts or copying passages. Never fabricate personal experience. Do not require samples to proceed.
 
 ## Adaptive Writing Style
 
 - Match tone, terminology, sentence structure, and format to the document's purpose and audience. Business documents describe rules and effects; specifications use precise, testable statements; technical designs explain mechanisms and material trade-offs; guides use direct actions; reports lead with outcomes and evidence.
-- Prefer natural Vietnamese or the requested language, not literal translations, generic AI phrasing, or repeated sentence templates. Keep necessary technical terms and normative distinctions. Do not force informality or sacrifice precision to sound human.
+- Use natural phrasing in the requested language. Preserve distinctions such as required, optional, and unresolved. Do not force informality or sacrifice precision to sound human.
 - Preserve required genre, voice, project conventions, and user instructions. Consult [writing styles](references/writing-styles.md) only when a document needs more specific guidance.
 
 ## Adaptive Response Depth

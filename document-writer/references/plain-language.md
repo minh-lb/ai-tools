@@ -16,7 +16,7 @@ These are **illustrative rewrites**, not project-specific design decisions or me
 
 - Prefer familiar words and active verbs. Explain what changes for the user, not just what a component does.
 - Use short sentences with one main point; keep conditions close to their effects.
-- Introduce an unfamiliar necessary term in context once: "Only one update can succeed at a time (concurrency control)."
+- Explain a necessary unfamiliar term in context on first use. In Vietnamese, retain the English term when it helps the reader recognize or look it up. For example, "Hệ thống giới hạn số yêu cầu mỗi phút cho từng tài khoản (rate limit)." When the label adds no value for the reader, give just the explanation.
 - Keep the exact names of fields, endpoints, states, commands, and error codes if readers need them to implement, search, or verify.
 - Show one small example if the explanation would otherwise remain abstract; omit examples for self-evident requests.
 - Match depth to the question: quick explanation, decision memo, technical contract, and runbook need different detail.
