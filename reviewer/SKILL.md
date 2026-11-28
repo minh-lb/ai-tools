@@ -1,6 +1,6 @@
 ---
 name: reviewer
-description: Use only when reviewer is explicitly requested for code, technical documents, GitHub PRs, GitLab MRs, or a named workflow handoff.
+description: Review code, technical documents, GitHub PRs, or GitLab MRs when the reviewer skill is explicitly invoked or named in a read-only handoff.
 metadata:
   author: Minh Luu
 ---
@@ -18,9 +18,9 @@ metadata:
 
 Follow [output](references/output-delivery.md), [history/IDs](references/review-history.md), and [template](templates/review-report.template.md). Write Vietnamese unless requested otherwise. Disclose scope, snapshot, actual checks and material gaps.
 
-- Local: create `docs/reviewer/YYYY-MM-DD_description.md` at project root without overwriting; read back.
+- Local: create `docs/reviewer/YYYY-MM-DD_description.md` at project root without overwriting; read back. For a chat-only request, deliver the report in chat.
 - GitHub PR / GitLab MR: **preview first; explicitly ask permission before ANY comment, reply, resolve, or approve**. Permission is specific to each action type and reviewed snapshot. See [publication consent](references/publication-consent.md) and [PR/MR delivery](references/pull-request.md). Recheck both endpoints; material changes require renewed preview and consent.
-- Embedded: return structured findings, snapshot, gaps and verdict to orchestrator; handoff NEVER grants provider write permission.
+- Embedded: when a caller requests a structured handoff, return findings, snapshot, gaps and verdict to the caller. Provider writes still require explicit user consent.
 
 If blocked, return the unpublished/unsaved draft and exact status. Skill edits need no review report.
 

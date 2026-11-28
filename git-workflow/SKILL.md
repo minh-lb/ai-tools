@@ -1,17 +1,17 @@
 ---
 name: git-workflow
-description: Use when handling Git branches, commits, pushes, PR/MRs, merges, conflicts, releases, or worktrees. Load before every Git operation, including read-only checks; require explicit permission for commits and pushes.
+description: Handle Git inspection, branches, commits, pushes, PR/MRs, merges, conflicts, releases, and worktrees. Require explicit permission for commits and pushes.
 metadata:
   author: Minh Luu
 ---
 
 # Git Workflow
 
-Use this skill to keep Git history clean, collaboration predictable, and AI-assisted changes safe to review. Its loading and authorization rules apply in every repository; branch, merge, and release recipes must follow that repository's documented model.
+Use this skill for Git operations in any repository. Follow the repository's documented model for branches, merges, and releases.
 
 ## When To Use
 
-Load this skill before each Git action. If it is absent from the current context, including after context compaction, read it before acting. When invoked inside **task-delivery**, keep its selected current checkout and no-worktree/no-automatic-commit boundaries; this skill does not override user or orchestrator constraints. This includes read-only commands (`status`, `diff`, `log`, `show`, remote inspection), write commands, and Git operations through scripts, IDEs, MCP, `gh`, or `glab`. Do not assume keyword matching guarantees activation. Host instructions must enforce this preflight; metadata alone cannot guarantee loading.
+When using this skill, keep these instructions in context before Git actions, including read-only commands and operations through scripts, IDEs, MCP, `gh`, or `glab`. Use the current checkout when required by the task. Respect any explicit restrictions on worktrees or changes to Git history. If the host requires this skill before all Git operations, follow that preflight. The skill's metadata cannot enforce host-wide loading.
 
 - **Inspection:** inspect the working tree, staged changes, history, refs, or remotes.
 - **Commit:** commit, amend, review a commit message, prepare a squash message, or split staged changes.

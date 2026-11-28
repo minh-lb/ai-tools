@@ -12,7 +12,7 @@ Formatting a review or returning an embedded handoff never grants comment/resolv
 
 ## Local files
 
-Use repository root inside authorized workspace, or invocation directory if no repo. Save `docs/reviewer/YYYY-MM-DD_<description>.md` using local date and ASCII kebab-case description (default code-review/document-review). Reject symlink escapes, write exclusively, add -2/-3 on collision and never overwrite. Read back before claiming success. If blocked, return full report inline and state not saved.
+For a chat-only request, return the report inline. Otherwise use the repository root inside the authorized workspace, or the invocation directory if there is no repo. Save `docs/reviewer/YYYY-MM-DD_<description>.md` using local date and an ASCII kebab-case description (default code-review/document-review). Reject symlink escapes, write exclusively, add -2/-3 on collision and never overwrite. Read back before claiming success. If blocked, return the full report inline and state that saving was blocked.
 
 ## Embedded handoff
 

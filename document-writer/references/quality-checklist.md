@@ -32,4 +32,4 @@ Fix blockers and majors before delivery. Avoid stylistic churn when the text alr
 5. Check exact output restrictions and requested scope.
 6. For complex or consequential documents, check the [Independent Reader Review](independent-reader-review.md) activation and limits before reviewing. Reuse an equivalent review when available, and follow the documented fallback if independent review is expected but unavailable.
 
-**Boundary:** This is a communication-quality check, not a substitute for the reviewer, testing, task-creator, or implementation skill. For review-only requests, report findings; do not silently rewrite source files. A static checklist does not prove a model will behave correctly; use [scenario evaluation](../eval/scenarios.md) to test behavior.
+**Boundary:** Use this checklist to assess communication quality. For review-only requests, report findings and leave source files untouched. Use [scenario evaluation](../eval/scenarios.md) to test model behavior.

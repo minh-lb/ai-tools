@@ -17,7 +17,7 @@ PR/MR review xét **toàn bộ merge-base → HEAD** kể cả khi review lại.
 
 ## Quy tắc kết quả
 
-- **Local:** báo cáo mới `docs/reviewer/YYYY-MM-DD_description.md`, không ghi đè.
+- **Local:** lưu báo cáo mới tại `docs/reviewer/YYYY-MM-DD_description.md` và tránh ghi đè. Nếu người dùng yêu cầu chỉ trả lời trong chat, gửi báo cáo tại đó.
 - **PR GitHub / MR GitLab:** mặc định **read-only**. Trước mọi thao tác comment/reply/resolve/approve, phải preview target, snapshot, verdict, nguyên văn comment/reply, file/line/discussion và xin xác nhận tường minh **theo loại hành động**. Yêu cầu “review PR/MR” không phải quyền đăng comment.
 - **Fallback:** không anchor được inline finding thì chỉ đăng general comment/discussion đầy đủ chi tiết nếu người dùng xác nhận riêng fallback đó.
 - **Review lại:** giữ ID theo root cause; reply/resolve thread cũ sau khi chứng minh fix và được xác nhận từng hành động.

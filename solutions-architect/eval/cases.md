@@ -77,3 +77,7 @@ Use this repository's docs to design a private customer export for a company wit
 ## S — Cross-team cutover and operational ownership
 
 Review a proposed production cutover from Ledger V1 to Ledger V2. The ledger team maintains both APIs and the ledger data. Billing and Reporting deploy independently. Today both call V1. The proposal shifts all traffic and write authority to V2 in one step, and tells on-call to roll back by pointing producers and consumers back to V1. V2's new write representation cannot be read by V1 and no reverse synchronization exists. A migration can tolerate a short pause in writes. Designs and load results exist, but the release lacks an agreed version-compatibility window, a reconciliation rehearsal, and named approval and incident roles. Decide whether the rollout can go ahead, and propose stages, checks, and owner handoffs that make it safe.
+
+## T — Standalone architecture review
+
+Review the checkout architecture before implementation. There is one item in stock. Each request reads available stock, then separately writes a reservation, with no conditional update or lock. Never reserve more units than are available. Respond in chat only with findings and the implementation-readiness verdict. No publish or file writes.

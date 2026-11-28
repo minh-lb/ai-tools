@@ -23,7 +23,7 @@ metadata:
 
 ## Minimum Sufficient Documentation
 
-Before drafting a document, determine its purpose, audience, and mandatory content (including any specialized skill's contract). Internally:
+Before drafting a document, determine its purpose, audience, and mandatory content from the request, the source material, and any applicable output contract. Internally:
 
 1. **Filter:** Keep all mandatory facts. Include supporting detail only when it changes understanding, decisions, execution, or verification. Exclude generic background, speculative detail, and obvious explanations before drafting.
 2. **Structure:** Use the smallest useful set of sections. Every optional section must have a distinct purpose. Merge overlapping sections; omit empty or ceremonial sections unless required.
@@ -86,6 +86,6 @@ For complex or consequential documents (e.g. SRS, Basic Design, Technical Design
 
 ## Scope and collaboration
 
-This skill governs communication quality, not artifact scope or domain workflows. Specialized specification, plan, review, test-case, flow, and testing skills own their deliverables. Apply these rules to their human-facing output without recreating their workflow.
+Use this skill directly for writing and editing requests. Use the user's instructions and the project's existing template or conventions to determine the deliverable. When another workflow is already in use, apply these rules to its human-facing output and preserve its required fields, format, and delivery rules.
 
 Apply silently. Read references only as needed: [filtering](references/information-filtering.md), [plain language](references/plain-language.md), [formatting](references/output-formatting.md), [quality check](references/quality-checklist.md). See [examples](examples/before-after.md) and [evaluation](eval/scenarios.md).

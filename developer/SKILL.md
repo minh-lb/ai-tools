@@ -7,7 +7,7 @@ metadata:
 
 # Developer
 
-Follow repository instructions, relevant project skills, and the project's established architecture, contracts, and tools.
+Use this workflow to implement and verify the change with the repository's established architecture, contracts, and tools. Follow applicable repository instructions, including any project-specific skill they explicitly require. When the repository merely offers relevant guidance, consult it if available.
 
 ## Implementation workflow
 
